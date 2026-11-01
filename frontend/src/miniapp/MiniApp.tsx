@@ -631,7 +631,11 @@ function ProductCard({
           />
 
           {/* Top-left Sale Type Badge */}
-          <span className="absolute left-2 top-2 rounded-full backdrop-blur-md bg-white/90 border border-white/40 px-2.5 py-0.5 text-[8.5px] font-extrabold uppercase tracking-[.14em] text-[#172641] shadow-xs">
+          <span className={`absolute left-2 top-2 rounded-full backdrop-blur-md px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] shadow-xs border ${
+            isStock
+              ? "bg-[#1b4332]/85 text-[#e8f5e9] border-[#74c69d]/40"
+              : "bg-[#172641]/85 text-[#faf7f2] border-[#c5a676]/40"
+          }`}>
             {isStock ? t.inStockBadge : t.preorderBadge}
           </span>
 
@@ -647,11 +651,11 @@ function ProductCard({
           <div className="line-clamp-2 font-display text-[15px] font-semibold leading-snug text-[#172641] group-hover:text-[#8a6c43] transition-colors">
             {name}
           </div>
-          <div className="mt-1.5 flex items-baseline justify-between gap-1">
+          <div className="mt-2 flex items-center justify-between gap-1">
             <span className="text-[13px] font-bold text-[#8a6c43]">
               {formatPrice(p.price)}
             </span>
-            <span className="text-[10px] font-bold text-[#172641]/60 uppercase tracking-wider group-hover:translate-x-0.5 transition-transform">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[#dccab0] bg-[#faf7f2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#172641] transition-all duration-200 group-hover:bg-[#172641] group-hover:text-[#f4efe5] group-hover:border-[#172641] group-hover:shadow-[0_2px_8px_rgba(23,38,65,0.2)]">
               Tanlash →
             </span>
           </div>
@@ -666,7 +670,7 @@ function ProductCard({
           e.stopPropagation();
           onToggleFav(p.id);
         }}
-        className="absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/85 text-[#172641] transition active:scale-90 cursor-pointer border border-black/5 shadow-xs hover:bg-white"
+        className="absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/90 text-[#172641] transition-all duration-200 active:scale-90 cursor-pointer border border-[#dccab0]/60 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:bg-white hover:scale-110 hover:shadow-[0_4px_12px_rgba(163,70,60,0.2)]"
       >
         <svg
           width="15"
@@ -794,10 +798,10 @@ function HomeScreen({
           <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
             <Link
               to="/miniapp/catalog"
-              className="shrink-0 flex items-center gap-2 rounded-2xl bg-[#172641] px-4 py-2.5 text-[11px] font-bold text-[#f4efe5] shadow-sm no-underline transition active:scale-95"
+              className="shrink-0 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] px-4 py-2.5 text-[11px] font-bold text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
             >
-              <span>✨</span>
-              <span>{t.allCategories}</span>
+              <span className="text-sm drop-shadow-sm">✨</span>
+              <span className="tracking-wide">{t.allCategories}</span>
             </Link>
             {categories.map((c) => {
               const label = lang === "ru" ? c.name_ru || c.name_uz : c.name_uz;
@@ -806,10 +810,10 @@ function HomeScreen({
                 <Link
                   key={c.id}
                   to={`/miniapp/catalog?category=${c.id}`}
-                  className="shrink-0 flex items-center gap-2 rounded-2xl border border-[#172641]/15 bg-white/90 px-4 py-2.5 text-[11px] font-bold text-[#172641] shadow-xs no-underline transition hover:border-[#172641] hover:bg-white active:scale-95"
+                  className="shrink-0 flex items-center gap-2 rounded-2xl border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] px-4 py-2.5 text-[11px] font-bold text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] no-underline transition-all duration-200 hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
                 >
                   <span className="text-sm">{icon}</span>
-                  <span>{label}</span>
+                  <span className="tracking-wide">{label}</span>
                 </Link>
               );
             })}
@@ -918,17 +922,17 @@ function CatalogScreen({
       </h1>
 
       {/* Search & Filter Controls */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex items-center gap-2">
         <label className="relative flex-1">
           <span className="sr-only">{t.search}</span>
           <svg
-            width="15"
-            height="15"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-[#172641]/45 pointer-events-none"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#c5a676] pointer-events-none transition-colors"
           >
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -938,7 +942,7 @@ function CatalogScreen({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="h-11 w-full border border-[#172641]/20 bg-[#fbf8f2] pl-9 pr-3 text-[13px] text-[#172641] outline-none focus:border-[#172641]"
+            className="h-11 w-full rounded-2xl border border-[#dccab0] bg-white/95 pl-10 pr-4 text-[13px] text-[#172641] placeholder-[#172641]/40 shadow-[0_2px_8px_rgba(23,38,65,0.03)] outline-none transition-all duration-200 focus:border-[#c5a676] focus:ring-2 focus:ring-[#c5a676]/30 focus:shadow-[0_4px_16px_rgba(197,166,118,0.18)]"
           />
         </label>
 
@@ -946,19 +950,19 @@ function CatalogScreen({
           type="button"
           onClick={() => setShowFilters((v) => !v)}
           aria-label="Filtrlar"
-          className={`flex h-11 w-11 items-center justify-center border transition cursor-pointer ${
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all duration-200 cursor-pointer active:scale-95 ${
             showFilters
-              ? "border-[#172641] bg-[#172641] text-[#f4efe5]"
-              : "border-[#172641]/20 bg-[#fbf8f2] text-[#172641]"
+              ? "border-[#c5a676] bg-gradient-to-r from-[#172641] to-[#223558] text-[#faf7f2] shadow-[0_4px_14px_rgba(23,38,65,0.3)] ring-2 ring-[#c5a676]/50"
+              : "border-[#dccab0] bg-white/95 text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.03)] hover:border-[#c5a676] hover:bg-white hover:text-[#0b1728] hover:shadow-[0_4px_16px_rgba(197,166,118,0.22)] hover:-translate-y-0.5"
           }`}
         >
           <svg
-            width="16"
-            height="16"
+            width="17"
+            height="17"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.9"
           >
             <line x1="4" y1="6" x2="20" y2="6" />
             <line x1="7" y1="12" x2="17" y2="12" />
@@ -969,50 +973,52 @@ function CatalogScreen({
         <button
           type="button"
           onClick={() => setOnlyFavs((v) => !v)}
-          className={`flex h-11 items-center gap-1.5 border px-3 text-[11px] font-semibold transition cursor-pointer ${
+          className={`flex h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[11px] font-bold transition-all duration-200 cursor-pointer active:scale-95 ${
             onlyFavs
-              ? "border-[#172641] bg-[#172641] text-[#f4efe5]"
-              : "border-[#172641]/20 bg-[#fbf8f2] text-[#172641]"
+              ? "border-[#a3463c] bg-gradient-to-r from-[#8f2d24] to-[#b34033] text-white shadow-[0_4px_14px_rgba(163,70,60,0.35)] ring-2 ring-[#f0a8a0]/60"
+              : "border-[#dccab0] bg-white/95 text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.03)] hover:border-[#c5a676] hover:bg-white hover:text-[#a3463c] hover:shadow-[0_4px_16px_rgba(163,70,60,0.18)] hover:-translate-y-0.5"
           }`}
         >
           <svg
-            width="15"
-            height="15"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill={onlyFavs ? "currentColor" : "none"}
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.9"
           >
             <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z" />
           </svg>
           <span className="hidden sm:inline">{t.favorites}</span>
           {favIds.length > 0 && (
-            <span className="text-[10px] opacity-75">{favIds.length}</span>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${onlyFavs ? "bg-white/25 text-white" : "bg-[#172641]/10 text-[#172641]"}`}>
+              {favIds.length}
+            </span>
           )}
         </button>
       </div>
 
       {/* Collapsible Sort & Type Drawer */}
       {showFilters && (
-        <div className="rise-in mt-2 grid grid-cols-2 gap-2 border border-[#172641]/15 bg-[#fbf8f2] p-3">
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/60">
+        <div className="rise-in mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#dccab0] bg-white/95 p-3.5 shadow-sm">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/70">
             Tartib
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2 text-[12px] normal-case tracking-normal text-[#172641]"
+              className="mt-1.5 h-10 w-full rounded-xl border border-[#dccab0] bg-[#faf7f2] px-2.5 text-[12px] font-medium normal-case tracking-normal text-[#172641] outline-none focus:border-[#c5a676]"
             >
               <option value="featured">Tanlanganlar avval</option>
               <option value="priceAsc">Arzonroq avval</option>
               <option value="priceDesc">Qimmatroq avval</option>
             </select>
           </label>
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/60">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/70">
             Turi
             <select
               value={saleType}
               onChange={(e) => setSaleType(e.target.value)}
-              className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2 text-[12px] normal-case tracking-normal text-[#172641]"
+              className="mt-1.5 h-10 w-full rounded-xl border border-[#dccab0] bg-[#faf7f2] px-2.5 text-[12px] font-medium normal-case tracking-normal text-[#172641] outline-none focus:border-[#c5a676]"
             >
               <option value="all">{t.allCategories}</option>
               <option value="stock">{t.inStockBadge}</option>
@@ -1027,13 +1033,13 @@ function CatalogScreen({
         <button
           type="button"
           onClick={() => setSearchParams({})}
-          className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-300 cursor-pointer ${
+          className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
             !selectedCat
-              ? "bg-[#172641] text-[#f4efe5] shadow-md shadow-[#172641]/25 ring-2 ring-[#d6bd92]/50 scale-[1.02]"
-              : "border border-[#172641]/15 bg-white/90 text-[#172641]/75 shadow-xs hover:border-[#172641]/35 hover:bg-white hover:text-[#172641]"
+              ? "bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] scale-[1.02]"
+              : "border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
           }`}
         >
-          <span className="text-sm">✨</span>
+          <span className="text-sm drop-shadow-sm">✨</span>
           <span>{t.allCategories}</span>
         </button>
         {categories.map((c) => {
@@ -1045,13 +1051,13 @@ function CatalogScreen({
               key={c.id}
               type="button"
               onClick={() => setSearchParams({ category: String(c.id) })}
-              className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-300 cursor-pointer ${
+              className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
                 active
-                  ? "bg-[#172641] text-[#f4efe5] shadow-md shadow-[#172641]/25 ring-2 ring-[#d6bd92]/50 scale-[1.02]"
-                  : "border border-[#172641]/15 bg-white/90 text-[#172641]/75 shadow-xs hover:border-[#172641]/35 hover:bg-white hover:text-[#172641]"
+                  ? "bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] scale-[1.02]"
+                  : "border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
               }`}
             >
-              <span className="text-sm">{icon}</span>
+              <span className="text-sm transition-transform duration-200 group-hover:scale-110">{icon}</span>
               <span>{label}</span>
             </button>
           );
@@ -1425,10 +1431,10 @@ function ProductScreen({
                       key={v.id}
                       type="button"
                       onClick={() => setSelectedVariantId(v.id)}
-                      className={`min-h-[44px] border px-3.5 py-2 text-[12px] font-semibold transition cursor-pointer ${
+                      className={`min-h-[44px] rounded-xl border px-4 py-2 text-[12px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 ${
                         active
-                          ? "border-[#172641] bg-[#172641] text-[#f4efe5]"
-                          : "border-[#172641]/25 bg-[#fbf8f2] text-[#172641]"
+                          ? "border-[#c5a676] bg-[#172641] text-[#faf7f2] shadow-[0_4px_14px_rgba(23,38,65,0.25)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#fbf8f2]"
+                          : "border-[#dccab0] bg-white text-[#172641] shadow-xs hover:border-[#c5a676] hover:shadow-[0_4px_12px_rgba(197,166,118,0.2)] hover:-translate-y-0.5"
                       }`}
                     >
                       <span>
@@ -1516,21 +1522,21 @@ function ProductScreen({
           {/* Add to Cart Bar */}
           {selectedVariant && (
             <div className="mt-6 flex items-center gap-2">
-              <div className="flex h-12 items-center border border-[#172641]/25 bg-[#fbf8f2]">
+              <div className="flex h-12 items-center rounded-2xl border border-[#dccab0] bg-white shadow-xs overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-3 h-full text-sm font-bold text-[#172641] bg-transparent border-0 cursor-pointer"
+                  className="px-3.5 h-full text-base font-bold text-[#172641] bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
                 >
                   −
                 </button>
-                <span className="w-7 text-center text-[13px] font-semibold">
+                <span className="w-8 text-center text-[13px] font-bold text-[#172641]">
                   {qty}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQty((q) => q + 1)}
-                  className="px-3 h-full text-sm font-bold text-[#172641] bg-transparent border-0 cursor-pointer"
+                  className="px-3.5 h-full text-base font-bold text-[#172641] bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
                 >
                   +
                 </button>
@@ -1541,7 +1547,7 @@ function ProductScreen({
                 onClick={() =>
                   onAddToCart(selectedVariant.id, product.id, qty)
                 }
-                className="flex h-12 flex-1 items-center justify-center gap-2 bg-[#172641] px-4 text-[11px] font-bold uppercase tracking-[.16em] text-[#f4efe5] transition active:scale-[.98] cursor-pointer border-0"
+                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] hover:from-[#1f3357] hover:to-[#1a2942] px-4 text-[11px] font-bold uppercase tracking-[.16em] text-[#faf7f2] shadow-[0_6px_20px_rgba(23,38,65,0.28)] hover:shadow-[0_8px_24px_rgba(23,38,65,0.38)] hover:-translate-y-0.5 transition-all duration-200 active:scale-[.98] cursor-pointer border-0"
               >
                 {t.addToCart} — {formatPrice(product.price * qty)}
               </button>
@@ -1550,7 +1556,7 @@ function ProductScreen({
                 type="button"
                 aria-label={t.favorites}
                 onClick={() => onToggleFav(product.id)}
-                className="flex h-12 w-12 items-center justify-center border border-[#172641]/25 bg-[#fbf8f2] text-[#172641] cursor-pointer"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#dccab0] bg-white text-[#172641] shadow-xs hover:border-[#c5a676] hover:text-[#a3463c] hover:shadow-[0_4px_16px_rgba(163,70,60,0.18)] hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer"
               >
                 <svg
                   width="18"
@@ -1574,9 +1580,10 @@ function ProductScreen({
               <button
                 type="button"
                 onClick={() => setShowQuickModal(true)}
-                className="flex h-11 w-full items-center justify-center gap-2 border border-[#172641] bg-[#faf5ea] text-[11px] font-bold uppercase tracking-[.14em] text-[#172641] transition hover:bg-[#172641] hover:text-[#f4efe5] active:scale-[.98] cursor-pointer"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#c5a676] bg-gradient-to-r from-[#faf5ea] via-[#f7ebd4] to-[#faf5ea] text-[11px] font-bold uppercase tracking-[.14em] text-[#172641] shadow-[0_4px_14px_rgba(197,166,118,0.2)] hover:bg-gradient-to-r hover:from-[#c5a676] hover:to-[#b38f5c] hover:text-white hover:shadow-[0_8px_24px_rgba(197,166,118,0.38)] hover:-translate-y-0.5 transition-all duration-200 active:scale-[.98] cursor-pointer"
               >
-                <span>⚡ 1-klikda buyurtma (Menejer yordami)</span>
+                <span className="text-sm">⚡</span>
+                <span>1-klikda buyurtma (Menejer yordami)</span>
               </button>
               <div className="mt-1 text-center text-[10px] text-[#172641]/60">
                 Pochta manzilini yozishga erinsangiz — telefoningizni qoldiring, o‘zimiz bog‘lanamiz.
