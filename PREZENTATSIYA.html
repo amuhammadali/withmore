@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whitmore — E-Commerce & CRM Prezentatsiya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,600&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b1320;
+      color: #f4efe5;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    .font-serif {
+      font-family: 'Playfair Display', serif;
+    }
+    .slide {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      box-sizing: border-box;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    .slide.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.985); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #d6bd92 0%, #aa8a5e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .glass-card {
+      background: rgba(23, 38, 65, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(214, 189, 146, 0.2);
+    }
+    @media print {
+      body { overflow: visible; background: white; color: black; }
+      .slide { display: flex !important; height: 100vh; page-break-after: always; }
+      .controls { display: none !important; }
+    }
+  </style>
+</head>
+<body class="relative">
+
+  <!-- Progress Bar -->
+  <div class="fixed top-0 left-0 h-1 bg-[#d6bd92] transition-all duration-300 z-50" id="progressBar" style="width: 10%;"></div>
+
+  <!-- Top Brand Watermark -->
+  <div class="fixed top-5 left-8 z-40 flex items-center gap-3">
+    <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-[#d6bd92] to-[#8a6c43] flex items-center justify-center text-[#172641] font-bold text-sm shadow-md">
+      W
+    </div>
+    <span class="text-xs font-bold uppercase tracking-[.25em] text-[#d6bd92]">WHITMORE SARTORIAL CRM</span>
+  </div>
+
+  <!-- Slide Counter -->
+  <div class="fixed top-5 right-8 z-40 text-xs font-bold tracking-widest text-[#d6bd92]/80 bg-[#172641]/60 px-3 py-1.5 rounded-full border border-[#d6bd92]/20">
+    SLAYD <span id="currentSlideNum">1</span> / 10
+  </div>
+
+  <!-- SLIDE 1: TITUL -->
+  <section class="slide active flex-col justify-center items-center text-center px-6 relative" id="slide-1">
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#d6bd92]/10 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#1e3a66]/20 blur-3xl pointer-events-none"></div>
+    
+    <div class="inline-flex items-center gap-2 rounded-full border border-[#d6bd92]/40 bg-[#172641]/80 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-6">
+      ✨ E-Commerce & Logistika Ekotizimi
+    </div>
+    <h1 class="font-serif text-5xl md:text-7xl font-bold max-w-4xl leading-tight">
+      Onlayn Kiyim Do‘konlari va Xorijdan Buyurtma Uchun <span class="gold-gradient">Yagona CRM Platformasi</span>
+    </h1>
+    <p class="mt-6 text-lg md:text-xl text-[#f4efe5]/70 max-w-2xl font-light leading-relaxed">
+      Buyurtma olishdan tortib, Xitoy/Turkiya xaridi, kargo logistikasi va mijoz qo‘liga yetkazib berishgacha bo‘lgan barcha jarayonlarni 100% avtomatlashtirish.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-4 justify-center">
+      <div class="glass-card rounded-2xl px-6 py-3 text-sm font-semibold flex items-center gap-2">
+        <span>📱</span> Telegram Mini App
+      </div>
+      <div class="glass-card rounded-2xl px-6 py-3 text-sm font-semibold flex items-center gap-2">
+        <span>📊</span> 7 Bosqichli Kanban CRM
+      </div>
+      <div class="glass-card rounded-2xl px-6 py-3 text-sm font-semibold flex items-center gap-2">
+        <span>⚡</span> Avtomatlashtirilgan Kargo
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: MUAMMO -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-2">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#e06d53] mb-2">Bozordagi Og‘riqli Nuqtalar</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-10">Bugungi Onlayn Do‘konlar Nimalardan Qiynalmoqda?</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl">
+      <div class="glass-card p-7 rounded-2xl border-l-4 border-l-[#e06d53] space-y-3">
+        <div class="text-3xl">📥</div>
+        <h3 class="text-xl font-bold text-[#f4efe5]">Direct va Telegram Tartibsizligi</h3>
+        <p class="text-sm text-[#f4efe5]/70 leading-relaxed">
+          Kuniga 100+ xabar orasida mijozlarning o‘lchamlari, to‘lov cheklari va manzillari yo‘qolib qoladi.
+        </p>
+      </div>
+
+      <div class="glass-card p-7 rounded-2xl border-l-4 border-l-[#e06d53] space-y-3">
+        <div class="text-3xl">📦</div>
+        <h3 class="text-xl font-bold text-[#f4efe5]">Xitoy / Turkiya Xaridi Chalkashligi</h3>
+        <p class="text-sm text-[#f4efe5]/70 leading-relaxed">
+          Qaysi tovar xarid qilindi, qaysi biri omborda va qaysi biri samolyotda kelayotganini kuzatishda odam adashadi.
+        </p>
+      </div>
+
+      <div class="glass-card p-7 rounded-2xl border-l-4 border-l-[#e06d53] space-y-3">
+        <div class="text-3xl">⏳</div>
+        <h3 class="text-xl font-bold text-[#f4efe5]">Mijozlarning Tinimsiz Savollari</h3>
+        <p class="text-sm text-[#f4efe5]/70 leading-relaxed">
+          "Zakazim qayerda?", "Qachon keladi?" degan savollarga javob berishga menejerning ish vaqtining 60% ketadi.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: BIZNING YECHIM -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-3">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Mukammal Ekotizim</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-10">Whitmore Qanday Yechim Beradi?</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl">
+      <div class="glass-card p-7 rounded-2xl border-t-2 border-t-[#d6bd92] space-y-3">
+        <div class="text-3xl">🛍️</div>
+        <h3 class="text-lg font-bold text-[#d6bd92]">1. Xaridor uchun qulaylik</h3>
+        <p class="text-sm text-[#f4efe5]/75 leading-relaxed">
+          Telegram Mini App orqali mijoz sayt ochmasdan tovar tanlaydi, o‘z bo‘yi va vaznini kiritadi, chek yuklab buyurtma beradi.
+        </p>
+      </div>
+
+      <div class="glass-card p-7 rounded-2xl border-t-2 border-t-[#d6bd92] space-y-3">
+        <div class="text-3xl">🎛️</div>
+        <h3 class="text-lg font-bold text-[#d6bd92]">2. Do‘kon egasi uchun nazorat</h3>
+        <p class="text-sm text-[#f4efe5]/75 leading-relaxed">
+          Yagona CRM doskada barcha buyurtmalar, avtomatlashgan narx kalkulyatori, xodimlar roli va moliyaviy hisobotlar.
+        </p>
+      </div>
+
+      <div class="glass-card p-7 rounded-2xl border-t-2 border-t-[#d6bd92] space-y-3">
+        <div class="text-3xl">🤖</div>
+        <h3 class="text-lg font-bold text-[#d6bd92]">3. Avtomatik bildirishnomalar</h3>
+        <p class="text-sm text-[#f4efe5]/75 leading-relaxed">
+          Kargo holati o‘zgarganda bot xaridorga darhol o‘zbek/rus tilida xabar beradi. Mijoz hech qachon ortiqcha savol bermaydi.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: TELEGRAM MINI APP -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-4">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Mijoz Interfeysi</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">Telegram Mini App Imkoniyatlari</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
+      <div class="space-y-4">
+        <div class="flex items-start gap-4 glass-card p-4 rounded-xl">
+          <span class="text-2xl">👔</span>
+          <div>
+            <h4 class="font-bold text-[#f4efe5]">Moda piktogrammali toifalar</h4>
+            <p class="text-xs text-[#f4efe5]/70 mt-1">Kostyumlar, Poyabzallar, Shimlar, Kurtkalar va Aksessuarlar interaktiv chip karuseli.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 glass-card p-4 rounded-xl">
+          <span class="text-2xl">📐</span>
+          <div>
+            <h4 class="font-bold text-[#f4efe5]">Sartorial O‘lchamlar Jadvali</h4>
+            <p class="text-xs text-[#f4efe5]/70 mt-1">Ko‘krak, bel va uzunlik aniq sm larda ko‘rsatiladi. Xaridor xato o‘lcham tanlamaydi.</p>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-4 glass-card p-4 rounded-xl">
+          <span class="text-2xl">💳</span>
+          <div>
+            <h4 class="font-bold text-[#f4efe5]">Avans va Karta To‘lovi</h4>
+            <p class="text-xs text-[#f4efe5]/70 mt-1">Uzcard/Humo rekvizitlari, 50% yoki 100% to‘lov va to‘lov chekini yuklash.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl flex flex-col justify-center items-center text-center border border-[#d6bd92]/30">
+        <div class="text-4xl mb-3">📍</div>
+        <h4 class="text-lg font-bold text-[#d6bd92]">7 Bosqichli Jonli Treking</h4>
+        <p class="text-xs text-[#f4efe5]/80 mt-2 max-w-sm">
+          Mijoz o‘z buyurtmasi qayerda ekanligini istalgan daqiqada Mini App ichidagi zamonaviy shkalada ko‘rib turadi.
+        </p>
+        <div class="mt-4 flex gap-1.5">
+          <span class="h-2 w-7 rounded-full bg-[#356348]"></span>
+          <span class="h-2 w-7 rounded-full bg-[#356348]"></span>
+          <span class="h-2 w-7 rounded-full bg-[#c5a776]"></span>
+          <span class="h-2 w-7 rounded-full bg-[#172641]"></span>
+          <span class="h-2 w-7 rounded-full bg-[#172641]"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: CRM KANBAN -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-5">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Boshqaruv Markazi</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">7 Bosqichli CRM va Kanban Doskasi</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2.5 max-w-6xl text-center">
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">1-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">Yangi</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Tekshirilmoqda</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">2-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">To‘lov</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Avans cheki</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">3-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">Xarid</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Fabrikadan</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">4-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">Ombor</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Xitoy omborida</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">5-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">Yo‘lda</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">O‘zbekistonga</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#d6bd92]">
+        <div class="text-xs text-[#d6bd92] font-bold">6-BOSQICH</div>
+        <div class="text-sm font-bold mt-2">BTS / EMU</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Pochta filiali</div>
+      </div>
+
+      <div class="glass-card p-3 rounded-xl border-t-2 border-t-[#356348]">
+        <div class="text-xs text-[#356348] font-bold">7-BOSQICH</div>
+        <div class="text-sm font-bold mt-2 text-[#68b884]">Topshirildi</div>
+        <div class="text-[10px] text-[#f4efe5]/60 mt-1">Muvaffaqiyatli</div>
+      </div>
+    </div>
+
+    <div class="mt-8 glass-card p-5 rounded-2xl max-w-6xl flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">⚡</span>
+        <span class="text-sm font-semibold">Har bir siljitishda mijozga Telegram orqali rasm va trek-kod bilan xushxabar jo‘natiladi.</span>
+      </div>
+      <span class="text-xs font-bold text-[#d6bd92] uppercase tracking-wider">Avtomatlashtirilgan</span>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: KARGO KALKULYATORI -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-6">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Aqlli Hisob-kitob</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">Avtomatlashtirilgan Narx Kalkulyatori</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl items-center">
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="text-lg font-bold text-[#d6bd92]">Universal Formula:</h3>
+        <div class="bg-[#0b1320] p-4 rounded-xl font-mono text-sm border border-[#d6bd92]/30 text-[#d6bd92]">
+          Narx = (Yuan × Kurs) + (Og‘irlik × Kargo) + Marja% + Pochta
+        </div>
+        <p class="text-xs text-[#f4efe5]/70">
+          Do‘kon egasi tovar kiritayotganda faqat 1688 dagi narxi (masalan 120 yuan) va vaznini (0.4 kg) yozadi. Sotish narxi o‘zi hisoblanadi.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+          <span class="text-sm">🔄 Yuan kursi o‘zgarganda:</span>
+          <span class="text-xs font-bold text-[#d6bd92]">1 tugma bilan 1,000 tovar qayta hisoblanadi</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+          <span class="text-sm">✈️ Kargo narxi o‘zgarganda:</span>
+          <span class="text-xs font-bold text-[#d6bd92]">Darhol yangilanadi</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl flex items-center justify-between">
+          <span class="text-sm">📊 Excelga hojat yo‘q:</span>
+          <span class="text-xs font-bold text-[#356348]">100% avtomatik hisob</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: SARTORIAL DOSSIER -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-7">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Mijoz Boshqaruvi</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">Mijozning 360° Sartorial Profili</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
+      <div class="glass-card p-6 rounded-2xl space-y-2">
+        <div class="text-3xl">🧍‍♂️</div>
+        <h4 class="font-bold text-[#d6bd92]">Tana O‘lchamlari Bazasi</h4>
+        <p class="text-xs text-[#f4efe5]/70">
+          Mijozning bo‘yi, vazni, yelkasi, ko‘krak va poyabzal o‘lchami bitta profilda saqlanadi.
+        </p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl space-y-2">
+        <div class="text-3xl">💎</div>
+        <h4 class="font-bold text-[#d6bd92]">LTV va Xaridlar Tarixi</h4>
+        <p class="text-xs text-[#f4efe5]/70">
+          Ushbu mijoz qancha savdo qilgani, eng ko‘p qaysi rang va fasonlarni afzal ko‘rishi ko‘rinadi.
+        </p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl space-y-2">
+        <div class="text-3xl">🎯</div>
+        <h4 class="font-bold text-[#d6bd92]">Shaxsiy Takliflar</h4>
+        <p class="text-xs text-[#f4efe5]/70">
+          Yangi kolleksiya kelganda, aynan shu o‘lchamdagi mijozlarga mos tovarlarni tavsiya qilish osonlashadi.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: WHITE-LABEL MULTI-STORE -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-8">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Biznesni Kengaytirish</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-8">10+ Do‘konga Klonlash (Multi-Store)</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="text-lg font-bold text-[#d6bd92]">15 Soniyada Yangi Do‘kon:</h3>
+        <div class="bg-[#0b1320] p-4 rounded-xl font-mono text-xs text-[#d6bd92] border border-[#d6bd92]/30">
+          python setup_store.py --name "Zara Men" --bot_token "TOKEN" --port 8001
+        </div>
+        <p class="text-xs text-[#f4efe5]/70 leading-relaxed">
+          Ushbu buyruq orqali har bir yangi kiyim do‘koni uchun alohida baza, alohida bot va alohida boshqaruv paneli yaratiladi.
+        </p>
+      </div>
+
+      <div class="glass-card p-6 rounded-2xl space-y-3">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🔒</span>
+          <span class="text-xs font-semibold">Do‘konlar ma'lumotlari bir-biriga mutlaqo aralashmaydi</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🎨</span>
+          <span class="text-xs font-semibold">Har bir do‘kon o‘z logotipi, nomi va ranglariga ega</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-xl">💰</span>
+          <span class="text-xs font-semibold">SaaS biznes sifatida do‘kon egalariga oylik obuna yoki sotish imkoniyati</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: SAMARADORLIK -->
+  <section class="slide flex-col justify-center px-12 md:px-24" id="slide-9">
+    <div class="text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-2">Raqamlar va Natijalar</div>
+    <h2 class="font-serif text-4xl md:text-5xl font-bold mb-10">Tizimni O‘rnatgandan Keyingi O‘zgarishlar</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl">
+      <div class="glass-card p-8 rounded-2xl text-center">
+        <div class="font-serif text-5xl font-bold gold-gradient mb-2">70%</div>
+        <div class="text-sm font-bold text-[#f4efe5]">Vaqt Tejalishi</div>
+        <p class="text-xs text-[#f4efe5]/60 mt-2">Menejerlar buyurtma yozish va savollarga javob berishdan xalos bo‘ladi.</p>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl text-center">
+        <div class="font-serif text-5xl font-bold gold-gradient mb-2">95%</div>
+        <div class="text-sm font-bold text-[#f4efe5]">Xatolar Kamayishi</div>
+        <p class="text-xs text-[#f4efe5]/60 mt-2">O‘lcham adashishi, chek yo‘qolishi va kargo chalkashliklari bartaraf etiladi.</p>
+      </div>
+
+      <div class="glass-card p-8 rounded-2xl text-center">
+        <div class="font-serif text-5xl font-bold gold-gradient mb-2">2.5x</div>
+        <div class="text-sm font-bold text-[#f4efe5]">Savdo O‘sishi</div>
+        <p class="text-xs text-[#f4efe5]/60 mt-2">Mijozlar chiroyli Mini App orqali tez va ishonch bilan buyurtma beradi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: XULOSA VA ALOQA -->
+  <section class="slide flex-col justify-center items-center text-center px-6" id="slide-10">
+    <div class="inline-flex items-center gap-2 rounded-full border border-[#d6bd92]/40 bg-[#172641]/80 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[.2em] text-[#d6bd92] mb-6">
+      🚀 Startga Tayyor
+    </div>
+    <h2 class="font-serif text-5xl md:text-6xl font-bold max-w-3xl leading-tight">
+      Do‘koningizni Yangi Darajaga Olib Chiqing!
+    </h2>
+    <p class="mt-6 text-base md:text-lg text-[#f4efe5]/70 max-w-xl font-light">
+      Tizim 1 klikda o‘rnatishga va bugunoq ishga tushirishga 100% tayyor holatda topshiriladi.
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-4 justify-center">
+      <a href="http://localhost:8000/admin" target="_blank" class="rounded-2xl bg-gradient-to-r from-[#d6bd92] to-[#aa8a5e] px-8 py-3.5 text-sm font-bold text-[#172641] shadow-lg hover:opacity-90 transition">
+        Admin Panelni Ko‘rish →
+      </a>
+      <a href="http://localhost:8000/miniapp" target="_blank" class="rounded-2xl glass-card px-8 py-3.5 text-sm font-bold text-[#f4efe5] hover:bg-[#172641] transition">
+        Telegram Mini Appni Ko‘rish →
+      </a>
+    </div>
+  </section>
+
+  <!-- Controls (Bottom) -->
+  <div class="controls fixed bottom-6 left-0 right-0 z-50 flex items-center justify-between px-8 pointer-events-none">
+    <div class="text-[11px] text-[#f4efe5]/40 tracking-wider pointer-events-auto">
+      Klaviatura: [←] Oldingi · [→] Keyingi · [F] Fullscreen
+    </div>
+
+    <div class="flex items-center gap-2 pointer-events-auto">
+      <button onclick="prevSlide()" class="h-10 w-10 rounded-xl glass-card flex items-center justify-center text-lg hover:border-[#d6bd92] transition cursor-pointer">
+        ←
+      </button>
+      <button onclick="nextSlide()" class="h-10 w-10 rounded-xl glass-card flex items-center justify-center text-lg hover:border-[#d6bd92] transition cursor-pointer">
+        →
+      </button>
+      <button onclick="window.print()" class="px-4 h-10 rounded-xl glass-card text-xs font-bold text-[#d6bd92] hover:border-[#d6bd92] transition cursor-pointer">
+        PDF Yuklab Olish
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function showSlide(num) {
+      if (num < 1) num = 1;
+      if (num > totalSlides) num = totalSlides;
+      currentSlide = num;
+
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const activeSlide = document.getElementById('slide-' + currentSlide);
+      if (activeSlide) activeSlide.classList.add('active');
+
+      document.getElementById('currentSlideNum').innerText = currentSlide;
+      document.getElementById('progressBar').style.width = (currentSlide / totalSlides * 100) + '%';
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) showSlide(currentSlide - 1);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(()=>{});
+        } else {
+          document.exitFullscreen().catch(()=>{});
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
