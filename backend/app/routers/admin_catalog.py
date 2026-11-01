@@ -224,6 +224,7 @@ def product_add(body: ProductIn, admin: AdminAccount = Depends(products_perm), d
 
 
 @router.put("/products/{pid}")
+@router.patch("/products/{pid}")
 def product_edit(pid: int, body: ProductIn, admin: AdminAccount = Depends(products_perm),
                  db: Session = Depends(get_db)):
     _validate(db, body)
