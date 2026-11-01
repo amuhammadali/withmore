@@ -1193,6 +1193,7 @@ export function ProductFormPage() {
     if (!files || !id) return;
     for (const f of Array.from(files)) {
       const fd = new FormData();
+      fd.append("files", f);
       fd.append("file", f);
       try {
         const updated = await adminFetch(`/api/admin/products/${id}/images`, {

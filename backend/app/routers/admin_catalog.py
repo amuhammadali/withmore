@@ -317,15 +317,25 @@ def product_restore(pid: int, admin: AdminAccount = Depends(products_perm), db: 
 
 # ---------------- images ----------------
 @router.post("/products/{pid}/images")
-async def image_add(pid: int, files: list[UploadFile] = File(...), admin: AdminAccount = Depends(products_perm),
-                    db: Session = Depends(get_db)):
+async def image_add(
+    pid: int,
+    files: list[UploadFile] = File(default=[]),
+    file: UploadFile | None = File(default=None),
+    admin: AdminAccount = Depends(products_perm),
+    db: Session = Depends(get_db)
+):
+    upload_list = list(files)
+    if file is not None:
+        upload_list.append(file)
+    if not upload_list:
+        raise HTTPException(422, "Kamida 1 ta rasm yuklang")
     p = _load(db, pid)
-    if len(p.images) + len(files) > MAX_IMAGES:
+    if len(p.images) + len(upload_list) > MAX_IMAGES:
         raise HTTPException(422, f"Ko'pi bilan {MAX_IMAGES} ta rasm")
-    for f in files:
+    for f in upload_list:
         up = await process_upload(f, db, admin.id)
         p.images.append(ProductImage(path=up.path, sort=len(p.images)))
-    audit(db, admin, "product_images_add", "product", p.id, f"{len(files)} files")
+    audit(db, admin, "product_images_add", "product", p.id, f"{len(upload_list)} files")
     db.commit()
     return product_out(_load(db, pid))
 
