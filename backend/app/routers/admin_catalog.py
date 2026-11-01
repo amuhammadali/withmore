@@ -1,3 +1,4 @@
+
 import json
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
@@ -23,7 +24,8 @@ MAX_IMAGES = 6
 def product_out(p: Product, detail: bool = True) -> dict:
     out = {
         "id": p.id, "category_id": p.category_id, "name_uz": p.name_uz, "name_ru": p.name_ru,
-        "price_uzs": p.price_uzs, "price_yuan": p.price_yuan, "sale_type": p.sale_type,
+        "price_uzs": p.price_uzs, "price_yuan": p.price_yuan, "weight_kg": p.weight_kg if p.weight_kg is not None else 0.5,
+        "manual_price": p.manual_price, "sale_type": p.sale_type,
         "featured": p.featured, "active": p.active, "draft": p.draft, "deleted": p.deleted_at is not None,
         "thumb": thumb_of(p.images[0].path) if p.images else None,
         "stock_total": sum(v.stock for v in p.variants),
@@ -31,7 +33,6 @@ def product_out(p: Product, detail: bool = True) -> dict:
     if detail:
         out.update({
             "desc_uz": p.desc_uz, "desc_ru": p.desc_ru, "material": p.material, "size_chart": p.size_chart or [],
-            "weight_kg": p.weight_kg, "manual_price": p.manual_price,
             "variants": [{"id": v.id, "size": v.size, "color": v.color, "stock": v.stock} for v in p.variants],
             "images": [{"id": i.id, "path": i.path, "thumb": thumb_of(i.path)} for i in p.images],
         })
@@ -124,8 +125,8 @@ class ProductIn(BaseModel):
     category_id: int | None = None
     material: str = ""
     size_chart: list[dict] = []
-    price_yuan: float = Field(default=0, ge=0)
-    weight_kg: float = Field(default=1, ge=0)
+    price_yuan: float | None = Field(default=0, ge=0)
+    weight_kg: float | None = Field(default=0.5, ge=0)
     manual_price: int | None = Field(default=None, ge=0)
     sale_type: str = "preorder"
     featured: bool = False
@@ -178,13 +179,14 @@ def _validate(db: Session, body: ProductIn):
 
 
 def _apply(db: Session, p: Product, body: ProductIn):
-    p.name_uz, p.name_ru = body.name_uz.strip(), body.name_ru.strip()
-    p.desc_uz, p.desc_ru = body.desc_uz, body.desc_ru
-    p.category_id, p.material = body.category_id, body.material
-    p.size_chart = [{k: str(v)[:20] for k, v in row.items()} for row in body.size_chart]
-    p.price_yuan, p.weight_kg = body.price_yuan, body.weight_kg
+    p.name_uz, p.name_ru = body.name_uz.strip(), (body.name_ru or "").strip()
+    p.desc_uz, p.desc_ru = body.desc_uz or "", body.desc_ru or ""
+    p.category_id, p.material = body.category_id, body.material or ""
+    p.size_chart = [{k: str(v)[:20] for k, v in row.items()} for row in (body.size_chart or [])]
+    p.price_yuan = body.price_yuan if body.price_yuan is not None else 0.0
+    p.weight_kg = body.weight_kg if body.weight_kg is not None else (p.weight_kg or 0.5)
     p.manual_price = body.manual_price or None
-    p.sale_type, p.featured, p.active = body.sale_type, body.featured, body.active
+    p.sale_type, p.featured, p.active = body.sale_type or "preorder", bool(body.featured), bool(body.active)
     p.price_uzs = price_for(db, p)
 
 

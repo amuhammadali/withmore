@@ -1114,16 +1114,23 @@ export function ProductFormPage() {
       .then(setSettings)
       .catch(() => {});
     if (!isNew) {
-      adminFetch(`/api/admin/products?status=all`).then((list) => {
-        const found = list.find((x: any) => String(x.id) === String(id));
-        if (found) {
-          setForm({
-            ...found,
-            category_id: found.category_id || "",
-            manual_price: found.manual_price || "",
-          });
-        }
-      });
+      adminFetch(`/api/admin/products/${id}`)
+        .catch(() =>
+          adminFetch(`/api/admin/products?status=all`).then((list) =>
+            Array.isArray(list) ? list.find((x: any) => String(x.id) === String(id)) : null
+          )
+        )
+        .then((found) => {
+          if (found) {
+            setForm({
+              ...found,
+              category_id: found.category_id || "",
+              manual_price: found.manual_price || "",
+              weight_kg: found.weight_kg != null ? found.weight_kg : 0.5,
+              price_yuan: found.price_yuan != null ? found.price_yuan : 0,
+            });
+          }
+        });
       adminFetch(`/api/admin/ops/supplier/${id}`)
         .then((res) => {
           if (res?.url) setSupplierUrl(res.url);
@@ -1146,8 +1153,8 @@ export function ProductFormPage() {
     const payload = {
       ...form,
       category_id: form.category_id ? Number(form.category_id) : null,
-      price_yuan: Number(form.price_yuan),
-      weight_kg: Number(form.weight_kg),
+      price_yuan: isNaN(Number(form.price_yuan)) ? 0 : Number(form.price_yuan),
+      weight_kg: isNaN(Number(form.weight_kg)) || Number(form.weight_kg) <= 0 ? 0.5 : Number(form.weight_kg),
       manual_price: form.manual_price ? Number(form.manual_price) : null,
       is_draft: false,
     };
