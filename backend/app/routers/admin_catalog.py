@@ -22,19 +22,22 @@ MAX_IMAGES = 6
 
 
 def product_out(p: Product, detail: bool = True) -> dict:
+    images_list = [{"id": i.id, "path": i.path, "thumb": thumb_of(i.path)} for i in p.images]
+    variants_list = [{"id": v.id, "size": v.size, "color": v.color, "stock": v.stock} for v in p.variants]
     out = {
         "id": p.id, "category_id": p.category_id, "name_uz": p.name_uz, "name_ru": p.name_ru,
-        "price_uzs": p.price_uzs, "price_yuan": p.price_yuan, "weight_kg": p.weight_kg if p.weight_kg is not None else 0.5,
+        "price_uzs": p.price_uzs, "selling_price": p.price_uzs, "price_yuan": p.price_yuan,
+        "weight_kg": p.weight_kg if p.weight_kg is not None else 0.5,
         "manual_price": p.manual_price, "sale_type": p.sale_type,
         "featured": p.featured, "active": p.active, "draft": p.draft, "deleted": p.deleted_at is not None,
         "thumb": thumb_of(p.images[0].path) if p.images else None,
+        "images": images_list,
+        "variants": variants_list,
         "stock_total": sum(v.stock for v in p.variants),
     }
     if detail:
         out.update({
             "desc_uz": p.desc_uz, "desc_ru": p.desc_ru, "material": p.material, "size_chart": p.size_chart or [],
-            "variants": [{"id": v.id, "size": v.size, "color": v.color, "stock": v.stock} for v in p.variants],
-            "images": [{"id": i.id, "path": i.path, "thumb": thumb_of(i.path)} for i in p.images],
         })
     return out
 

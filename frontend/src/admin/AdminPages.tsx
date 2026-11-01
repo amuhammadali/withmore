@@ -809,7 +809,7 @@ export function ProductsPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {items.map((p) => {
             const checked = selected.includes(p.id);
-            const firstImg = p.images?.[0];
+            const imgThumb = p.thumb || p.images?.[0]?.thumb || p.images?.[0]?.path;
             return (
               <article
                 key={p.id}
@@ -818,9 +818,9 @@ export function ProductsPage() {
                 <div>
                   {/* Image Header */}
                   <div className="relative h-[185px] overflow-hidden bg-[#ece5d8]">
-                    {firstImg ? (
+                    {imgThumb ? (
                       <img
-                        src={`/uploads/${firstImg.thumb}`}
+                        src={`/uploads/${imgThumb}`}
                         alt={p.name_uz}
                         className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                       />
@@ -897,7 +897,7 @@ export function ProductsPage() {
                     <div className="mt-3 flex items-baseline justify-between border-t border-border/70 pt-3">
                       <div>
                         <div className="font-display text-[20px] font-medium tracking-[-.02em]">
-                          {formatPrice(p.selling_price)}
+                          {formatPrice(p.price_uzs ?? p.selling_price ?? 0)}
                         </div>
                         <div className="text-[10px] text-muted-foreground">
                           ¥{p.price_yuan} · {p.weight_kg} kg
