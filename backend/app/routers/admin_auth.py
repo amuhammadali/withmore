@@ -42,7 +42,7 @@ def login(body: LoginIn, request: Request, response: Response, db: Session = Dep
     audit(db, admin, "login", "admin", admin.id)
     db.commit()
     token, csrf = make_session_cookie(admin)
-    set_cookie(response, token)
+    set_cookie(response, token, request=request)
     return {"admin": admin_out(admin), "csrf": csrf}
 
 
@@ -74,7 +74,7 @@ def change_password(body: PasswordIn, response: Response, admin: AdminAccount = 
     audit(db, admin, "password_change", "admin", admin.id)
     db.commit()
     token, csrf = make_session_cookie(admin)
-    set_cookie(response, token)
+    set_cookie(response, token, request=request)
     return {"csrf": csrf}
 
 

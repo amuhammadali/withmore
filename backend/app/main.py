@@ -41,7 +41,9 @@ async def lifespan(app: FastAPI):
                     await bot.set_webhook(f"{st.APP_URL.rstrip('/')}/api/bot/webhook",
                                           secret_token=st.WEBHOOK_SECRET or None, drop_pending_updates=False)
                 except Exception as exc:
-                    log.error("Webhook setup failed: %s", type(exc).__name__)
+                    log.warning("Webhook setup failed (%s), starting long-polling as fallback...", exc)
+                    task = asyncio.create_task(botmod.run_polling(bot, dp))
+                    tasks.append(task)
         else:
             await botmod.ensure_bot_started(app)
     else:

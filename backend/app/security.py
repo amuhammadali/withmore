@@ -61,9 +61,16 @@ def read_session(token: str | None):
         return None
 
 
-def set_cookie(response, token: str):
+def set_cookie(response, token: str, request: Request | None = None):
+    # Only set secure flag if actual connection is HTTPS, allowing plain HTTP on VPS IP
+    secure = False
+    if request is not None:
+        proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+        secure = proto == "https"
+    else:
+        secure = get_settings().secure_cookies
     response.set_cookie(COOKIE, token, httponly=True, samesite="lax",
-                        secure=get_settings().secure_cookies, max_age=SESSION_MAX_AGE, path="/")
+                        secure=secure, max_age=SESSION_MAX_AGE, path="/")
 
 
 def origin_ok(request: Request) -> bool:
