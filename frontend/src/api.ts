@@ -41,6 +41,13 @@ export async function adminFetch<T = any>(
     }
     const err: any = new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
     err.status = res.status;
+    if (res.status === 401 && !path.includes("/login")) {
+      if (window.location.pathname.startsWith("/admin") && window.location.pathname !== "/admin/login") {
+        setTimeout(() => {
+          window.location.href = "/admin/login";
+        }, 1200);
+      }
+    }
     throw err;
   }
   return res.json();
@@ -68,6 +75,13 @@ export async function shopFetch<T = any>(
     }
     const err: any = new Error(typeof msg === "string" ? msg : JSON.stringify(msg));
     err.status = res.status;
+    if (res.status === 401 && !path.includes("/login")) {
+      if (window.location.pathname.startsWith("/admin") && window.location.pathname !== "/admin/login") {
+        setTimeout(() => {
+          window.location.href = "/admin/login";
+        }, 1200);
+      }
+    }
     throw err;
   }
   return res.json();

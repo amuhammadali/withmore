@@ -137,8 +137,8 @@ def team_add(body: TeamIn, owner: AdminAccount = Depends(require_owner), db: Ses
 
 
 @router.patch("/team/{aid}")
-def team_edit(aid: int, body: TeamIn, owner: AdminAccount = Depends(require_owner),
-              db: Session = Depends(get_db)):
+def team_edit(aid: int, body: TeamIn, request: Request, response: Response,
+              owner: AdminAccount = Depends(require_owner), db: Session = Depends(get_db)):
     a = db.get(AdminAccount, aid) or _404()
     uname = _clean(body)
     if a.id == owner.id and body.role != "owner":
@@ -147,11 +147,16 @@ def team_edit(aid: int, body: TeamIn, owner: AdminAccount = Depends(require_owne
                                           AdminAccount.id != aid).first()
     if other:
         raise HTTPException(409, "Bunday login mavjud")
-    changed_access = (a.role != body.role or set(a.permissions or []) != set(body.permissions))
+    if a.id == owner.id:
+        body.role = "owner"
+    changed_access = (a.id != owner.id) and (a.role != body.role or set(a.permissions or []) != set(body.permissions))
     a.full_name, a.tg_username, a.login = body.full_name.strip(), uname, body.login.strip().lower()
     a.role, a.permissions, a.accepts_orders = body.role, body.permissions, body.accepts_orders
     if changed_access:
         a.session_version += 1
+    elif a.id == owner.id:
+        token, csrf = make_session_cookie(a)
+        set_cookie(response, token, request=request)
     audit(db, owner, "team_edit", "admin", a.id, f"role={a.role} perms={a.permissions} accepts={a.accepts_orders}")
     db.commit()
     return admin_out(a)
