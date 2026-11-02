@@ -765,34 +765,6 @@ function HomeScreen({
 
   return (
     <div className="rise-in">
-      {/* Luxury Story Highlights Row */}
-      <section aria-label="Tezkor ruknlar" className="px-4 pt-3 pb-2 bg-[#f4efe5]">
-        <div className="flex items-center gap-3.5 overflow-x-auto no-scrollbar py-1">
-          {[
-            { id: "new", title: "Kolleksiya 2026", icon: "✨", link: "/miniapp/catalog" },
-            { id: "suits", title: "Kostyumlar", icon: "👔", link: "/miniapp/catalog?category=1" },
-            { id: "fabrics", title: "Italiya matosi", icon: "🇮🇹", link: "/miniapp/about" },
-            { id: "shirts", title: "Ko‘ylaklar", icon: "🧵", link: "/miniapp/catalog?category=2" },
-            { id: "delivery", title: "Yetkazib berish", icon: "🚚", link: "/miniapp/about" },
-          ].map((st) => (
-            <Link
-              key={st.id}
-              to={st.link}
-              className="flex flex-col items-center gap-1.5 shrink-0 no-underline group text-center"
-            >
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#c5a676] via-[#172641] to-[#c5a676] p-[2px] shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_4px_16px_rgba(197,166,118,0.4)]">
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#fbf9f5] border border-white text-xl">
-                  {st.icon}
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-[#172641] tracking-tight line-clamp-1 max-w-[68px]">
-                {st.title}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Editorial Luxury Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#0e1828] via-[#172641] to-[#0a121f] text-[#f4efe5]">
         {content?.hero_image ? (
