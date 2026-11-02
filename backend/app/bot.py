@@ -29,7 +29,7 @@ T = {
     "uz": {
         "choose_lang": "Tilni tanlang / Выберите язык",
         "welcome": (
-            "<b>WHITMORE — Sartorial Menswear</b>\n\n"
+            "<b>WITHMORE — Sartorial Menswear</b>\n\n"
             "Xitoydan buyurtma asosida yetkaziladigan klassik erkaklar kiyimi.\n"
             "Do'konni (Mini App) ochish yoki bo'limlarni ko'rish uchun pastdagi tugmalardan foydalaning:"
         ),
@@ -50,12 +50,12 @@ T = {
         "link_bad": "Havola eskirgan yoki noto'g'ri. Admin paneldan yangisini oling.",
         "need_https": "HTTPS tunnel ishga tushirilmoqda... Bir necha soniyadan so'ng /start bosing yoki quyidagi katalogdan foydalaning:",
         "faq": "Ko'p so'raladigan savollar",
-        "catalog_header": "<b>WHITMORE — Tanlangan modellar:</b>\n\nTo'liq katalog, o'lchamlar jadvali va buyurtma berish uchun Mini App tugmasini bosing:",
+        "catalog_header": "<b>WITHMORE — Tanlangan modellar:</b>\n\nTo'liq katalog, o'lchamlar jadvali va buyurtma berish uchun Mini App tugmasini bosing:",
     },
     "ru": {
         "choose_lang": "Tilni tanlang / Выберите язык",
         "welcome": (
-            "<b>WHITMORE — Sartorial Menswear</b>\n\n"
+            "<b>WITHMORE — Sartorial Menswear</b>\n\n"
             "Классическая мужская одежда под заказ из Китая.\n"
             "Используйте кнопки ниже, чтобы открыть магазин (Mini App) или разделы:"
         ),
@@ -76,7 +76,7 @@ T = {
         "link_bad": "Ссылка устарела или неверна. Получите новую в админ-панели.",
         "need_https": "HTTPS-туннель запускается... Нажмите /start через несколько секунд или воспользуйтесь каталогом ниже:",
         "faq": "Частые вопросы",
-        "catalog_header": "<b>WHITMORE — Избранные модели:</b>\n\nДля полного каталога, таблицы размеров и оформления заказа откройте Mini App:",
+        "catalog_header": "<b>WITHMORE — Избранные модели:</b>\n\nДля полного каталога, таблицы размеров и оформления заказа откройте Mini App:",
     },
 }
 
@@ -670,7 +670,7 @@ async def backup_cmd(m: Message):
         n_cust = db.query(func.count(Customer.id)).scalar() or 0
         await m.answer_document(
             BufferedInputFile(csv_bytes, filename=f"whitmore-orders-{now().strftime('%Y%m%d')}.csv"),
-            caption=f"💾 <b>WHITMORE Zaxira</b> — Buyurtmalar: {n_orders} ta, Mijozlar: {n_cust} ta",
+            caption=f"💾 <b>WITHMORE Zaxira</b> — Buyurtmalar: {n_orders} ta, Mijozlar: {n_cust} ta",
         )
         st = get_settings()
         if st.DATABASE_URL.startswith("sqlite:///"):

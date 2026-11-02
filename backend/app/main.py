@@ -57,7 +57,7 @@ async def lifespan(app: FastAPI):
         botstate.bot = None
 
 
-app = FastAPI(title="Whitmore", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="Withmore", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(GZipMiddleware, minimum_size=500)
 app.include_router(admin_auth.router)
 app.include_router(admin_catalog.router)

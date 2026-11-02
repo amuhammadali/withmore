@@ -156,13 +156,13 @@ export const BRAND_LOGOS = [
     ),
   },
   {
-    id: "whitmore",
-    name: "WHITMORE",
+    id: "withmore",
+    name: "WITHMORE",
     origin: "Tashkent Atelier",
     type: "Bespoke Sartorial Menswear",
     svg: (
       <svg viewBox="0 0 180 50" className="h-8 w-auto fill-current">
-        {/* Whitmore Monogram Crest */}
+        {/* Withmore Monogram Crest */}
         <g transform="translate(10, 8) scale(0.7)">
           <circle cx="16" cy="18" r="14" stroke="currentColor" strokeWidth="1.5" fill="none" />
           <text x="9" y="23" fontFamily="'Playfair Display', serif" fontSize="15" fontWeight="700">
@@ -170,7 +170,7 @@ export const BRAND_LOGOS = [
           </text>
         </g>
         <text x="42" y="26" fontFamily="'Cormorant Garamond', 'Playfair Display', serif" fontSize="19" fontWeight="700" letterSpacing="0.22em">
-          WHITMORE
+          WITHMORE
         </text>
         <text x="43" y="38" fontFamily="system-ui, -apple-system, sans-serif" fontSize="6.5" fontWeight="700" letterSpacing="0.25em" opacity="0.8">
           BESPOKE ATELIER
@@ -179,3 +179,4 @@ export const BRAND_LOGOS = [
     ),
   },
 ];
+

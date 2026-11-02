@@ -1487,7 +1487,7 @@ export function PromotionsPage() {
             required
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="WHITMORE10"
+            placeholder="WITHMORE10"
             className="wm-input"
           />
         </div>
@@ -2318,7 +2318,7 @@ export function SettingsPage() {
               <input
                 id="st-bname"
                 required
-                placeholder="WHITMORE"
+                placeholder="WITHMORE"
                 value={form.brand_name || ""}
                 onChange={(e) => setForm({ ...form, brand_name: e.target.value })}
                 className="wm-input font-bold"
@@ -2613,7 +2613,7 @@ export function SettingsPage() {
             </label>
             <input
               id="st-holder"
-              placeholder="WHITMORE MENSWEAR"
+              placeholder="WITHMORE MENSWEAR"
               value={form.payment_card_holder || ""}
               onChange={(e) => setForm({ ...form, payment_card_holder: e.target.value })}
               className="wm-input uppercase font-bold"

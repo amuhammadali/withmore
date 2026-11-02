@@ -500,7 +500,7 @@ export function AdminCrmPage() {
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#aa8a5e]">
-                  WHITMORE SARTORIAL CLUB
+                  WITHMORE SARTORIAL CLUB
                 </span>
                 <h2 className="text-xl font-display font-medium text-foreground">
                   👤 {dossierData?.customer?.name || "Mijoz Dosyesi"}

@@ -61,7 +61,7 @@ function ProductImage({
             className="mx-auto h-10 w-10 rounded-full opacity-50 mix-blend-multiply object-cover"
           />
           <div className="mt-2 text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
-            WHITMORE
+            WITHMORE
           </div>
         </div>
       </div>
@@ -246,14 +246,14 @@ export function MiniAppRoot() {
             >
               <img
                 src="/whitmore-logo.jpg"
-                alt="Whitmore"
+                alt="Withmore"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
                 className="h-8 w-8 rounded-full object-cover border border-[#172641]/20"
               />
               <span className="font-display text-[15px] font-semibold tracking-[.22em]">
-                WHITMORE
+                WITHMORE
               </span>
             </Link>
           ) : (
@@ -919,7 +919,7 @@ function HomeScreen({
       {/* Editorial Footer Note */}
       <section className="mx-4 mt-10 border-t border-[#172641]/15 pt-6">
         <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
-          Whitmore uslubi
+          Withmore uslubi
         </div>
         <p className="mt-2 font-display text-[20px] leading-snug text-[#172641]">
           Sokin klassika. Aniq bichim. Har kuni kiyiladigan ishonch.
@@ -2256,7 +2256,7 @@ function CheckoutScreen({
     >
       <div>
         <div className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
-          WHITMORE CHECKOUT
+          WITHMORE CHECKOUT
         </div>
         <h1 className="mt-1 font-display text-[28px] text-[#172641]">
           {t.checkout}
@@ -2540,7 +2540,7 @@ function OrderResultScreen({
     : "#";
 
   const cardNumber = content?.payment_card_number || "8600 1234 5678 9012";
-  const cardHolder = content?.payment_card_holder || "WHITMORE MENSWEAR";
+  const cardHolder = content?.payment_card_holder || "WITHMORE MENSWEAR";
   const advancePct = Number(order.advance_pct || content?.advance_pct || 30);
   const advanceAmount =
     order.advance_amount ?? Math.round((order.total * advancePct) / 100);
@@ -2927,7 +2927,7 @@ function OrdersScreen({ content }: { content: any }) {
       <div className="flex items-end justify-between gap-3">
         <div>
           <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
-            WHITMORE · TRACKING
+            WITHMORE · TRACKING
           </div>
           <h1 className="mt-1 font-display text-[30px] leading-tight text-[#172641]">
             {t.orders}
@@ -2985,7 +2985,7 @@ function OrdersScreen({ content }: { content: any }) {
         <div className="absolute right-4 top-4 text-3xl opacity-20 pointer-events-none">⚜️</div>
         <div className="flex items-center justify-between">
           <span className="font-display text-xs tracking-[.22em] text-[#d6bd92]">
-            WHITMORE SARTORIAL CLUB
+            WITHMORE SARTORIAL CLUB
           </span>
           <span className="rounded-full bg-[#d6bd92] px-2.5 py-0.5 text-[9px] font-extrabold uppercase text-[#172641]">
             {orders.length >= 5
@@ -3254,7 +3254,7 @@ function AboutScreen({
       <div>
         <img
           src="/whitmore-logo.jpg"
-          alt="Whitmore"
+          alt="Withmore"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = "none";
           }}

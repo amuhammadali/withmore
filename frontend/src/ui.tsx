@@ -141,7 +141,7 @@ export function ConfirmModal({
       <div className="wm-card p-6 max-w-sm w-full space-y-5">
         <div className="space-y-1">
           <div className="text-[11px] uppercase tracking-widest text-[#7D8AA3] font-semibold">
-            WHITMORE
+            WITHMORE
           </div>
           <h3 className="text-xl font-semibold text-[#14213D]">{title}</h3>
         </div>

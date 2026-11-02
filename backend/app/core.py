@@ -13,7 +13,7 @@ from .config import get_settings
 from .models import AdminAccount, AdminAudit, ImageUpload, Product, Setting
 
 DEFAULTS = {
-    "brand_name": "WHITMORE",
+    "brand_name": "WITHMORE",
     "brand_slogan_uz": "Klassik erkaklar kiyimi",
     "brand_slogan_ru": "Классическая мужская одежда",
     "brand_color": "#172641",
@@ -25,7 +25,7 @@ DEFAULTS = {
     "yuan_rate": "1750", "margin_pct": "25", "shipping_per_kg": "65000", "advance_pct": "30",
     "low_stock": "3",
     "payment_card_number": "8600 1234 5678 9012",
-    "payment_card_holder": "WHITMORE MENSWEAR",
+    "payment_card_holder": "WITHMORE MENSWEAR",
     "notify_admin_order": "1", "notify_admin_lowstock": "1",
     "notify_customer_status": "1", "notify_customer_restock": "1",
     "contact_username": "whitmore_admin",
@@ -33,8 +33,8 @@ DEFAULTS = {
     "hero_text_uz": "Xitoydan buyurtma asosida. Sifat, sokin uslub, aniq narx.",
     "hero_text_ru": "Под заказ из Китая. Качество, спокойный стиль, честная цена.",
     "hero_image": "",
-    "about_uz": "Whitmore — klassik erkaklar kiyimi brendi. Biz tanlangan modellarni Xitoydan buyurtma asosida olib kelamiz va O'zbekiston bo'ylab yetkazamiz.",
-    "about_ru": "Whitmore — бренд классической мужской одежды. Мы привозим отобранные модели из Китая под заказ и доставляем по Узбекистану.",
+    "about_uz": "Withmore — klassik erkaklar kiyimi brendi. Biz tanlangan modellarni Xitoydan buyurtma asosida olib kelamiz va O'zbekiston bo'ylab yetkazamiz.",
+    "about_ru": "Withmore — бренд классической мужской одежды. Мы привозим отобранные модели из Китая под заказ и доставляем по Узбекистану.",
     "delivery_uz": "Buyurtma Xitoydan 14-25 kun ichida keladi. O'zbekiston bo'ylab barcha viloyatlarga faqat pochta orqali (BTS / EMU) jo'natamiz. Oldindan to'lov — 30%, qolgan qismi pochtaga topshirishdan oldin to'lanadi.",
     "delivery_ru": "Заказ приходит из Китая за 14-25 дней. Отправляем по всему Узбекистану только почтой (BTS / EMU). Предоплата — 30%, остаток оплачивается перед отправкой почтой.",
     "returns_uz": "O'lcham mos kelmasa, mahsulot kiyilmagan holatda 3 kun ichida almashtiriladi. Buyurtma asosida olib kelingan mahsulotlar uchun to'lov qaytarilmaydi.",

@@ -285,7 +285,7 @@ export function AdminRoot() {
       <div className="flex min-h-[88px] items-center gap-3.5 border-b border-white/10 px-5">
         <img
           src="/whitmore-logo.jpg"
-          alt="Whitmore"
+          alt="Withmore"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = "none";
           }}
@@ -293,7 +293,7 @@ export function AdminRoot() {
         />
         <div className="min-w-0 leading-none">
           <div className="font-display text-[15px] font-semibold tracking-[.16em] text-white">
-            WHITMORE
+            WITHMORE
           </div>
           <div className="mt-1 text-[8px] font-semibold uppercase tracking-[.22em] text-white/50">
             {t.adminPanel || "Classic Menswear"}
@@ -501,7 +501,7 @@ export function AdminRoot() {
             </button>
             <div>
               <div className="text-[9px] font-bold uppercase tracking-[.22em] text-muted-foreground">
-                WHITMORE / {activeNav?.sub ?? (lang === "ru" ? "Панель" : "Workspace")}
+                WITHMORE / {activeNav?.sub ?? (lang === "ru" ? "Панель" : "Workspace")}
               </div>
               <div className="text-[13px] font-bold text-foreground">
                 {activeNav?.label ?? (lang === "ru" ? "Управление" : "Boshqaruv")}
@@ -721,7 +721,7 @@ function LoginScreen({
         <div className="relative flex items-center gap-4">
           <img
             src="/whitmore-logo.jpg"
-            alt="Whitmore"
+            alt="Withmore"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = "none";
             }}
@@ -729,7 +729,7 @@ function LoginScreen({
           />
           <div>
             <div className="font-display text-[17px] font-semibold tracking-[.18em]">
-              WHITMORE
+              WITHMORE
             </div>
             <div className="mt-0.5 text-[9px] uppercase tracking-[.24em] text-white/55">
               Classic Menswear
@@ -762,7 +762,7 @@ function LoginScreen({
             <div className="flex items-center gap-3.5">
               <img
                 src="/whitmore-logo.jpg"
-                alt="Whitmore"
+                alt="Withmore"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = "none";
                 }}
@@ -770,7 +770,7 @@ function LoginScreen({
               />
               <div>
                 <div className="font-display text-[16px] font-semibold tracking-[.16em]">
-                  WHITMORE
+                  WITHMORE
                 </div>
                 <div className="text-[9px] uppercase tracking-[.22em] text-muted-foreground">
                   {t.adminPanel}
@@ -781,7 +781,7 @@ function LoginScreen({
           </div>
 
           <div className="text-[10px] font-bold uppercase tracking-[.22em] text-[#aa8a5e]">
-            Xush kelibsiz · Whitmore
+            Xush kelibsiz · Withmore
           </div>
           <h2 className="mt-2 font-display text-[32px] font-medium tracking-[-.03em]">
             Do‘koningiz ishonchli qo‘llarda.

@@ -564,7 +564,7 @@ def add_review(body: ReviewIn, c: Customer = Depends(shop_customer), db: Session
         "name": body.name.strip(),
         "city": f"{body.city.strip()} · Pochta",
         "rating": body.rating,
-        "item": body.item.strip() or "WHITMORE Collection",
+        "item": body.item.strip() or "WITHMORE Collection",
         "text_uz": body.text.strip(),
         "text_ru": body.text.strip(),
         "date": "Yangi fikr",
