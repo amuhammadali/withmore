@@ -618,7 +618,7 @@ function ProductCard({
   const isStock = p.sale_type === "stock";
 
   return (
-    <div className="group relative min-w-0 self-start rise-in rounded-2xl border border-[#172641]/10 bg-white p-2.5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#172641]/35 hover:shadow-xl">
+    <div className="group relative min-w-0 self-start rise-in rounded-2xl border border-[#e2d6c1] bg-white p-2.5 shadow-[0_4px_16px_rgba(23,38,65,0.04)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c5a676] hover:shadow-[0_16px_36px_rgba(23,38,65,0.12)]">
       <Link
         to={`/miniapp/product/${p.id}`}
         className="block w-full min-w-0 text-left no-underline text-[#172641]"
@@ -627,14 +627,14 @@ function ProductCard({
           <ProductImage
             src={p.thumb}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
           />
 
           {/* Top-left Sale Type Badge */}
-          <span className={`absolute left-2 top-2 rounded-full backdrop-blur-md px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] shadow-xs border ${
+          <span className={`absolute left-2 top-2 rounded-full backdrop-blur-md px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] shadow-sm border ${
             isStock
-              ? "bg-[#1b4332]/85 text-[#e8f5e9] border-[#74c69d]/40"
-              : "bg-[#172641]/85 text-[#faf7f2] border-[#c5a676]/40"
+              ? "bg-[#1b4332]/90 text-[#e8f5e9] border-[#74c69d]/50"
+              : "bg-[#172641]/90 text-[#faf7f2] border-[#c5a676]/60"
           }`}>
             {isStock ? t.inStockBadge : t.preorderBadge}
           </span>
@@ -655,7 +655,7 @@ function ProductCard({
             <span className="text-[13px] font-bold text-[#8a6c43]">
               {formatPrice(p.price)}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-[#dccab0] bg-[#faf7f2] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#172641] transition-all duration-200 group-hover:bg-[#172641] group-hover:text-[#f4efe5] group-hover:border-[#172641] group-hover:shadow-[0_2px_8px_rgba(23,38,65,0.2)]">
+            <span className="inline-flex items-center gap-1 rounded-full border border-[#dccab0] bg-gradient-to-r from-[#faf7f2] to-[#f4ede1] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#172641] transition-all duration-300 group-hover:from-[#172641] group-hover:to-[#243c68] group-hover:text-[#f4efe5] group-hover:border-[#172641] group-hover:shadow-[0_4px_12px_rgba(23,38,65,0.25)] group-hover:scale-105">
               Tanlash →
             </span>
           </div>
@@ -684,6 +684,53 @@ function ProductCard({
         </svg>
       </button>
     </div>
+  );
+}
+
+// ---------------- LUXURY BRAND LOGO MARQUEE TICKER ----------------
+function BrandMarquee() {
+  const brands = [
+    { name: "LORO PIANA", origin: "ITALY 1924", tag: "Noble Fibres", icon: "🇮🇹" },
+    { name: "ERMENEGILDO ZEGNA", origin: "TRIVERO", tag: "Trofeo Silk", icon: "✨" },
+    { name: "SCABAL", origin: "SAVILE ROW · LONDON", tag: "Royal Bespoke", icon: "👑" },
+    { name: "VITALE BARBERIS CANONICO", origin: "BIELLA 1663", tag: "Super 150s Wool", icon: "🏛️" },
+    { name: "DORMEUIL", origin: "PARIS · LONDON", tag: "Amadeus Cashmere", icon: "💎" },
+    { name: "WHITMORE ATELIER", origin: "TASHKENT", tag: "Sartorial Craft", icon: "👔" },
+    { name: "CERRUTI 1881", origin: "BIELLA", tag: "Prestige Wool", icon: "✂️" },
+    { name: "HOLLAND & SHERRY", origin: "EDINBURGH", tag: "Scottish Heritage", icon: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  ];
+  const marqueeItems = [...brands, ...brands];
+
+  return (
+    <section
+      aria-label="Hamkor brendlar va matolar"
+      className="relative overflow-hidden border-y border-[#dccab0]/60 bg-gradient-to-r from-[#172641] via-[#1f3358] to-[#172641] py-3 text-[#f4efe5] shadow-[inset_0_2px_10px_rgba(0,0,0,0.25)]"
+    >
+      {/* Edge gradient mask for smooth fade in/out */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#172641] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#172641] to-transparent z-10" />
+
+      <div className="animate-marquee flex items-center gap-4">
+        {marqueeItems.map((b, idx) => (
+          <div
+            key={idx}
+            className="flex items-center gap-2.5 shrink-0 rounded-xl border border-[#c5a676]/35 bg-white/[0.05] px-3.5 py-1.5 backdrop-blur-xs transition-all duration-300 hover:border-[#c5a676] hover:bg-white/[0.12] hover:scale-105"
+          >
+            <span className="text-sm">{b.icon}</span>
+            <div className="text-left">
+              <div className="font-serif tracking-[.18em] text-[11px] font-bold text-[#faf7f2] uppercase whitespace-nowrap">
+                {b.name}
+              </div>
+              <div className="flex items-center gap-1.5 text-[8.5px] font-semibold text-[#c5a676] tracking-wider uppercase whitespace-nowrap">
+                <span>{b.origin}</span>
+                <span className="opacity-40">·</span>
+                <span className="text-[#faf7f2]/75 font-normal">{b.tag}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -763,20 +810,23 @@ function HomeScreen({
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               to="/miniapp/catalog"
-              className="inline-flex items-center gap-2 bg-[#d6bd92] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#172641] no-underline transition active:scale-[.98]"
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#172641] no-underline shadow-[0_4px_16px_rgba(214,189,146,0.35)] transition-all duration-200 hover:scale-105 active:scale-[.98]"
             >
               <span>{t.catalog}</span>
               <span>→</span>
             </Link>
             <Link
               to="/miniapp/about"
-              className="inline-flex items-center gap-2 border border-[#f4efe5]/30 px-5 py-3.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#f4efe5] no-underline transition hover:bg-white/10"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#f4efe5]/30 bg-white/5 backdrop-blur-xs px-5 py-3.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#f4efe5] no-underline transition-all duration-200 hover:bg-white/15 hover:border-[#f4efe5]/60 hover:scale-105"
             >
               {t.about}
             </Link>
           </div>
         </div>
       </section>
+
+      {/* Infinite Brand Marquee Ticker */}
+      <BrandMarquee />
 
       {/* Editorial Luxury Category Chips Row */}
       {categories.length > 0 && (

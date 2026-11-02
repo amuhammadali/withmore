@@ -106,6 +106,77 @@ h1, h2, h3, .font-serif-heading, .font-display {
   animation: 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both rise-in;
 }
 
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-reverse 38s linear infinite;
+}
+
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.bento-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(229, 223, 210, 0.85);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFBF8 100%);
+  box-shadow: 0 4px 20px -2px rgba(23, 38, 65, 0.04), 0 2px 6px -1px rgba(23, 38, 65, 0.02);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card:hover {
+  border-color: #C5A676;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -4px rgba(23, 38, 65, 0.08), 0 4px 12px -2px rgba(197, 166, 118, 0.15);
+}
+
 .wm-card {
   background-color: #FCFBF8;
   border: 1px solid #E5DFD2;

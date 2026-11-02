@@ -137,26 +137,117 @@ export function DashboardPage({ adminName }: { adminName?: string }) {
         }
       />
 
-      {/* 3 Primary Tone Cards (Navy, Sand, Sage) */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <ToneCard
-          tone="navy"
-          label={t.cardOrderedAmount}
-          value={formatPrice(c.ordered_amount)}
-          sub={`Jami buyurtmalar: ${c.orders} ta · bekor: ${c.cancelled}`}
-        />
-        <ToneCard
-          tone="sand"
-          label={t.cardPaidAmount}
-          value={formatPrice(c.paid_amount)}
-          sub="Tasdiqlangan to‘lovlar summasi"
-        />
+      {/* SaaS Bento-Grid Overview */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {/* Bento Hero Card: Ordered Volume (Spans 2 columns on lg) */}
+        <div className="lg:col-span-2 relative overflow-hidden rounded-3xl border border-[#2b4169]/60 bg-gradient-to-br from-[#172641] via-[#1c2e4e] to-[#0f192b] p-7 text-[#f5f1e8] shadow-[0_12px_36px_rgba(23,38,65,0.2)] transition-all duration-300 hover:shadow-[0_20px_48px_rgba(23,38,65,0.3)]">
+          {/* Subtle gold ambient glow circles */}
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[#c5a676]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-12 -bottom-12 h-48 w-48 rounded-full bg-[#397252]/10 blur-2xl" />
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-[#34d399] animate-pulse" />
+              <span className="text-[10px] font-extrabold uppercase tracking-[.2em] text-[#d6bd92]">
+                {t.cardOrderedAmount} · JONLI METRIKA
+              </span>
+            </div>
+            <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-bold text-[#f5f1e8] backdrop-blur-md">
+              Oxirgi {days} kun
+            </span>
+          </div>
+
+          <div className="mt-5 font-display text-[38px] sm:text-[44px] font-semibold leading-none tracking-tight text-[#faf7f2]">
+            {formatPrice(c.ordered_amount)}
+          </div>
+          <p className="mt-2.5 text-xs text-[#f5f1e8]/75">
+            Jami qabul qilingan: <span className="font-bold text-white">{c.orders} ta buyurtma</span> · Bekor qilingan: <span className="text-[#f87171] font-semibold">{c.cancelled} ta</span>
+          </p>
+
+          <div className="mt-6 pt-5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+              <div className="text-[9px] uppercase tracking-wider text-[#d6bd92] font-bold">Muvaffaqiyat ko‘rsatkichi</div>
+              <div className="mt-1 text-base font-bold text-white">
+                {c.orders > 0 ? Math.round(((c.orders - c.cancelled) / c.orders) * 100) : 100}%
+              </div>
+            </div>
+            <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+              <div className="text-[9px] uppercase tracking-wider text-[#d6bd92] font-bold">O‘rtacha chek</div>
+              <div className="mt-1 text-base font-bold text-white">
+                {formatPrice(c.orders > 0 ? Math.round(c.ordered_amount / c.orders) : 0)}
+              </div>
+            </div>
+            <div className="col-span-2 sm:col-span-1 rounded-xl bg-gradient-to-r from-[#c5a676]/20 to-[#c5a676]/5 border border-[#c5a676]/30 p-3 flex items-center justify-between">
+              <div>
+                <div className="text-[9px] uppercase tracking-wider text-[#d6bd92] font-bold">Tezkor o‘tish</div>
+                <Link to="/admin/orders" className="mt-1 text-xs font-bold text-white no-underline hover:underline flex items-center gap-1">
+                  Buyurtmalar ro‘yxati →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bento Card: Paid Amount */}
+        <div className="relative overflow-hidden rounded-3xl border border-[#dfcaa1] bg-gradient-to-br from-[#faf4e8] via-[#f5ebdb] to-[#e8d5b5] p-6 text-[#172641] shadow-md transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#8a6c43]">
+                {t.cardPaidAmount}
+              </span>
+              <span className="rounded-full border border-[#d6bd92]/60 bg-white/80 px-2.5 py-0.5 text-[9px] font-extrabold text-[#8a6c43]">
+                TASDIQLANGAN
+              </span>
+            </div>
+            <div className="mt-4 font-display text-[32px] font-semibold leading-none text-[#172641]">
+              {formatPrice(c.paid_amount)}
+            </div>
+            <div className="mt-2 text-xs font-medium text-[#4d5361]">
+              Mijozlar to‘lagan avans va to‘liq to‘lovlar
+            </div>
+          </div>
+          <div className="mt-5">
+            <div className="flex justify-between text-[10px] font-bold text-[#8a6c43] mb-1.5">
+              <span>Yig‘ish darajasi</span>
+              <span>{c.ordered_amount > 0 ? Math.min(100, Math.round((c.paid_amount / c.ordered_amount) * 100)) : 0}%</span>
+            </div>
+            <div className="h-2 rounded-full bg-white/80 overflow-hidden border border-[#d6bd92]/40">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#8a6c43] to-[#c5a676] transition-all duration-700"
+                style={{ width: `${c.ordered_amount > 0 ? Math.min(100, Math.round((c.paid_amount / c.ordered_amount) * 100)) : 0}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Delivery & Secondary Tone Card Row */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <ToneCard
           tone="sage"
           label={t.cardDelivered}
           value={`${c.delivered} ta`}
-          sub="Mijozga topshirilgan buyurtmalar"
+          sub="Mijozga muvaffaqiyatli topshirilgan buyurtmalar"
         />
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-card via-[#faf6ef] to-muted p-5 shadow-sm flex items-center justify-between">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#8a6c43]">
+              Xitoy Kargo & Pre-Order
+            </span>
+            <div className="mt-1 font-display text-[22px] font-bold text-foreground">
+              Tezkor Kargo Boshqaruvi
+            </div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              Partiya bo‘yicha holat va trek-kodlarni biriktirish
+            </div>
+          </div>
+          <Link
+            to="/admin/orders"
+            className="rounded-xl bg-[#172641] px-4 py-2.5 text-xs font-bold text-[#f5f1e8] no-underline transition hover:bg-[#22345a] hover:scale-105"
+          >
+            Kanban ochish →
+          </Link>
+        </div>
       </div>
 
       {/* 6 Secondary Metric Cards */}

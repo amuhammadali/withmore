@@ -38,6 +38,20 @@ export function OrdersPage() {
   const [bulkStatus, setBulkStatus] = useState("in_transit");
   const [bulkTracking, setBulkTracking] = useState("");
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [viewMode, setViewMode] = useState<"kanban" | "table">("kanban");
+
+  const quickChangeStatus = async (orderId: number, nextStatus: string) => {
+    try {
+      await adminFetch(`/api/admin/orders/${orderId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      toast(`Holat o'zgartirildi: ${getStatusLabel(nextStatus, lang)}`);
+      load();
+    } catch (err: any) {
+      toast(err.message, "error");
+    }
+  };
 
   const handleBulkStatus = async () => {
     if (selected.length === 0) return;
@@ -101,9 +115,37 @@ export function OrdersPage() {
         title="Buyurtmalar"
         detail="Har bir buyurtma holati va mijoz ma’lumotlari."
         action={
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#d6e4d8] bg-[#e9f3eb] px-3 py-1 text-[10px] font-bold text-[#397252]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#397252]" />
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* View Mode Switcher: Kanban vs Table */}
+            <div className="flex items-center rounded-xl border border-border bg-[#efe9dc]/70 p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("kanban")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer border-0 ${
+                  viewMode === "kanban"
+                    ? "bg-[#172641] text-[#f5f1e8] shadow-sm"
+                    : "bg-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span>🗂️</span>
+                <span>Kanban</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition cursor-pointer border-0 ${
+                  viewMode === "table"
+                    ? "bg-[#172641] text-[#f5f1e8] shadow-sm"
+                    : "bg-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <span>📋</span>
+                <span>Jadval</span>
+              </button>
+            </div>
+
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#d6e4d8] bg-[#e9f3eb] px-3 py-1.5 text-[10px] font-bold text-[#397252]">
+              <span className="h-2 w-2 rounded-full bg-[#397252] animate-pulse" />
               Live · {items.length}
             </span>
             <button
@@ -208,7 +250,219 @@ export function OrdersPage() {
         <SkeletonList count={4} />
       ) : items.length === 0 ? (
         <EmptyState text="Buyurtmalar topilmadi" />
+      ) : viewMode === "kanban" ? (
+        /* Modern SaaS Kanban Board */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-start overflow-x-auto pb-4">
+          {[
+            {
+              id: "new",
+              title: "Yangi so‘rovlar",
+              match: ["new"],
+              color: "from-blue-500/10 via-indigo-500/5 to-transparent",
+              border: "border-blue-300/80",
+              badge: "bg-blue-100 text-blue-900 border-blue-200",
+              nextStatus: "pending_payment",
+              nextLabel: "To‘lov kutilmoqda →",
+              icon: "📥",
+            },
+            {
+              id: "pending_payment",
+              title: "To‘lov kutilmoqda",
+              match: ["pending_payment", "confirmed"],
+              color: "from-amber-500/10 via-yellow-500/5 to-transparent",
+              border: "border-amber-300/80",
+              badge: "bg-amber-100 text-amber-900 border-amber-200",
+              nextStatus: "in_transit",
+              nextLabel: "Xitoydan yo‘lda →",
+              icon: "⏳",
+            },
+            {
+              id: "in_transit",
+              title: "Xitoydan yo‘lda (Kargo)",
+              match: ["in_transit", "paid", "ordered_china"],
+              color: "from-purple-500/10 via-violet-500/5 to-transparent",
+              border: "border-purple-300/80",
+              badge: "bg-purple-100 text-purple-900 border-purple-200",
+              nextStatus: "delivering",
+              nextLabel: "Yetkazishga berish →",
+              icon: "✈️",
+            },
+            {
+              id: "delivering",
+              title: "Yetkazilmoqda (Pochta)",
+              match: ["delivering"],
+              color: "from-orange-500/10 via-amber-500/5 to-transparent",
+              border: "border-orange-300/80",
+              badge: "bg-orange-100 text-orange-900 border-orange-200",
+              nextStatus: "delivered",
+              nextLabel: "Topshirildi ✓",
+              icon: "🚚",
+            },
+            {
+              id: "delivered",
+              title: "Bajarildi & Topshirildi",
+              match: ["delivered"],
+              color: "from-emerald-500/10 via-teal-500/5 to-transparent",
+              border: "border-emerald-300/80",
+              badge: "bg-emerald-100 text-emerald-900 border-emerald-200",
+              nextStatus: null,
+              nextLabel: null,
+              icon: "✅",
+            },
+          ].map((col) => {
+            const colOrders = items.filter((o) => col.match.includes(o.status));
+            const colSum = colOrders.reduce(
+              (acc, o) => acc + (Number(o.total) || 0),
+              0
+            );
+
+            return (
+              <div
+                key={col.id}
+                className={`flex flex-col rounded-2xl border ${col.border} bg-gradient-to-b ${col.color} bg-white/70 p-3.5 shadow-sm min-w-[240px]`}
+              >
+                {/* Column Header */}
+                <div className="mb-2.5 flex items-center justify-between border-b border-border/70 pb-2">
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-foreground">
+                    <span>{col.icon}</span>
+                    <span className="line-clamp-1">{col.title}</span>
+                  </div>
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-[10px] font-extrabold ${col.badge}`}
+                  >
+                    {colOrders.length}
+                  </span>
+                </div>
+
+                {/* Column Total Sum */}
+                <div className="mb-3 flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
+                  <span>Jami qiymat:</span>
+                  <span className="font-extrabold text-[#172641]">
+                    {formatPrice(colSum)}
+                  </span>
+                </div>
+
+                {/* Cards in Column */}
+                <div className="space-y-3">
+                  {colOrders.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-border/80 bg-white/40 p-5 text-center text-xs text-muted-foreground">
+                      Hozircha buyurtma yo‘q
+                    </div>
+                  ) : (
+                    colOrders.map((o) => (
+                      <div
+                        key={o.id}
+                        className="group relative flex flex-col justify-between rounded-xl border border-border/80 bg-card p-3.5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c5a676] hover:shadow-md"
+                      >
+                        <div>
+                          {/* Card Top: Code & Date */}
+                          <div className="flex items-center justify-between">
+                            <Link
+                              to={`/admin/orders/${o.id}`}
+                              className="font-extrabold text-xs text-foreground no-underline hover:text-[#8a6c43] hover:underline"
+                            >
+                              {o.code}
+                            </Link>
+                            <span className="text-[10px] text-muted-foreground">
+                              {o.created_at ? o.created_at.split("T")[0] : ""}
+                            </span>
+                          </div>
+
+                          {/* Customer Details */}
+                          <div className="mt-2 text-xs">
+                            <div className="font-bold text-foreground">{o.name}</div>
+                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                              {o.phone && (
+                                <a
+                                  href={`tel:${o.phone}`}
+                                  className="text-foreground hover:underline"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  📞 {o.phone}
+                                </a>
+                              )}
+                              {o.tg_username && (
+                                <a
+                                  href={`https://t.me/${o.tg_username.replace("@", "")}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-[#2aabee] hover:underline font-semibold"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  @{o.tg_username.replace("@", "")}
+                                </a>
+                              )}
+                            </div>
+                            <div className="mt-1 text-[10px] text-muted-foreground">
+                              📍 {o.city || "Toshkent"} {o.address ? `· ${o.address}` : ""}
+                            </div>
+                          </div>
+
+                          {/* Items count / preview */}
+                          {Array.isArray(o.items) && o.items.length > 0 && (
+                            <div className="mt-2.5 rounded-lg bg-[#faf7f0] p-2 text-[10.5px] border border-[#e8dfcf]/60">
+                              <div className="font-semibold text-foreground line-clamp-1">
+                                {o.items
+                                  .map((it: any) => it.product_name || it.name)
+                                  .join(", ")}
+                              </div>
+                              <div className="text-[9.5px] text-muted-foreground">
+                                {o.items.length} ta mahsulot
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Card Footer: Price & One-click Next Status */}
+                        <div className="mt-3 pt-2.5 border-t border-border/70">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              Jami:
+                            </span>
+                            <span className="font-extrabold text-xs text-[#172641]">
+                              {formatPrice(o.total)}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1.5">
+                            {col.nextStatus && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  quickChangeStatus(o.id, col.nextStatus!)
+                                }
+                                className="flex-1 rounded-lg bg-[#172641] py-1.5 px-2 text-[10px] font-bold text-[#faf7f2] transition hover:bg-[#23385e] active:scale-95 cursor-pointer border-0"
+                              >
+                                {col.nextLabel}
+                              </button>
+                            )}
+                            <a
+                              href={`/api/admin/ops/label/${o.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded-lg border border-border bg-[#faf7f0] p-1.5 text-[10px] text-foreground no-underline hover:bg-[#efe9dc] transition"
+                              title="Pochta nakladnoyini chop etish"
+                            >
+                              🖨
+                            </a>
+                            <Link
+                              to={`/admin/orders/${o.id}`}
+                              className="rounded-lg border border-border bg-[#faf7f0] py-1.5 px-2 text-[10px] font-bold text-foreground no-underline hover:bg-[#efe9dc] transition"
+                            >
+                              Batafsil
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       ) : (
+        /* Traditional Table View */
         <div className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[850px] text-left">
