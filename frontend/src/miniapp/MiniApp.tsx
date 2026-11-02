@@ -11,6 +11,7 @@ import {
 import { getShopToken, setShopToken, shopFetch } from "../api";
 import { formatPrice, useLang } from "../i18n";
 import { EmptyState, SkeletonList, StatusBadge, useToast } from "../ui";
+import { BRAND_LOGOS } from "./BrandLogos";
 
 declare global {
   interface Window {
@@ -689,42 +690,33 @@ function ProductCard({
 
 // ---------------- LUXURY BRAND LOGO MARQUEE TICKER ----------------
 function BrandMarquee() {
-  const brands = [
-    { name: "LORO PIANA", origin: "ITALY 1924", tag: "Noble Fibres", icon: "🇮🇹" },
-    { name: "ERMENEGILDO ZEGNA", origin: "TRIVERO", tag: "Trofeo Silk", icon: "✨" },
-    { name: "SCABAL", origin: "SAVILE ROW · LONDON", tag: "Royal Bespoke", icon: "👑" },
-    { name: "VITALE BARBERIS CANONICO", origin: "BIELLA 1663", tag: "Super 150s Wool", icon: "🏛️" },
-    { name: "DORMEUIL", origin: "PARIS · LONDON", tag: "Amadeus Cashmere", icon: "💎" },
-    { name: "WHITMORE ATELIER", origin: "TASHKENT", tag: "Sartorial Craft", icon: "👔" },
-    { name: "CERRUTI 1881", origin: "BIELLA", tag: "Prestige Wool", icon: "✂️" },
-    { name: "HOLLAND & SHERRY", origin: "EDINBURGH", tag: "Scottish Heritage", icon: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
-  ];
-  const marqueeItems = [...brands, ...brands];
+  const marqueeItems = [...BRAND_LOGOS, ...BRAND_LOGOS];
 
   return (
     <section
-      aria-label="Hamkor brendlar va matolar"
-      className="relative overflow-hidden border-y border-[#dccab0]/60 bg-gradient-to-r from-[#172641] via-[#1f3358] to-[#172641] py-3 text-[#f4efe5] shadow-[inset_0_2px_10px_rgba(0,0,0,0.25)]"
+      aria-label="Original brendlar va mato uylari"
+      className="relative overflow-hidden border-y border-[#c5a676]/40 bg-gradient-to-r from-[#0c1524] via-[#16243d] to-[#0c1524] py-3 text-[#f4efe5] shadow-[inset_0_3px_14px_rgba(0,0,0,0.35)]"
     >
       {/* Edge gradient mask for smooth fade in/out */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#172641] to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#172641] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0c1524] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0c1524] to-transparent z-10" />
 
-      <div className="animate-marquee flex items-center gap-4">
+      <div className="animate-marquee flex items-center gap-5">
         {marqueeItems.map((b, idx) => (
           <div
             key={idx}
-            className="flex items-center gap-2.5 shrink-0 rounded-xl border border-[#c5a676]/35 bg-white/[0.05] px-3.5 py-1.5 backdrop-blur-xs transition-all duration-300 hover:border-[#c5a676] hover:bg-white/[0.12] hover:scale-105"
+            className="group flex items-center gap-3.5 shrink-0 rounded-2xl border border-[#c5a676]/30 bg-white/[0.04] px-4 py-2 backdrop-blur-md transition-all duration-300 hover:border-[#c5a676] hover:bg-white/[0.12] hover:scale-105 shadow-sm"
           >
-            <span className="text-sm">{b.icon}</span>
+            <div className="text-[#e8dfcf] group-hover:text-[#faf7f2] transition-colors">
+              {b.svg}
+            </div>
+            <div className="h-6 w-px bg-white/15" />
             <div className="text-left">
-              <div className="font-serif tracking-[.18em] text-[11px] font-bold text-[#faf7f2] uppercase whitespace-nowrap">
-                {b.name}
+              <div className="text-[9px] font-bold uppercase tracking-[.18em] text-[#c5a676]">
+                {b.origin}
               </div>
-              <div className="flex items-center gap-1.5 text-[8.5px] font-semibold text-[#c5a676] tracking-wider uppercase whitespace-nowrap">
-                <span>{b.origin}</span>
-                <span className="opacity-40">·</span>
-                <span className="text-[#faf7f2]/75 font-normal">{b.tag}</span>
+              <div className="text-[8px] font-medium text-[#f4efe5]/70 tracking-wider uppercase whitespace-nowrap">
+                {b.type}
               </div>
             </div>
           </div>
@@ -773,51 +765,79 @@ function HomeScreen({
 
   return (
     <div className="rise-in">
-      {/* Replit Deep Navy Editorial Hero */}
-      <section className="relative overflow-hidden bg-[#172641] text-[#f4efe5]">
+      {/* Luxury Story Highlights Row */}
+      <section aria-label="Tezkor ruknlar" className="px-4 pt-3 pb-2 bg-[#f4efe5]">
+        <div className="flex items-center gap-3.5 overflow-x-auto no-scrollbar py-1">
+          {[
+            { id: "new", title: "Kolleksiya 2026", icon: "✨", link: "/miniapp/catalog" },
+            { id: "suits", title: "Kostyumlar", icon: "👔", link: "/miniapp/catalog?category=1" },
+            { id: "fabrics", title: "Italiya matosi", icon: "🇮🇹", link: "/miniapp/about" },
+            { id: "shirts", title: "Ko‘ylaklar", icon: "🧵", link: "/miniapp/catalog?category=2" },
+            { id: "delivery", title: "Yetkazib berish", icon: "🚚", link: "/miniapp/about" },
+          ].map((st) => (
+            <Link
+              key={st.id}
+              to={st.link}
+              className="flex flex-col items-center gap-1.5 shrink-0 no-underline group text-center"
+            >
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-[#c5a676] via-[#172641] to-[#c5a676] p-[2px] shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_4px_16px_rgba(197,166,118,0.4)]">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-[#fbf9f5] border border-white text-xl">
+                  {st.icon}
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-[#172641] tracking-tight line-clamp-1 max-w-[68px]">
+                {st.title}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Editorial Luxury Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0e1828] via-[#172641] to-[#0a121f] text-[#f4efe5]">
         {content?.hero_image ? (
           <img
             src={`/uploads/${content.hero_image}`}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-55"
+            className="absolute inset-0 h-full w-full object-cover opacity-50 mix-blend-luminosity"
           />
         ) : (
           <>
-            <div className="pointer-events-none absolute -right-24 -top-10 h-80 w-80 rounded-full border border-[#d6bd92]/25" />
-            <div className="pointer-events-none absolute -right-8 top-6 h-56 w-56 rounded-full border border-[#d6bd92]/15" />
+            <div className="pointer-events-none absolute -right-20 -top-16 h-88 w-88 rounded-full bg-[#c5a676]/10 blur-3xl" />
+            <div className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-[#2a4575]/20 blur-2xl" />
           </>
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#172641] via-[#172641]/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0e1828] via-[#172641]/60 to-transparent" />
 
-        <div className="relative flex min-h-[320px] flex-col justify-end px-5 pb-8 pt-16 sm:min-h-[380px] sm:px-8 lg:px-12 lg:pb-12">
-          {customerName && !customerName.startsWith("#") ? (
-            <div className="mb-3 text-[10px] font-semibold uppercase tracking-[.22em] text-[#d6bd92]">
-              Xush kelibsiz, {customerName}
-            </div>
-          ) : (
-            <div className="mb-3 text-[10px] font-semibold uppercase tracking-[.22em] text-[#d6bd92]">
-              WHITMORE · CLASSIC MENSWEAR
-            </div>
-          )}
-          <h1 className="max-w-3xl font-display text-[clamp(2rem,5vw,3.5rem)] font-medium leading-[1.06] tracking-[-.02em] text-[#f4efe5]">
+        <div className="relative flex min-h-[330px] flex-col justify-end px-5 pb-8 pt-16 sm:min-h-[390px] sm:px-8 lg:px-12 lg:pb-12">
+          <div className="inline-flex items-center gap-2 self-start rounded-full border border-[#c5a676]/40 bg-white/5 backdrop-blur-md px-3 py-1 text-[9.5px] font-extrabold uppercase tracking-[.22em] text-[#d6bd92] mb-3.5 shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#34d399] animate-pulse" />
+            <span>
+              {customerName && !customerName.startsWith("#")
+                ? `Xush kelibsiz, ${customerName}`
+                : "Sartorial Bespoke Atelier · 2026"}
+            </span>
+          </div>
+
+          <h1 className="max-w-3xl font-display text-[clamp(2.1rem,5.5vw,3.6rem)] font-normal leading-[1.05] tracking-[-.02em] text-[#faf7f2]">
             {heroTitle || t.brandSub}
           </h1>
           {heroText && (
-            <p className="mt-3 max-w-md text-[13px] leading-6 text-[#f4efe5]/75">
+            <p className="mt-3.5 max-w-md text-[13px] leading-relaxed text-[#f4efe5]/80">
               {heroText}
             </p>
           )}
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               to="/miniapp/catalog"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#172641] no-underline shadow-[0_4px_16px_rgba(214,189,146,0.35)] transition-all duration-200 hover:scale-105 active:scale-[.98]"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#172641] no-underline shadow-[0_6px_20px_rgba(214,189,146,0.35)] transition-all duration-300 hover:scale-105 active:scale-[.98]"
             >
               <span>{t.catalog}</span>
               <span>→</span>
             </Link>
             <Link
               to="/miniapp/about"
-              className="inline-flex items-center gap-2 rounded-xl border border-[#f4efe5]/30 bg-white/5 backdrop-blur-xs px-5 py-3.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#f4efe5] no-underline transition-all duration-200 hover:bg-white/15 hover:border-[#f4efe5]/60 hover:scale-105"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#f4efe5]/30 bg-white/5 backdrop-blur-md px-5 py-3.5 text-[11px] font-bold uppercase tracking-[.16em] text-[#f4efe5] no-underline transition-all duration-300 hover:bg-white/15 hover:border-[#f4efe5]/60 hover:scale-105"
             >
               {t.about}
             </Link>
@@ -827,6 +847,27 @@ function HomeScreen({
 
       {/* Infinite Brand Marquee Ticker */}
       <BrandMarquee />
+
+      {/* Atelier Excellence Highlights */}
+      <section className="mx-4 mt-3 mb-1 rounded-2xl border border-[#dccab0]/70 bg-gradient-to-br from-[#faf7f2] via-[#f7f2e7] to-[#efe6d5] p-3 shadow-xs">
+        <div className="grid grid-cols-3 gap-2 text-center divide-x divide-[#dccab0]/60">
+          <div className="px-1">
+            <div className="text-sm mb-0.5">✂️</div>
+            <div className="text-[10px] font-extrabold text-[#172641]">Aniq Bichim</div>
+            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Qaddi-qomatga mos</div>
+          </div>
+          <div className="px-1">
+            <div className="text-sm mb-0.5">🇮🇹</div>
+            <div className="text-[10px] font-extrabold text-[#172641]">100% Original</div>
+            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Italiya & Angliya</div>
+          </div>
+          <div className="px-1">
+            <div className="text-sm mb-0.5">⚡</div>
+            <div className="text-[10px] font-extrabold text-[#172641]">Tezkor Kuryer</div>
+            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Butun O‘zbekiston</div>
+          </div>
+        </div>
+      </section>
 
       {/* Editorial Luxury Category Chips Row */}
       {categories.length > 0 && (
