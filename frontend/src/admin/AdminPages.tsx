@@ -1198,6 +1198,33 @@ export function ProductFormPage() {
   });
   const [supplierUrl, setSupplierUrl] = useState("");
   const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingPreviews, setPendingPreviews] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  const onPickNewPhotos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const picked = Array.from(files);
+    const availableSlots = 6 - pendingFiles.length;
+    const toAdd = picked.slice(0, availableSlots);
+    if (toAdd.length === 0) {
+      toast("Ko‘pi bilan 6 ta rasm yuklash mumkin", "error");
+      return;
+    }
+    const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
+    setPendingFiles((prev) => [...prev, ...toAdd]);
+    setPendingPreviews((prev) => [...prev, ...newPreviews]);
+    e.target.value = "";
+  };
+
+  const removePendingPhoto = (idx: number) => {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== idx));
+    setPendingPreviews((prev) => {
+      URL.revokeObjectURL(prev[idx]);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
 
   useEffect(() => {
     adminFetch("/api/admin/categories").then(setCategories);
@@ -1241,28 +1268,56 @@ export function ProductFormPage() {
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let manualPriceVal: number | null = null;
+    if (form.manual_price !== "" && form.manual_price !== null && !isNaN(Number(form.manual_price))) {
+      const num = Number(form.manual_price);
+      if (num < 0) {
+        toast("Qo'lda kiritilgan narx 0 dan kam bo'lishi mumkin emas", "error");
+        return;
+      }
+      manualPriceVal = Math.round(num);
+    }
+
     const payload = {
       ...form,
       category_id: form.category_id ? Number(form.category_id) : null,
       price_yuan: isNaN(Number(form.price_yuan)) ? 0 : Number(form.price_yuan),
       weight_kg: isNaN(Number(form.weight_kg)) || Number(form.weight_kg) <= 0 ? 0.5 : Number(form.weight_kg),
-      manual_price: form.manual_price ? Number(form.manual_price) : null,
+      manual_price: manualPriceVal,
       is_draft: false,
     };
+
+    setSaving(true);
     try {
       if (isNew) {
         const created = await adminFetch("/api/admin/products", {
           method: "POST",
           body: JSON.stringify(payload),
         });
-        toast(t.savedToast);
+
+        // Agar yangi mahsulotga rasmlar tanlangan bo'lsa, yuklaymiz
+        if (pendingFiles.length > 0) {
+          const fd = new FormData();
+          pendingFiles.forEach((f) => fd.append("files", f));
+          try {
+            await adminFetch(`/api/admin/products/${created.id}/images`, {
+              method: "POST",
+              body: fd,
+            });
+          } catch (imgErr: any) {
+            toast(`Rasmlarni yuklashda xatolik: ${imgErr.message}`, "error");
+          }
+        }
+
         if (supplierUrl.trim()) {
           adminFetch(`/api/admin/ops/supplier/${created.id}`, {
             method: "PUT",
             body: JSON.stringify({ url: supplierUrl.trim() }),
           }).catch(() => {});
         }
-        navigate(`/admin/products/${created.id}`);
+        toast("Mahsulot muvaffaqiyatli yaratildi!");
+        navigate(`/admin/products`);
       } else {
         const updated = await adminFetch(`/api/admin/products/${id}`, {
           method: "PATCH",
@@ -1283,6 +1338,8 @@ export function ProductFormPage() {
       }
     } catch (err: any) {
       toast(err.message, "error");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -1440,6 +1497,8 @@ export function ProductFormPage() {
           <input
             id="pf-manual"
             type="number"
+            min="0"
+            placeholder="Ixtiyoriy (hisoblangan narx o‘rniga)"
             value={form.manual_price}
             onChange={(e) => setForm({ ...form, manual_price: e.target.value })}
             className="wm-input"
@@ -1514,70 +1573,127 @@ export function ProductFormPage() {
         </div>
       </div>
 
-      {/* Photos (up to 6, drag to reorder, first is main) */}
-      {!isNew && (
-        <div className="rounded-2xl border border-border bg-card p-6 space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <label htmlFor="pf-photos" className="wm-label mb-0">
-              Rasmlar (ko'pi bilan 6 ta, birinchisi asosiy — surib tartiblang)
-            </label>
+      {/* Photos (up to 6) — available both on create and edit */}
+      <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 pb-3">
+          <div>
+            <div className="text-sm font-extrabold text-[#172641]">
+              Mahsulot rasmlari (ko‘pi bilan 6 ta)
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {isNew
+                ? "Yangi mahsulot uchun rasmlarni tanlang (birinchisi asosiy bo'ladi)"
+                : "Rasmlarni surib tartiblang (birinchisi asosiy) yoki yangi rasm qo'shing"}
+            </p>
+          </div>
+          <label className="wm-btn text-xs cursor-pointer">
+            <span>📷 Rasm tanlash</span>
             <input
-              id="pf-photos"
               type="file"
               multiple
               accept="image/jpeg,image/png,image/webp"
-              onChange={uploadPhotos}
-              className="text-xs"
+              onChange={isNew ? onPickNewPhotos : uploadPhotos}
+              className="hidden"
             />
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {(form.images || []).map((img: any, idx: number) => (
-              <div
-                key={img.id}
-                draggable
-                onDragStart={() => setDragIdx(idx)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => {
-                  if (dragIdx === null || dragIdx === idx) return;
-                  const copy = [...form.images];
-                  const [moved] = copy.splice(dragIdx, 1);
-                  copy.splice(idx, 0, moved);
-                  setDragIdx(null);
-                  reorderImages(copy);
-                }}
-                className="p-2 border border-border rounded-xl space-y-1.5 bg-[#faf8f3]"
-              >
-                <img
-                  src={`/uploads/${img.thumb}`}
-                  alt=""
-                  className="w-24 h-28 object-cover rounded-lg"
-                />
-                <div className="flex justify-between gap-1 px-1">
-                  <span className="text-[10px] font-bold">
-                    {idx === 0 ? "Asosiy" : `#${idx + 1}`}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      const updated = await adminFetch(
-                        `/api/admin/products/${id}/images/${img.id}`,
-                        { method: "DELETE" }
-                      );
-                      setForm((prev: any) => ({
-                        ...prev,
-                        images: updated.images,
-                      }));
-                    }}
-                    className="text-[10px] font-bold text-[#a3463c] underline cursor-pointer bg-transparent border-0 p-0"
-                  >
-                    {t.delete}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          </label>
         </div>
-      )}
+
+        {/* New Product previews */}
+        {isNew && (
+          <div>
+            {pendingPreviews.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border/90 bg-[#faf8f3] p-6 text-center text-xs text-muted-foreground">
+                Hozircha rasmlar tanlanmagan. Yuqoridagi <strong className="text-[#172641]">«📷 Rasm tanlash»</strong> tugmasini bosing.
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {pendingPreviews.map((src, idx) => (
+                  <div
+                    key={idx}
+                    className="relative p-2 border border-border rounded-xl space-y-1.5 bg-[#faf8f3]"
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="w-24 h-28 object-cover rounded-lg"
+                    />
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] font-bold text-[#172641]">
+                        {idx === 0 ? "Asosiy" : `#${idx + 1}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removePendingPhoto(idx)}
+                        className="text-[10px] font-bold text-[#a3463c] underline cursor-pointer bg-transparent border-0 p-0"
+                      >
+                        O‘chirish
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Edit Product existing images */}
+        {!isNew && (
+          <div>
+            {(form.images || []).length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border/90 bg-[#faf8f3] p-6 text-center text-xs text-muted-foreground">
+                Bu mahsulotda hali rasm yo‘q. <strong className="text-[#172641]">«📷 Rasm tanlash»</strong> tugmasi orqali yuklang.
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-3">
+                {(form.images || []).map((img: any, idx: number) => (
+                  <div
+                    key={img.id}
+                    draggable
+                    onDragStart={() => setDragIdx(idx)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => {
+                      if (dragIdx === null || dragIdx === idx) return;
+                      const copy = [...form.images];
+                      const [moved] = copy.splice(dragIdx, 1);
+                      copy.splice(idx, 0, moved);
+                      setDragIdx(null);
+                      reorderImages(copy);
+                    }}
+                    className="p-2 border border-border rounded-xl space-y-1.5 bg-[#faf8f3]"
+                  >
+                    <img
+                      src={`/uploads/${img.thumb}`}
+                      alt=""
+                      className="w-24 h-28 object-cover rounded-lg"
+                    />
+                    <div className="flex justify-between gap-1 px-1">
+                      <span className="text-[10px] font-bold">
+                        {idx === 0 ? "Asosiy" : `#${idx + 1}`}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const updated = await adminFetch(
+                            `/api/admin/products/${id}/images/${img.id}`,
+                            { method: "DELETE" }
+                          );
+                          setForm((prev: any) => ({
+                            ...prev,
+                            images: updated.images,
+                          }));
+                        }}
+                        className="text-[10px] font-bold text-[#a3463c] underline cursor-pointer bg-transparent border-0 p-0"
+                      >
+                        {t.delete}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Variants */}
       <div className="rounded-2xl border border-border bg-card p-6 space-y-3">
@@ -1767,8 +1883,8 @@ export function ProductFormPage() {
         ))}
       </div>
 
-      <button type="submit" className="wm-btn">
-        {t.save}
+      <button type="submit" disabled={saving} className="wm-btn">
+        {saving ? "Saqlanmoqda..." : t.save}
       </button>
     </form>
   );

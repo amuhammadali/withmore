@@ -35,7 +35,17 @@ export async function adminFetch<T = any>(
     let msg = `Error ${res.status}`;
     try {
       const data = await res.json();
-      msg = data.detail || msg;
+      if (Array.isArray(data.detail)) {
+        msg = data.detail
+          .map((d: any) => {
+            const field = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : "";
+            if (field === "manual_price") return "Qo'lda kiritilgan narx 0 dan kam bo'lmasligi kerak";
+            return d.msg || `${field}: ${d.msg}`;
+          })
+          .join(", ");
+      } else {
+        msg = data.detail || msg;
+      }
     } catch {
       // ignore
     }
@@ -69,7 +79,17 @@ export async function shopFetch<T = any>(
     let msg = `Error ${res.status}`;
     try {
       const data = await res.json();
-      msg = data.detail || msg;
+      if (Array.isArray(data.detail)) {
+        msg = data.detail
+          .map((d: any) => {
+            const field = Array.isArray(d.loc) ? d.loc[d.loc.length - 1] : "";
+            if (field === "manual_price") return "Qo'lda kiritilgan narx 0 dan kam bo'lmasligi kerak";
+            return d.msg || `${field}: ${d.msg}`;
+          })
+          .join(", ");
+      } else {
+        msg = data.detail || msg;
+      }
     } catch {
       // ignore
     }
