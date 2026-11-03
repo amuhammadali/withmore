@@ -3542,6 +3542,8 @@ function AboutScreen({
     }
     toast("Ulashish oynasi ochildi!", "success");
   };
+
+  useEffect(() => {
     shopFetch("/api/shop/orders")
       .then((res) => setMyOrders(res))
       .catch(() => {});
