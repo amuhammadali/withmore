@@ -744,6 +744,7 @@ function HomeScreen({
   const [featured, setFeatured] = useState<any[]>([]);
   const [lookbooks, setLookbooks] = useState<any[]>([]);
   const [addingBundleId, setAddingBundleId] = useState<number | null>(null);
+  const [selectedCatId, setSelectedCatId] = useState<number | "lookbook" | null>(null);
 
   useEffect(() => {
     shopFetch("/api/shop/lookbooks")
@@ -846,180 +847,239 @@ function HomeScreen({
 
       
 
-            {/* ---------------- BUY THE LOOK (LOOKBOOK BUNDLES) ---------------- */}
-      {lookbooks.length > 0 && (
-        <section className="px-4 py-5 border-t border-[#172641]/10 bg-gradient-to-b from-[#faf8f4] to-transparent">
-          <div className="flex items-center justify-between mb-3">
+            {/* Editorial Luxury Category Chips Row (Lookbook now in categories!) */}
+      <section
+        aria-label="Kategoriyalar"
+        className="px-4 py-4"
+      >
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
+            {lang === "ru" ? "Коллекции и категории" : "Kolleksiyalar va bo‘limlar"}
+          </span>
+          <Link
+            to="/miniapp/catalog"
+            className="text-[11px] font-semibold text-slate-900 hover:underline"
+          >
+            {lang === "ru" ? "Весь каталог →" : "Barchasi →"}
+          </Link>
+        </div>
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          {/* Barchasi */}
+          <button
+            type="button"
+            onClick={() => setSelectedCatId(null)}
+            className={`shrink-0 flex items-center rounded-2xl px-4 py-2.5 text-[11.5px] font-bold transition-all duration-200 cursor-pointer ${
+              selectedCatId === null
+                ? "bg-[#172641] text-white shadow-sm ring-1 ring-[#172641] scale-[1.02]"
+                : "border border-slate-200/90 bg-white text-[#172641] shadow-xs hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
+            }`}
+          >
+            <span className="tracking-wide">{t.allCategories}</span>
+          </button>
+
+          {/* Tayyor Obrazlar (Lookbook) Chip */}
+          <button
+            type="button"
+            onClick={() => setSelectedCatId("lookbook")}
+            className={`shrink-0 flex items-center gap-1.5 rounded-2xl px-4 py-2.5 text-[11.5px] font-bold transition-all duration-200 cursor-pointer ${
+              selectedCatId === "lookbook"
+                ? "bg-gradient-to-r from-[#172641] via-[#24375a] to-[#172641] text-[#faf7f2] shadow-sm ring-2 ring-[#c5a676] scale-[1.02]"
+                : "border border-[#c5a676]/60 bg-[#fffdf9] text-[#172641] shadow-xs hover:border-[#c5a676] hover:shadow-md hover:-translate-y-0.5 active:scale-95"
+            }`}
+          >
+            <span className="tracking-wide">{lang === "ru" ? "Готовые образы" : "Tayyor Obrazlar"}</span>
+            <span className="text-[9px] font-extrabold uppercase bg-[#c5a676] text-slate-900 px-1.5 py-0.5 rounded-md shadow-2xs">
+              -10%
+            </span>
+          </button>
+
+          {/* Regular Categories */}
+          {categories.map((c) => {
+            const label = lang === "ru" ? c.name_ru || c.name_uz : c.name_uz;
+            const active = selectedCatId === c.id;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setSelectedCatId(c.id)}
+                className={`shrink-0 flex items-center rounded-2xl px-4 py-2.5 text-[11.5px] font-bold transition-all duration-200 cursor-pointer ${
+                  active
+                    ? "bg-[#172641] text-white shadow-sm ring-1 ring-[#172641] scale-[1.02]"
+                    : "border border-slate-200/90 bg-white text-[#172641] shadow-xs hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
+                }`}
+              >
+                <span className="tracking-wide">{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Main Content Area based on Selected Category */}
+      {selectedCatId === "lookbook" ? (
+        /* LOOKBOOK BUNDLES VIEW */
+        <section className="px-4 pt-1 rise-in">
+          <div className="mb-4 flex items-end justify-between border-b border-[#c5a676]/30 pb-2.5">
             <div>
               <span className="text-[9px] font-bold uppercase tracking-[.22em] text-[#a4814d] block">
-                WITHMORE EDITORIAL
+                WITHMORE STYLIST EDITORIAL
               </span>
-              <h2 className="font-display text-[20px] font-bold text-[#172641]">
-                Buy The Look · Tayyor Obrazlar
+              <h2 className="font-display text-[24px] font-bold text-[#172641]">
+                {lang === "ru" ? "Готовые мужские образы" : "Tayyor erkaklar obrazlari"}
               </h2>
             </div>
-            <span className="text-[10px] font-extrabold uppercase bg-[#172641] text-[#f5f1e8] px-2.5 py-1 rounded-full shadow-xs">
+            <span className="text-[10px] font-extrabold uppercase bg-[#172641] text-[#f5f1e8] px-3 py-1 rounded-full shadow-xs">
               -10% KOMPLEKT
             </span>
           </div>
 
-          <div className="space-y-4">
-            {lookbooks.map((look: any) => (
-              <div
-                key={look.id}
-                className="overflow-hidden rounded-2xl border border-[#c5a676]/30 bg-white shadow-sm hover:shadow-md transition-all"
-              >
-                {/* Lookbook Cover & Header */}
-                <div className="p-4 bg-gradient-to-r from-[#172641] to-[#25395b] text-[#f5f1e8] flex items-center justify-between">
-                  <div>
-                    <span className="text-[9px] font-bold uppercase tracking-[.2em] text-[#d6bd92]">
-                      TAYYOR OBRAZ
-                    </span>
-                    <h3 className="font-display text-lg font-bold text-white">
-                      {lang === "ru" ? look.title_ru || look.title_uz : look.title_uz}
-                    </h3>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-slate-300 line-through block">
-                      {formatPrice(look.regular_total)}
-                    </span>
-                    <span className="text-base font-extrabold text-[#d6bd92]">
-                      {formatPrice(look.bundle_price)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-4 space-y-3">
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {lang === "ru" ? look.description_ru || look.description_uz : look.description_uz}
-                  </p>
-
-                  {/* Included Items preview */}
-                  <div className="grid grid-cols-3 gap-2 pt-1">
-                    {look.items.map((it: any) => (
-                      <Link
-                        key={it.id}
-                        to={`/miniapp/product/${it.id}`}
-                        className="rounded-xl border border-slate-100 bg-[#faf8f3] p-2 text-center text-slate-900 no-underline hover:border-[#172641] transition"
-                      >
-                        {it.image ? (
-                          <img
-                            src={it.image}
-                            alt=""
-                            className="h-16 w-full rounded-lg object-cover mx-auto mb-1.5"
-                          />
-                        ) : (
-                          <div className="h-16 w-full rounded-lg bg-slate-200 flex items-center justify-center text-xs mb-1.5">
-                            👔
-                          </div>
-                        )}
-                        <div className="text-[10px] font-bold truncate">
-                          {lang === "ru" ? it.title_ru || it.title_uz : it.title_uz}
-                        </div>
-                        <div className="text-[9px] text-[#8a6c43] font-semibold mt-0.5">
-                          {formatPrice(it.price)}
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-
-                  {/* Add Entire Look Button */}
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      disabled={addingBundleId === look.id}
-                      onClick={() => handleAddBundle(look.id)}
-                      className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#172641] to-[#25395b] hover:from-[#223555] hover:to-[#2e4770] text-[11px] font-bold uppercase tracking-[.14em] text-[#f5f1e8] shadow-sm transition active:scale-[.98] cursor-pointer"
-                    >
-                      <span>👔</span>
-                      <span>
-                        {addingBundleId === look.id
-                          ? "Qo'shilmoqda..."
-                          : `To'liq obrazni savatga qo'shish (-${look.discount_pct}% tejash)`}
+          {lookbooks.length === 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">
+              Tayyor obrazlar tayyorlanmoqda...
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {lookbooks.map((look: any) => (
+                <div
+                  key={look.id}
+                  className="overflow-hidden rounded-2xl border border-[#c5a676]/30 bg-white shadow-sm hover:shadow-md transition-all"
+                >
+                  {/* Look Header */}
+                  <div className="p-4 bg-gradient-to-r from-[#172641] to-[#25395b] text-[#f5f1e8] flex items-center justify-between">
+                    <div>
+                      <span className="text-[9px] font-bold uppercase tracking-[.2em] text-[#d6bd92]">
+                        TAYYOR OBRAZ · JAMLANMA
                       </span>
-                    </button>
-                    <div className="mt-1 text-center text-[10px] text-slate-500 font-medium">
-                      Komplekt chegirmasi orqali {formatPrice(look.savings)} tejab qolasiz
+                      <h3 className="font-display text-lg font-bold text-white">
+                        {lang === "ru" ? look.title_ru || look.title_uz : look.title_uz}
+                      </h3>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-slate-300 line-through block">
+                        {formatPrice(look.regular_total)}
+                      </span>
+                      <span className="text-base font-extrabold text-[#d6bd92]">
+                        {formatPrice(look.bundle_price)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {lang === "ru" ? look.description_ru || look.description_uz : look.description_uz}
+                    </p>
+
+                    {/* Included Items preview with fixed high-res images */}
+                    <div className="grid grid-cols-3 gap-2 pt-1">
+                      {look.items.map((it: any) => {
+                        const imgUrl = it.image
+                          ? (it.image.startsWith('/') || it.image.startsWith('http')
+                              ? it.image
+                              : `/uploads/${it.image}`)
+                          : '';
+                        return (
+                          <Link
+                            key={it.id}
+                            to={`/miniapp/product/${it.id}`}
+                            className="rounded-xl border border-slate-100 bg-[#faf8f3] p-2 text-center text-slate-900 no-underline hover:border-[#172641] transition group"
+                          >
+                            {imgUrl ? (
+                              <div className="h-20 w-full overflow-hidden rounded-lg mb-1.5 bg-slate-100">
+                                <img
+                                  src={imgUrl}
+                                  alt=""
+                                  className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  onError={(e) => {
+                                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div className="h-20 w-full rounded-lg bg-slate-200 flex items-center justify-center text-xs mb-1.5">
+                                👔
+                              </div>
+                            )}
+                            <div className="text-[10.5px] font-bold truncate">
+                              {lang === "ru" ? it.title_ru || it.title_uz : it.title_uz}
+                            </div>
+                            <div className="text-[9.5px] text-[#8a6c43] font-semibold mt-0.5">
+                              {formatPrice(it.price)}
+                            </div>
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    {/* Add Entire Look Button */}
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        disabled={addingBundleId === look.id}
+                        onClick={() => handleAddBundle(look.id)}
+                        className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#172641] to-[#25395b] hover:from-[#223555] hover:to-[#2e4770] text-[11px] font-bold uppercase tracking-[.14em] text-[#f5f1e8] shadow-sm transition active:scale-[.98] cursor-pointer"
+                      >
+                        <span>👔</span>
+                        <span>
+                          {addingBundleId === look.id
+                            ? "Qo'shilmoqda..."
+                            : `To'liq obrazni savatga qo'shish (-${look.discount_pct}% tejash)`}
+                        </span>
+                      </button>
+                      <div className="mt-1 text-center text-[10px] text-slate-500 font-medium">
+                        Komplekt chegirmasi orqali {formatPrice(look.savings)} tejab qolasiz
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
-      )}
-
-{/* Editorial Luxury Category Chips Row */}
-      {categories.length > 0 && (
-        <section
-          aria-label="Kategoriyalar"
-          className="px-4 py-4"
-        >
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
-              {lang === "ru" ? "Коллекции и категории" : "Kolleksiyalar va bo‘limlar"}
-            </span>
+      ) : (
+        /* REGULAR PRODUCTS GRID VIEW */
+        <section className="px-4 pt-2 rise-in">
+          <div className="mb-4 flex items-end justify-between border-b border-slate-200/80 pb-2.5">
+            <h2 className="font-display text-[24px] font-medium text-slate-900">
+              {selectedCatId === null
+                ? (featured.length > 0 ? t.featured : t.catalog)
+                : (categories.find(c => c.id === selectedCatId)?.name_uz || t.catalog)}
+            </h2>
             <Link
               to="/miniapp/catalog"
-              className="text-[11px] font-semibold text-slate-900 hover:underline"
+              className="text-[10px] font-bold uppercase tracking-[.16em] text-[#8a6c43] no-underline hover:underline"
             >
-              {lang === "ru" ? "Весь каталог →" : "Barchasi →"}
+              {t.viewAll} · {allProds.length}
             </Link>
           </div>
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-            <Link
-              to="/miniapp/catalog"
-              className="shrink-0 flex items-center rounded-2xl bg-[#172641] px-4 py-2.5 text-[11.5px] font-bold text-white shadow-sm ring-1 ring-[#172641] no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
-            >
-              <span className="tracking-wide">{t.allCategories}</span>
-            </Link>
-            {categories.map((c) => {
-              const label = lang === "ru" ? c.name_ru || c.name_uz : c.name_uz;
+
+          {loading ? (
+            <SkeletonList count={4} />
+          ) : (
+            (() => {
+              const activeProds = selectedCatId === null
+                ? (featured.length > 0 ? featured : allProds).slice(0, 8)
+                : allProds.filter(p => p.category_id === selectedCatId);
+
+              if (activeProds.length === 0) {
+                return <EmptyState text={t.emptyCatalog} />;
+              }
+
               return (
-                <Link
-                  key={c.id}
-                  to={`/miniapp/catalog?category=${c.id}`}
-                  className="shrink-0 flex items-center rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-[11.5px] font-bold text-[#172641] shadow-[0_1px_4px_rgba(0,0,0,0.03)] no-underline transition-all duration-200 hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
-                >
-                  <span className="tracking-wide">{label}</span>
-                </Link>
+                <div className="miniapp-product-grid">
+                  {activeProds.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      p={p}
+                      isFav={favIds.includes(p.id)}
+                      onToggleFav={onToggleFav}
+                    />
+                  ))}
+                </div>
               );
-            })}
-          </div>
+            })()
+          )}
         </section>
       )}
-
-      {/* Featured / Collection Grid */}
-      <section className="px-4 pt-2">
-        <div className="mb-4 flex items-end justify-between border-b border-slate-200/80 pb-2.5">
-          <h2 className="font-display text-[24px] font-medium text-slate-900">
-            {featured.length > 0 ? t.featured : t.catalog}
-          </h2>
-          <Link
-            to="/miniapp/catalog"
-            className="text-[10px] font-bold uppercase tracking-[.16em] text-[#8a6c43] no-underline hover:underline"
-          >
-            {t.viewAll} · {allProds.length}
-          </Link>
-        </div>
-
-        {loading ? (
-          <SkeletonList count={4} />
-        ) : displayProds.length === 0 ? (
-          <EmptyState text={t.emptyCatalog} />
-        ) : (
-          <div className="miniapp-product-grid">
-            {displayProds.map((p) => (
-              <ProductCard
-                key={p.id}
-                p={p}
-                isFav={favIds.includes(p.id)}
-                onToggleFav={onToggleFav}
-              />
-            ))}
-          </div>
-        )}
-      </section>
 
       {/* Editorial Footer Note */}
       <section className="mx-4 mt-10 border-t border-slate-200/80 pt-6">
@@ -1202,12 +1262,26 @@ function CatalogScreen({
           type="button"
           onClick={() => setSearchParams({})}
           className={`shrink-0 inline-flex items-center rounded-2xl px-4 py-2 text-[11.5px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
-            !selectedCat
+            !selectedCat && searchParams.get("view") !== "lookbook"
               ? "bg-[#172641] text-white shadow-sm ring-1 ring-[#172641] scale-[1.02]"
               : "border border-slate-200/90 bg-white text-[#172641] shadow-xs hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
           }`}
         >
           <span>{t.allCategories}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setSearchParams({ view: "lookbook" })}
+          className={`shrink-0 inline-flex items-center gap-1.5 rounded-2xl px-4 py-2 text-[11.5px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
+            searchParams.get("view") === "lookbook"
+              ? "bg-gradient-to-r from-[#172641] via-[#24375a] to-[#172641] text-[#faf7f2] shadow-sm ring-2 ring-[#c5a676] scale-[1.02]"
+              : "border border-[#c5a676]/60 bg-[#fffdf9] text-[#172641] shadow-xs hover:border-[#c5a676] hover:shadow-md active:scale-95"
+          }`}
+        >
+          <span>{lang === "ru" ? "Готовые образы" : "Tayyor Obrazlar"}</span>
+          <span className="text-[9px] font-extrabold uppercase bg-[#c5a676] text-slate-900 px-1.5 py-0.5 rounded-md shadow-2xs">
+            -10%
+          </span>
         </button>
         {categories.map((c) => {
           const active = selectedCat === c.id;
