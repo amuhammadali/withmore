@@ -11,7 +11,7 @@ from .. import botstate
 from ..config import get_settings
 from ..core import all_settings, fmt_dt, get_setting, process_upload, set_setting, thumb_of
 from ..db import get_db
-from ..models import (STATUS_RU, STATUS_UZ, AdminAccount, Category, Customer, Favorite, MarketingVisit, Order,
+from ..models import (FittingAppointment, STATUS_RU, STATUS_UZ, AdminAccount, Category, Customer, Favorite, MarketingVisit, Order,
                       OrderStatusHistory, Product, ProductVariant, RestockSubscription, ShopSession, StoreEvent, now)
 from ..orders_service import (active_order_admins, check_promo, create_order, customer_summary_text, fmt_money)
 from ..outbox import enqueue
@@ -573,3 +573,149 @@ def add_review(body: ReviewIn, c: Customer = Depends(shop_customer), db: Session
     set_setting(db, "customer_reviews_json", json.dumps(custom[:30], ensure_ascii=False))
     db.commit()
     return entry
+
+
+# ---------------- Bespoke Measurements & Fitting Appointments ----------------
+class CustomerMeasurementsIn(BaseModel):
+    height_cm: Optional[int] = None
+    weight_kg: Optional[int] = None
+    suit_size: Optional[str] = Field(default="", max_length=32)
+    shirt_collar: Optional[str] = Field(default="", max_length=32)
+    shoe_size: Optional[str] = Field(default="", max_length=32)
+    preferred_fit: Optional[str] = Field(default="Regular", max_length=64)
+    notes: Optional[str] = Field(default="", max_length=1000)
+
+
+@router.get("/measurements")
+def get_customer_measurements(c: Customer = Depends(shop_customer), db: Session = Depends(get_db)):
+    raw = get_setting(db, f"crm:customer:{c.id}")
+    data = {}
+    if raw:
+        try:
+            data = json.loads(raw)
+        except Exception:
+            pass
+    return {
+        "customer_id": c.id,
+        "name": c.display_name,
+        "height_cm": data.get("height_cm"),
+        "weight_kg": data.get("weight_kg"),
+        "suit_size": data.get("suit_size", ""),
+        "shirt_collar": data.get("shirt_collar", ""),
+        "shoe_size": data.get("shoe_size", ""),
+        "preferred_fit": data.get("preferred_fit", "Regular"),
+        "vip_tier": data.get("vip_tier", "Standard"),
+        "notes": data.get("notes", ""),
+    }
+
+
+@router.put("/measurements")
+def save_customer_measurements(body: CustomerMeasurementsIn, c: Customer = Depends(shop_customer), db: Session = Depends(get_db)):
+    raw = get_setting(db, f"crm:customer:{c.id}")
+    existing = {}
+    if raw:
+        try:
+            existing = json.loads(raw)
+        except Exception:
+            pass
+    existing.update({
+        "height_cm": body.height_cm,
+        "weight_kg": body.weight_kg,
+        "suit_size": body.suit_size or "",
+        "shirt_collar": body.shirt_collar or "",
+        "shoe_size": body.shoe_size or "",
+        "preferred_fit": body.preferred_fit or "Regular",
+        "notes": body.notes or existing.get("notes", ""),
+    })
+    set_setting(db, f"crm:customer:{c.id}", json.dumps(existing, ensure_ascii=False))
+    db.commit()
+    return {"success": True, "measurements": existing}
+
+
+class FittingBookingIn(BaseModel):
+    date: str = Field(min_length=8, max_length=16)
+    time_slot: str = Field(min_length=3, max_length=32)
+    product_id: Optional[int] = None
+    suit_size: Optional[str] = Field(default="", max_length=32)
+    name: Optional[str] = Field(default="", max_length=120)
+    phone: Optional[str] = Field(default="", max_length=32)
+    notes: Optional[str] = Field(default="", max_length=500)
+
+
+@router.post("/fitting", status_code=201)
+def book_fitting(body: FittingBookingIn, c: Customer = Depends(shop_customer), db: Session = Depends(get_db)):
+    prod_name = ""
+    if body.product_id:
+        p = db.get(Product, body.product_id)
+        if p:
+            prod_name = p.name_uz
+
+    cust_name = body.name.strip() or c.display_name
+    cust_phone = body.phone.strip() or c.phone
+
+    apt = FittingAppointment(
+        customer_id=c.id,
+        customer_name=cust_name,
+        customer_phone=cust_phone,
+        tg_username=c.username or "",
+        product_id=body.product_id,
+        product_name=prod_name,
+        suit_size=body.suit_size or "",
+        date=body.date.strip(),
+        time_slot=body.time_slot.strip(),
+        location="Withmore Bespoke Atelier (Toshkent)",
+        notes=body.notes or "",
+        status="pending",
+    )
+    db.add(apt)
+    db.flush()
+
+    admin_msg = (
+        f"🪡 <b>YANGI PRIMERKA BRON QILINDI!</b>\n\n"
+        f"👤 Mijoz: <b>{cust_name}</b>\n"
+        f"📞 Tel: <code>{cust_phone}</code>\n"
+        f"📅 Sana: <b>{apt.date}</b> ({apt.time_slot})\n"
+        f"👔 Mahsulot: {prod_name or 'Umumiy o‘lcham olish'}\n"
+        f"📏 Razmer: {apt.suit_size or 'Atelyeda aniqlanadi'}\n"
+    )
+    if apt.notes:
+        admin_msg += f"📝 Izoh: {apt.notes}\n"
+
+    for adm in active_order_admins(db):
+        if adm.tg_chat_id:
+            enqueue(db, "direct", adm.tg_chat_id, admin_msg)
+
+    db.commit()
+
+    return {
+        "success": True,
+        "id": apt.id,
+        "date": apt.date,
+        "time_slot": apt.time_slot,
+        "location": apt.location,
+        "status": apt.status,
+    }
+
+
+@router.get("/fitting")
+def get_customer_fittings(c: Customer = Depends(shop_customer), db: Session = Depends(get_db)):
+    rows = (
+        db.query(FittingAppointment)
+        .filter(FittingAppointment.customer_id == c.id)
+        .order_by(FittingAppointment.id.desc())
+        .limit(10)
+        .all()
+    )
+    return [
+        {
+            "id": r.id,
+            "date": r.date,
+            "time_slot": r.time_slot,
+            "location": r.location,
+            "product_name": r.product_name,
+            "suit_size": r.suit_size,
+            "status": r.status,
+            "created_at": fmt_dt(r.created_at),
+        }
+        for r in rows
+    ]

@@ -300,3 +300,22 @@ class Outbox(Base):
     last_error: Mapped[str] = mapped_column(String(255), default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
     sent_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
+class FittingAppointment(Base):
+    __tablename__ = "fitting_appointments"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    customer_id: Mapped[int | None] = mapped_column(ForeignKey("customers.id"), nullable=True, index=True)
+    customer_name: Mapped[str] = mapped_column(String(120), default="")
+    customer_phone: Mapped[str] = mapped_column(String(32), default="")
+    tg_username: Mapped[str] = mapped_column(String(64), default="")
+    product_id: Mapped[int | None] = mapped_column(ForeignKey("products.id"), nullable=True)
+    product_name: Mapped[str] = mapped_column(String(200), default="")
+    suit_size: Mapped[str] = mapped_column(String(32), default="")
+    date: Mapped[str] = mapped_column(String(16), index=True)  # YYYY-MM-DD
+    time_slot: Mapped[str] = mapped_column(String(32))  # e.g. "15:00 - 16:00"
+    location: Mapped[str] = mapped_column(String(200), default="Withmore Bespoke Atelier (Toshkent)")
+    notes: Mapped[str] = mapped_column(Text, default="")
+    status: Mapped[str] = mapped_column(String(24), default="pending", index=True)  # pending | confirmed | completed | cancelled
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now, index=True)
+
