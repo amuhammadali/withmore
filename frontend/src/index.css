@@ -1,16 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --bg-milk: #F6F2EA;
-  --bg-milk-deep: #EFE9DC;
-  --card-white: #FCFBF8;
-  --navy: #172641;
-  --navy-light: #22345A;
-  --slate: #4D5361;
-  --slate-muted: #7D8AA3;
-  --line: #E5DFD2;
-  --sand: #D2B98B;
-  --sand-light: #F2ECDF;
+  --bg-milk: #F8F9FA;
+  --bg-milk-deep: #F1F3F5;
+  --card-white: #FFFFFF;
+  --navy: #0F172A;
+  --navy-light: #1E293B;
+  --slate: #475569;
+  --slate-muted: #64748B;
+  --line: #E2E8F0;
+  --sand: #C5A676;
+  --sand-light: #F8F6F0;
   --app-font-sans: "DM Sans", "Montserrat", system-ui, -apple-system, sans-serif;
   --app-font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
 }
@@ -52,43 +52,37 @@ h1, h2, h3, .font-serif-heading, .font-display {
   color: var(--navy);
 }
 
-/* Replit semantic utility classes */
+/* Modern semantic utility classes */
 .bg-background {
-  background-color: #F6F2EA;
+  background-color: #F8F9FA;
 }
 
 .bg-card {
-  background-color: #FCFBF8;
+  background-color: #FFFFFF;
 }
 
 .bg-muted {
-  background-color: #EFE9DC;
+  background-color: #F1F3F5;
 }
 
 .text-foreground {
-  color: #172641;
+  color: #0F172A;
 }
 
 .text-muted-foreground {
-  color: #6E7582;
+  color: #64748B;
 }
 
 .text-primary {
-  color: #172641;
+  color: #0F172A;
 }
 
 .border-border {
-  border-color: #E5DFD2;
+  border-color: #E2E8F0;
 }
 
 .grain::after {
-  content: "";
-  pointer-events: none;
-  opacity: 0.022;
-  z-index: 50;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
-  position: fixed;
-  inset: 0;
+  display: none;
 }
 
 @keyframes rise-in {

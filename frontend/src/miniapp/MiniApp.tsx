@@ -235,14 +235,14 @@ export function MiniAppRoot() {
     location.pathname === "/miniapp" || location.pathname === "/miniapp/";
 
   return (
-    <div className="grain min-h-[100dvh] flex flex-col bg-[#f4efe5] text-[#172641] pb-20">
+    <div className="min-h-[100dvh] flex flex-col bg-[#F8F9FA] text-[#0F172A] pb-24 selection:bg-[#E2E8F0] selection:text-[#0F172A]">
       {/* Replit Editorial Header */}
-      <header className="sticky top-0 z-30 shrink-0 border-b border-[#172641]/10 bg-[#f4efe5]/92 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 shrink-0 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
         <div className="mx-auto flex min-h-14 w-full max-w-[1160px] items-center justify-between gap-2 px-4 sm:px-6">
           {isHome ? (
             <Link
               to="/miniapp"
-              className="flex items-center gap-2.5 no-underline text-[#172641]"
+              className="flex items-center gap-2.5 no-underline text-slate-900"
             >
               <img
                 src="/whitmore-logo.jpg"
@@ -260,7 +260,7 @@ export function MiniAppRoot() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex items-center gap-1.5 text-[12px] font-semibold text-[#172641] bg-transparent border-0 cursor-pointer py-2 px-1"
+              className="flex items-center gap-1.5 text-[12px] font-semibold text-slate-900 bg-transparent border-0 cursor-pointer py-2 px-1"
             >
               <svg
                 width="16"
@@ -283,7 +283,7 @@ export function MiniAppRoot() {
           <div className="flex items-center gap-2">
             {/* Pill Language Switcher */}
             <div
-              className="flex rounded-full border border-[#172641]/15 p-0.5 text-[10px] font-bold bg-[#fbf8f2]"
+              className="flex rounded-full border border-slate-200 bg-slate-100/80 p-0.5 text-[10px] font-bold"
               role="group"
               aria-label="Til"
             >
@@ -294,8 +294,8 @@ export function MiniAppRoot() {
                   onClick={() => setLang(l)}
                   className={`rounded-full px-2.5 py-1 uppercase transition cursor-pointer border-0 ${
                     lang === l
-                      ? "bg-[#172641] text-[#f4efe5]"
-                      : "bg-transparent text-[#172641]/60"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "bg-transparent text-slate-500 hover:text-slate-900"
                   }`}
                 >
                   {l}
@@ -307,7 +307,7 @@ export function MiniAppRoot() {
             <Link
               to="/miniapp/cart"
               aria-label={t.cart}
-              className="relative rounded-full p-2.5 text-[#172641] transition active:scale-95 no-underline"
+              className="relative rounded-full p-2.5 text-slate-900 transition active:scale-95 no-underline"
             >
               <svg
                 width="20"
@@ -432,7 +432,7 @@ export function MiniAppRoot() {
         aria-label="Do‘kon bo‘limlari"
         className="fixed bottom-3 left-0 right-0 z-30 px-2.5 sm:bottom-4 sm:px-5 pointer-events-none"
       >
-        <div className="pointer-events-auto mx-auto grid max-w-[600px] grid-cols-5 items-center gap-1 rounded-full border border-[#d6bd92]/35 bg-[#172641]/95 p-1.5 text-[#f4efe5] shadow-[0_18px_42px_-8px_rgba(14,24,42,0.55),0_0_0_1px_rgba(255,255,255,0.07)_inset] backdrop-blur-xl">
+        <div className="pointer-events-auto mx-auto grid max-w-[600px] grid-cols-5 items-center gap-1 rounded-full border border-white/10 bg-[#0F172A]/92 p-1.5 text-slate-300 shadow-[0_20px_45px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
           <NavTab to="/miniapp" exact label={t.home} icon="home" />
           <NavTab
             to="/miniapp/catalog"
@@ -488,8 +488,8 @@ function NavTab({
       to={to}
       className={`group relative flex min-h-[50px] min-w-0 flex-col items-center justify-center gap-1 rounded-full px-1.5 py-1.5 no-underline transition-all duration-300 active:scale-95 ${
         active
-          ? "bg-gradient-to-b from-[#ebdcc0] to-[#cfa972] text-[#172641] shadow-[0_6px_18px_-3px_rgba(214,189,146,0.45)]"
-          : "text-[#f4efe5]/70 hover:bg-white/10 hover:text-[#f4efe5]"
+          ? "bg-gradient-to-b from-[#e5d2ae] to-[#c5a676] text-[#0F172A] font-bold shadow-[0_4px_16px_rgba(197,166,118,0.4)]"
+          : "text-slate-400 hover:bg-white/10 hover:text-white"
       }`}
     >
       <div className="relative flex items-center justify-center">
@@ -574,8 +574,8 @@ function NavTab({
           <span
             className={` -right-2.5 -top-1.5 absolute flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-extrabold leading-none shadow-sm ${
               active
-                ? "bg-[#172641] text-[#f4efe5]"
-                : "bg-[#d6bd92] text-[#172641]"
+                ? "bg-slate-900 text-white shadow-xs"
+                : "bg-[#c5a676] text-[#0F172A]"
             }`}
           >
             {badge}
@@ -619,45 +619,51 @@ function ProductCard({
   const isStock = p.sale_type === "stock";
 
   return (
-    <div className="group relative min-w-0 self-start rise-in rounded-2xl border border-[#e2d6c1] bg-white p-2.5 shadow-[0_4px_16px_rgba(23,38,65,0.04)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#c5a676] hover:shadow-[0_16px_36px_rgba(23,38,65,0.12)]">
+    <div className="group relative min-w-0 self-start rise-in rounded-3xl border border-slate-200/80 bg-white p-2.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_16px_36px_-6px_rgba(15,23,42,0.12)]">
       <Link
         to={`/miniapp/product/${p.id}`}
-        className="block w-full min-w-0 text-left no-underline text-[#172641]"
+        className="block w-full min-w-0 text-left no-underline text-slate-900"
       >
-        <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-[#e6dccb]">
+        <div className="relative aspect-[3/4] overflow-hidden rounded-[20px] bg-[#F1F3F7]">
           <ProductImage
             src={p.thumb}
             alt={name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-106"
           />
 
           {/* Top-left Sale Type Badge */}
-          <span className={`absolute left-2 top-2 rounded-full backdrop-blur-md px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-[.14em] shadow-sm border ${
-            isStock
-              ? "bg-[#1b4332]/90 text-[#e8f5e9] border-[#74c69d]/50"
-              : "bg-[#172641]/90 text-[#faf7f2] border-[#c5a676]/60"
-          }`}>
-            {isStock ? t.inStockBadge : t.preorderBadge}
-          </span>
+          <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-full bg-white/92 backdrop-blur-md px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-slate-800 shadow-xs border border-white/70">
+            <span className={`h-1.5 w-1.5 rounded-full ${isStock ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`} />
+            <span>{isStock ? t.inStockBadge : t.preorderBadge}</span>
+          </div>
 
           {/* Sold out bottom bar */}
           {p.sold_out && (
-            <span className="absolute inset-x-0 bottom-0 bg-[#172641]/90 py-1.5 text-center text-[9px] font-bold uppercase tracking-[.16em] text-white backdrop-blur-xs">
-              {t.soldOut}
-            </span>
+            <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px]">
+              <span className="rounded-full bg-white px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-900 shadow-md">
+                {t.soldOut}
+              </span>
+            </div>
           )}
         </div>
 
         <div className="mt-2.5 px-1">
-          <div className="line-clamp-2 font-display text-[15px] font-semibold leading-snug text-[#172641] group-hover:text-[#8a6c43] transition-colors">
+          <div className="text-[9px] font-bold tracking-[0.16em] uppercase text-slate-400 truncate">
+            WITHMORE BESPOKE
+          </div>
+          <div className="font-display text-[14px] sm:text-[15px] font-semibold text-slate-900 line-clamp-1 group-hover:text-[#8a6c43] transition-colors mt-0.5">
             {name}
           </div>
-          <div className="mt-2 flex items-center justify-between gap-1">
-            <span className="text-[13px] font-bold text-[#8a6c43]">
-              {formatPrice(p.price)}
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-[#dccab0] bg-gradient-to-r from-[#faf7f2] to-[#f4ede1] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#172641] transition-all duration-300 group-hover:from-[#172641] group-hover:to-[#243c68] group-hover:text-[#f4efe5] group-hover:border-[#172641] group-hover:shadow-[0_4px_12px_rgba(23,38,65,0.25)] group-hover:scale-105">
-              Tanlash →
+          <div className="mt-2 flex items-center justify-between gap-1 pt-1.5 border-t border-slate-100">
+            <div className="flex flex-col">
+              <span className="text-[8.5px] uppercase tracking-wider font-semibold text-slate-400">Narx</span>
+              <span className="text-[13px] sm:text-[14px] font-black text-slate-900 tracking-tight leading-none">
+                {formatPrice(p.price)}
+              </span>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-bold text-white shadow-xs transition-all duration-200 group-hover:bg-[#8a6c43] group-hover:scale-105 active:scale-95">
+              <span>Tanlash</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </span>
           </div>
         </div>
@@ -671,15 +677,15 @@ function ProductCard({
           e.stopPropagation();
           onToggleFav(p.id);
         }}
-        className="absolute right-3.5 top-3.5 flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md bg-white/90 text-[#172641] transition-all duration-200 active:scale-90 cursor-pointer border border-[#dccab0]/60 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:bg-white hover:scale-110 hover:shadow-[0_4px_12px_rgba(163,70,60,0.2)]"
+        className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 backdrop-blur-md text-slate-700 shadow-xs border border-white/70 transition-all duration-200 hover:scale-110 active:scale-90 hover:bg-white cursor-pointer"
       >
         <svg
           width="15"
           height="15"
           viewBox="0 0 24 24"
-          fill={isFav ? "#a3463c" : "none"}
-          stroke={isFav ? "#a3463c" : "currentColor"}
-          strokeWidth="1.8"
+          fill={isFav ? "#e11d48" : "none"}
+          stroke={isFav ? "#e11d48" : "currentColor"}
+          strokeWidth="2"
         >
           <path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z" />
         </svg>
@@ -802,7 +808,7 @@ function HomeScreen({
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               to="/miniapp/catalog"
-              className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-[#172641] no-underline shadow-[0_6px_20px_rgba(214,189,146,0.35)] transition-all duration-300 hover:scale-105 active:scale-[.98]"
+              className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] px-6 py-3.5 text-[11px] font-bold uppercase tracking-[.18em] text-slate-900 no-underline shadow-[0_6px_20px_rgba(214,189,146,0.35)] transition-all duration-300 hover:scale-105 active:scale-[.98]"
             >
               <span>{t.catalog}</span>
               <span>→</span>
@@ -821,22 +827,22 @@ function HomeScreen({
       <BrandMarquee />
 
       {/* Atelier Excellence Highlights */}
-      <section className="mx-4 mt-3 mb-1 rounded-2xl border border-[#dccab0]/70 bg-gradient-to-br from-[#faf7f2] via-[#f7f2e7] to-[#efe6d5] p-3 shadow-xs">
-        <div className="grid grid-cols-3 gap-2 text-center divide-x divide-[#dccab0]/60">
+      <section className="mx-4 mt-4 mb-2 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+        <div className="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100">
           <div className="px-1">
-            <div className="text-sm mb-0.5">✂️</div>
-            <div className="text-[10px] font-extrabold text-[#172641]">Aniq Bichim</div>
-            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Qaddi-qomatga mos</div>
+            <div className="text-base mb-1">✂️</div>
+            <div className="text-[11px] font-bold text-slate-900">Aniq Bichim</div>
+            <div className="text-[9px] font-medium text-slate-400 mt-0.5">Qaddi-qomatga mos</div>
           </div>
           <div className="px-1">
-            <div className="text-sm mb-0.5">🇮🇹</div>
-            <div className="text-[10px] font-extrabold text-[#172641]">100% Original</div>
-            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Italiya & Angliya</div>
+            <div className="text-base mb-1">🇮🇹</div>
+            <div className="text-[11px] font-bold text-slate-900">100% Original</div>
+            <div className="text-[9px] font-medium text-slate-400 mt-0.5">Italiya & Angliya</div>
           </div>
           <div className="px-1">
-            <div className="text-sm mb-0.5">⚡</div>
-            <div className="text-[10px] font-extrabold text-[#172641]">Tezkor Kuryer</div>
-            <div className="text-[8px] font-medium text-[#7d8aa3] mt-0.5">Butun O‘zbekiston</div>
+            <div className="text-base mb-1">⚡</div>
+            <div className="text-[11px] font-bold text-slate-900">Tezkor Kuryer</div>
+            <div className="text-[9px] font-medium text-slate-400 mt-0.5">Butun O‘zbekiston</div>
           </div>
         </div>
       </section>
@@ -853,7 +859,7 @@ function HomeScreen({
             </span>
             <Link
               to="/miniapp/catalog"
-              className="text-[11px] font-semibold text-[#172641] hover:underline"
+              className="text-[11px] font-semibold text-slate-900 hover:underline"
             >
               {lang === "ru" ? "Весь каталог →" : "Barchasi →"}
             </Link>
@@ -861,7 +867,7 @@ function HomeScreen({
           <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
             <Link
               to="/miniapp/catalog"
-              className="shrink-0 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] px-4 py-2.5 text-[11px] font-bold text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
+              className="shrink-0 flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-[11px] font-bold text-white shadow-sm ring-1 ring-slate-900 no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
             >
               <span className="text-sm drop-shadow-sm">✨</span>
               <span className="tracking-wide">{t.allCategories}</span>
@@ -873,7 +879,7 @@ function HomeScreen({
                 <Link
                   key={c.id}
                   to={`/miniapp/catalog?category=${c.id}`}
-                  className="shrink-0 flex items-center gap-2 rounded-2xl border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] px-4 py-2.5 text-[11px] font-bold text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] no-underline transition-all duration-200 hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
+                  className="shrink-0 flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-[11px] font-bold text-slate-800 shadow-[0_1px_4px_rgba(0,0,0,0.03)] no-underline transition-all duration-200 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
                 >
                   <span className="text-sm">{icon}</span>
                   <span className="tracking-wide">{label}</span>
@@ -886,8 +892,8 @@ function HomeScreen({
 
       {/* Featured / Collection Grid */}
       <section className="px-4 pt-2">
-        <div className="mb-4 flex items-end justify-between border-b border-[#172641]/15 pb-2.5">
-          <h2 className="font-display text-[24px] font-medium text-[#172641]">
+        <div className="mb-4 flex items-end justify-between border-b border-slate-200/80 pb-2.5">
+          <h2 className="font-display text-[24px] font-medium text-slate-900">
             {featured.length > 0 ? t.featured : t.catalog}
           </h2>
           <Link
@@ -917,16 +923,16 @@ function HomeScreen({
       </section>
 
       {/* Editorial Footer Note */}
-      <section className="mx-4 mt-10 border-t border-[#172641]/15 pt-6">
+      <section className="mx-4 mt-10 border-t border-slate-200/80 pt-6">
         <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
           Withmore uslubi
         </div>
-        <p className="mt-2 font-display text-[20px] leading-snug text-[#172641]">
+        <p className="mt-2 font-display text-[20px] leading-snug text-slate-900">
           Sokin klassika. Aniq bichim. Har kuni kiyiladigan ishonch.
         </p>
         <Link
           to="/miniapp/about"
-          className="mt-4 inline-block text-[11px] font-semibold text-[#172641] underline underline-offset-4"
+          className="mt-4 inline-block text-[11px] font-semibold text-slate-900 underline underline-offset-4"
         >
           {t.deliveryAndReturnTerms}
         </Link>
@@ -980,7 +986,7 @@ function CatalogScreen({
 
   return (
     <div className="px-4 pt-5 rise-in">
-      <h1 className="font-display text-[30px] leading-none text-[#172641]">
+      <h1 className="font-display text-[30px] leading-none text-slate-900">
         {t.catalog}
       </h1>
 
@@ -1005,7 +1011,7 @@ function CatalogScreen({
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t.searchPlaceholder}
-            className="h-11 w-full rounded-2xl border border-[#dccab0] bg-white/95 pl-10 pr-4 text-[13px] text-[#172641] placeholder-[#172641]/40 shadow-[0_2px_8px_rgba(23,38,65,0.03)] outline-none transition-all duration-200 focus:border-[#c5a676] focus:ring-2 focus:ring-[#c5a676]/30 focus:shadow-[0_4px_16px_rgba(197,166,118,0.18)]"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-white pl-10 pr-4 text-[13px] text-slate-900 placeholder-slate-400 shadow-[0_1px_3px_rgba(0,0,0,0.03)] outline-none transition-all duration-200 focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
           />
         </label>
 
@@ -1016,7 +1022,7 @@ function CatalogScreen({
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border transition-all duration-200 cursor-pointer active:scale-95 ${
             showFilters
               ? "border-[#c5a676] bg-gradient-to-r from-[#172641] to-[#223558] text-[#faf7f2] shadow-[0_4px_14px_rgba(23,38,65,0.3)] ring-2 ring-[#c5a676]/50"
-              : "border-[#dccab0] bg-white/95 text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.03)] hover:border-[#c5a676] hover:bg-white hover:text-[#0b1728] hover:shadow-[0_4px_16px_rgba(197,166,118,0.22)] hover:-translate-y-0.5"
+              : "border-slate-200 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:text-black active:scale-95"
           }`}
         >
           <svg
@@ -1039,7 +1045,7 @@ function CatalogScreen({
           className={`flex h-11 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[11px] font-bold transition-all duration-200 cursor-pointer active:scale-95 ${
             onlyFavs
               ? "border-[#a3463c] bg-gradient-to-r from-[#8f2d24] to-[#b34033] text-white shadow-[0_4px_14px_rgba(163,70,60,0.35)] ring-2 ring-[#f0a8a0]/60"
-              : "border-[#dccab0] bg-white/95 text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.03)] hover:border-[#c5a676] hover:bg-white hover:text-[#a3463c] hover:shadow-[0_4px_16px_rgba(163,70,60,0.18)] hover:-translate-y-0.5"
+              : "border-slate-200 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:text-rose-600 active:scale-95"
           }`}
         >
           <svg
@@ -1054,7 +1060,7 @@ function CatalogScreen({
           </svg>
           <span className="hidden sm:inline">{t.favorites}</span>
           {favIds.length > 0 && (
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${onlyFavs ? "bg-white/25 text-white" : "bg-[#172641]/10 text-[#172641]"}`}>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${onlyFavs ? "bg-white/25 text-white" : "bg-[#172641]/10 text-slate-900"}`}>
               {favIds.length}
             </span>
           )}
@@ -1063,25 +1069,25 @@ function CatalogScreen({
 
       {/* Collapsible Sort & Type Drawer */}
       {showFilters && (
-        <div className="rise-in mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#dccab0] bg-white/95 p-3.5 shadow-sm">
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/70">
+        <div className="rise-in mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-900/70">
             Tartib
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="mt-1.5 h-10 w-full rounded-xl border border-[#dccab0] bg-[#faf7f2] px-2.5 text-[12px] font-medium normal-case tracking-normal text-[#172641] outline-none focus:border-[#c5a676]"
+              className="mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[12px] font-medium normal-case tracking-normal text-slate-900 outline-none focus:border-slate-900"
             >
               <option value="featured">Tanlanganlar avval</option>
               <option value="priceAsc">Arzonroq avval</option>
               <option value="priceDesc">Qimmatroq avval</option>
             </select>
           </label>
-          <label className="text-[10px] font-semibold uppercase tracking-wider text-[#172641]/70">
+          <label className="text-[10px] font-semibold uppercase tracking-wider text-slate-900/70">
             Turi
             <select
               value={saleType}
               onChange={(e) => setSaleType(e.target.value)}
-              className="mt-1.5 h-10 w-full rounded-xl border border-[#dccab0] bg-[#faf7f2] px-2.5 text-[12px] font-medium normal-case tracking-normal text-[#172641] outline-none focus:border-[#c5a676]"
+              className="mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-[12px] font-medium normal-case tracking-normal text-slate-900 outline-none focus:border-slate-900"
             >
               <option value="all">{t.allCategories}</option>
               <option value="stock">{t.inStockBadge}</option>
@@ -1098,8 +1104,8 @@ function CatalogScreen({
           onClick={() => setSearchParams({})}
           className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
             !selectedCat
-              ? "bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] scale-[1.02]"
-              : "border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
+              ? "bg-slate-900 text-white shadow-sm ring-1 ring-slate-900 scale-[1.02]"
+              : "border border-slate-200/90 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
           }`}
         >
           <span className="text-sm drop-shadow-sm">✨</span>
@@ -1116,8 +1122,8 @@ function CatalogScreen({
               onClick={() => setSearchParams({ category: String(c.id) })}
               className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
                 active
-                  ? "bg-gradient-to-r from-[#172641] via-[#223558] to-[#121c2e] text-[#faf7f2] shadow-[0_4px_16px_rgba(23,38,65,0.28)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#f6f2ea] scale-[1.02]"
-                  : "border border-[#dccab0] bg-gradient-to-b from-white to-[#fbf7f0] text-[#172641] shadow-[0_2px_8px_rgba(23,38,65,0.04)] hover:border-[#c5a676] hover:shadow-[0_6px_20px_rgba(197,166,118,0.28)] hover:-translate-y-0.5 hover:text-[#0b1728] active:scale-95"
+                  ? "bg-slate-900 text-white shadow-sm ring-1 ring-slate-900 scale-[1.02]"
+                  : "border border-slate-200/90 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
               }`}
             >
               <span className="text-sm transition-transform duration-200 group-hover:scale-110">{icon}</span>
@@ -1127,7 +1133,7 @@ function CatalogScreen({
         })}
       </div>
 
-      <div className="mb-4 mt-2.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#172641]/55">
+      <div className="mb-4 mt-2.5 text-[10px] font-semibold uppercase tracking-[.16em] text-slate-900/55">
         {filtered.length} ta mahsulot
       </div>
 
@@ -1294,7 +1300,7 @@ function ProductScreen({
         {/* Left: Swipeable Editorial Photo Gallery */}
         <div>
           <div
-            className="relative aspect-[3/4] max-h-[560px] w-full overflow-hidden bg-[#e6dccb] select-none"
+            className="relative aspect-[3/4] max-h-[560px] w-full overflow-hidden bg-[#F1F3F7] select-none"
             onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
             onTouchEnd={(e) => {
               if (touchStartX === null || images.length < 2) return;
@@ -1357,12 +1363,12 @@ function ProductScreen({
             {product.material ? ` · ${product.material}` : ""}
           </div>
 
-          <h1 className="mt-2 font-display text-[28px] leading-[1.1] text-[#172641]">
+          <h1 className="mt-2 font-display text-[28px] leading-[1.1] text-slate-900">
             {name}
           </h1>
 
           <div className="mt-2 flex items-center justify-between">
-            <span className="text-[18px] font-bold text-[#172641]">
+            <span className="text-[18px] font-bold text-slate-900">
               {formatPrice(product.price)}
             </span>
             {product.sale_type === "stock" && product.stock_total !== null && (
@@ -1373,7 +1379,7 @@ function ProductScreen({
           </div>
 
           {desc && (
-            <p className="mt-4 whitespace-pre-line text-[13px] leading-6 text-[#172641]/80">
+            <p className="mt-4 whitespace-pre-line text-[13px] leading-6 text-slate-900/80">
               {desc}
             </p>
           )}
@@ -1381,7 +1387,7 @@ function ProductScreen({
           {/* Variants & Size Chart */}
           <div className="mt-6 border-t border-[#172641]/12 pt-5">
             <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[#172641]">
+              <span className="text-[10px] font-bold uppercase tracking-[.18em] text-slate-900">
                 {t.size} / {t.color}
               </span>
               <div className="flex items-center gap-3">
@@ -1396,7 +1402,7 @@ function ProductScreen({
                   <button
                     type="button"
                     onClick={() => setShowChart((v) => !v)}
-                    className="text-[11px] font-semibold text-[#172641] underline underline-offset-4 bg-transparent border-0 cursor-pointer"
+                    className="text-[11px] font-semibold text-slate-900 underline underline-offset-4 bg-transparent border-0 cursor-pointer"
                   >
                     {t.sizeChart}
                   </button>
@@ -1416,13 +1422,13 @@ function ProductScreen({
                   <button
                     type="button"
                     onClick={() => setShowSizeCalc(false)}
-                    className="text-xs text-[#172641]/50 bg-transparent border-0 cursor-pointer"
+                    className="text-xs text-slate-900/50 bg-transparent border-0 cursor-pointer"
                   >
                     ✕
                   </button>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <label className="text-[10px] font-semibold text-[#172641]/70">
+                  <label className="text-[10px] font-semibold text-slate-900/70">
                     {lang === "ru" ? "Рост (см)" : "Bo'yingiz (sm)"}
                     <input
                       type="number"
@@ -1430,10 +1436,10 @@ function ProductScreen({
                       max={215}
                       value={heightCm}
                       onChange={(e) => setHeightCm(e.target.value)}
-                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2.5 text-xs font-semibold text-[#172641]"
+                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2.5 text-xs font-semibold text-slate-900"
                     />
                   </label>
-                  <label className="text-[10px] font-semibold text-[#172641]/70">
+                  <label className="text-[10px] font-semibold text-slate-900/70">
                     {lang === "ru" ? "Вес (кг)" : "Vazningiz (kg)"}
                     <input
                       type="number"
@@ -1441,15 +1447,15 @@ function ProductScreen({
                       max={160}
                       value={weightKg}
                       onChange={(e) => setWeightKg(e.target.value)}
-                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2.5 text-xs font-semibold text-[#172641]"
+                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2.5 text-xs font-semibold text-slate-900"
                     />
                   </label>
-                  <label className="text-[10px] font-semibold text-[#172641]/70">
+                  <label className="text-[10px] font-semibold text-slate-900/70">
                     {lang === "ru" ? "Посадка" : "Bichim"}
                     <select
                       value={fitPref}
                       onChange={(e) => setFitPref(e.target.value as any)}
-                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2 text-xs font-semibold text-[#172641]"
+                      className="mt-1 h-9 w-full border border-[#172641]/20 bg-white px-2 text-xs font-semibold text-slate-900"
                     >
                       <option value="regular">
                         {lang === "ru" ? "Классика" : "Klassik"}
@@ -1461,9 +1467,9 @@ function ProductScreen({
                   </label>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#172641]/10 pt-2.5">
-                  <div className="text-xs text-[#172641]">
+                  <div className="text-xs text-slate-900">
                     {lang === "ru" ? "Рекомендуемый размер: " : "Tavsiya etilgan o'lcham: "}
-                    <strong className="font-display text-base text-[#172641]">
+                    <strong className="font-display text-base text-slate-900">
                       {rec.letter} ({rec.numeric})
                     </strong>
                   </div>
@@ -1497,7 +1503,7 @@ function ProductScreen({
                       className={`min-h-[44px] rounded-xl border px-4 py-2 text-[12px] font-semibold transition-all duration-200 cursor-pointer active:scale-95 ${
                         active
                           ? "border-[#c5a676] bg-[#172641] text-[#faf7f2] shadow-[0_4px_14px_rgba(23,38,65,0.25)] ring-2 ring-[#c5a676] ring-offset-2 ring-offset-[#fbf8f2]"
-                          : "border-[#dccab0] bg-white text-[#172641] shadow-xs hover:border-[#c5a676] hover:shadow-[0_4px_12px_rgba(197,166,118,0.2)] hover:-translate-y-0.5"
+                          : "border-[#dccab0] bg-white text-slate-900 shadow-xs hover:border-[#c5a676] hover:shadow-[0_4px_12px_rgba(197,166,118,0.2)] hover:-translate-y-0.5"
                       }`}
                     >
                       <span>
@@ -1523,7 +1529,7 @@ function ProductScreen({
               (product.size_chart && product.size_chart.length > 0)) && (
               <div className="mt-4 border border-[#172641]/12 bg-[#fbf8f2] overflow-x-auto">
                 <table className="w-full text-[11px] border-collapse">
-                  <thead className="border-b border-[#172641]/10 text-[9px] uppercase tracking-wider text-[#172641]/60">
+                  <thead className="border-b border-[#172641]/10 text-[9px] uppercase tracking-wider text-slate-900/60">
                     <tr>
                       <th className="px-3 py-2 text-left">{t.size}</th>
                       <th className="px-3 py-2 text-center">{t.chest}</th>
@@ -1562,7 +1568,7 @@ function ProductScreen({
                       key={v.id}
                       type="button"
                       onClick={() => subscribeRestock(v.id)}
-                      className="min-h-[40px] border border-[#172641]/25 bg-white px-3 py-1.5 text-xs font-semibold text-[#172641] cursor-pointer hover:bg-[#172641] hover:text-[#f4efe5]"
+                      className="min-h-[40px] border border-[#172641]/25 bg-white px-3 py-1.5 text-xs font-semibold text-slate-900 cursor-pointer hover:bg-[#172641] hover:text-[#f4efe5]"
                     >
                       {v.size} {v.color ? `· ${v.color}` : ""} —{" "}
                       {t.notifyRestock}
@@ -1574,8 +1580,8 @@ function ProductScreen({
 
             {product.material && (
               <div className="mt-5 flex justify-between border-t border-[#172641]/10 pt-3 text-[12px]">
-                <span className="text-[#172641]/60">{t.material}</span>
-                <span className="font-semibold text-[#172641]">
+                <span className="text-slate-900/60">{t.material}</span>
+                <span className="font-semibold text-slate-900">
                   {product.material}
                 </span>
               </div>
@@ -1589,17 +1595,17 @@ function ProductScreen({
                 <button
                   type="button"
                   onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="px-3.5 h-full text-base font-bold text-[#172641] bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
+                  className="px-3.5 h-full text-base font-bold text-slate-900 bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
                 >
                   −
                 </button>
-                <span className="w-8 text-center text-[13px] font-bold text-[#172641]">
+                <span className="w-8 text-center text-[13px] font-bold text-slate-900">
                   {qty}
                 </span>
                 <button
                   type="button"
                   onClick={() => setQty((q) => q + 1)}
-                  className="px-3.5 h-full text-base font-bold text-[#172641] bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
+                  className="px-3.5 h-full text-base font-bold text-slate-900 bg-transparent hover:bg-[#f6f2ea] active:scale-90 transition border-0 cursor-pointer"
                 >
                   +
                 </button>
@@ -1619,7 +1625,7 @@ function ProductScreen({
                 type="button"
                 aria-label={t.favorites}
                 onClick={() => onToggleFav(product.id)}
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#dccab0] bg-white text-[#172641] shadow-xs hover:border-[#c5a676] hover:text-[#a3463c] hover:shadow-[0_4px_16px_rgba(163,70,60,0.18)] hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#dccab0] bg-white text-slate-900 shadow-xs hover:border-[#c5a676] hover:text-[#a3463c] hover:shadow-[0_4px_16px_rgba(163,70,60,0.18)] hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer"
               >
                 <svg
                   width="18"
@@ -1643,12 +1649,12 @@ function ProductScreen({
               <button
                 type="button"
                 onClick={() => setShowQuickModal(true)}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#c5a676] bg-gradient-to-r from-[#faf5ea] via-[#f7ebd4] to-[#faf5ea] text-[11px] font-bold uppercase tracking-[.14em] text-[#172641] shadow-[0_4px_14px_rgba(197,166,118,0.2)] hover:bg-gradient-to-r hover:from-[#c5a676] hover:to-[#b38f5c] hover:text-white hover:shadow-[0_8px_24px_rgba(197,166,118,0.38)] hover:-translate-y-0.5 transition-all duration-200 active:scale-[.98] cursor-pointer"
+                className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#c5a676] bg-gradient-to-r from-[#faf5ea] via-[#f7ebd4] to-[#faf5ea] text-[11px] font-bold uppercase tracking-[.14em] text-slate-900 shadow-[0_4px_14px_rgba(197,166,118,0.2)] hover:bg-gradient-to-r hover:from-[#c5a676] hover:to-[#b38f5c] hover:text-white hover:shadow-[0_8px_24px_rgba(197,166,118,0.38)] hover:-translate-y-0.5 transition-all duration-200 active:scale-[.98] cursor-pointer"
               >
                 <span className="text-sm">⚡</span>
                 <span>1-klikda buyurtma (Menejer yordami)</span>
               </button>
-              <div className="mt-1 text-center text-[10px] text-[#172641]/60">
+              <div className="mt-1 text-center text-[10px] text-slate-900/60">
                 Pochta manzilini yozishga erinsangiz — telefoningizni qoldiring, o‘zimiz bog‘lanamiz.
               </div>
             </div>
@@ -1657,7 +1663,7 @@ function ProductScreen({
           {/* Quick Order Modal */}
           {showQuickModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-              <div className="w-full max-w-sm rounded-2xl border border-border bg-[#faf8f3] p-5 shadow-2xl text-[#172641] space-y-4 rise-in">
+              <div className="w-full max-w-sm rounded-2xl border border-border bg-[#faf8f3] p-5 shadow-2xl text-slate-900 space-y-4 rise-in">
                 <div className="flex items-center justify-between border-b border-[#172641]/10 pb-3">
                   <div>
                     <div className="text-[9px] font-bold uppercase tracking-[.18em] text-[#8a6c43]">
@@ -1676,7 +1682,7 @@ function ProductScreen({
                   </button>
                 </div>
 
-                <div className="text-xs text-[#172641]/75">
+                <div className="text-xs text-slate-900/75">
                   <b>{product.name_uz}</b> ({selectedVariant?.size || "M"}
                   {selectedVariant?.color ? ` · ${selectedVariant.color}` : ""}) —{" "}
                   <b>{formatPrice(product.price)}</b>
@@ -1718,7 +1724,7 @@ function ProductScreen({
                   className="space-y-3"
                 >
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                       Ismingiz *
                     </label>
                     <input
@@ -1726,12 +1732,12 @@ function ProductScreen({
                       value={quickName}
                       onChange={(e) => setQuickName(e.target.value)}
                       placeholder="Alisher"
-                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-[#172641] outline-none"
+                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-slate-900 outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                       Telefon raqamingiz *
                     </label>
                     <input
@@ -1739,23 +1745,23 @@ function ProductScreen({
                       value={quickPhone}
                       onChange={(e) => setQuickPhone(e.target.value)}
                       placeholder="+998 90 123 45 67"
-                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-[#172641] outline-none"
+                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-slate-900 outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                       Viloyat / Shahar (Pochta filiali uchun)
                     </label>
                     <input
                       value={quickCity}
                       onChange={(e) => setQuickCity(e.target.value)}
                       placeholder="Samarqand / Toshkent / Farg‘ona..."
-                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-[#172641] outline-none"
+                      className="mt-1 h-10 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-slate-900 outline-none"
                     />
                   </div>
 
-                  <div className="rounded-lg bg-[#efe9dc] p-2.5 text-[11px] text-[#172641]/75">
+                  <div className="rounded-lg bg-[#efe9dc] p-2.5 text-[11px] text-slate-900/75">
                     💡 O‘lchamingiz: <b>{heightCm} sm</b>, <b>{weightKg} kg</b>{" "}
                     (Tavsiya: <b>{rec.letter}</b>). Menejer qo‘ng‘iroq qilganda
                     o‘lchamni yana bir bor aniqlashtirib beradi.
@@ -1775,13 +1781,13 @@ function ProductScreen({
 
           {/* Collapsible Delivery & Return Policy */}
           <details className="group mt-5 border-t border-[#172641]/12 pt-3">
-            <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold text-[#172641]">
+            <summary className="flex cursor-pointer list-none items-center justify-between text-[11px] font-semibold text-slate-900">
               <span>{t.deliveryAndReturnTerms}</span>
-              <span className="text-[10px] text-[#172641]/50 group-open:hidden">
+              <span className="text-[10px] text-slate-900/50 group-open:hidden">
                 ochish
               </span>
             </summary>
-            <div className="mt-3 space-y-2 text-[12px] leading-5 text-[#172641]/75">
+            <div className="mt-3 space-y-2 text-[12px] leading-5 text-slate-900/75">
               <p>{lang === "ru" ? content?.delivery_ru : content?.delivery_uz}</p>
               <p>{lang === "ru" ? content?.returns_ru : content?.returns_uz}</p>
             </div>
@@ -1795,7 +1801,7 @@ function ProductScreen({
           <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
             Kolleksiyadan
           </div>
-          <h2 className="mt-1 font-display text-[22px] text-[#172641]">
+          <h2 className="mt-1 font-display text-[22px] text-slate-900">
             {t.relatedProducts}
           </h2>
           <div className="miniapp-product-grid mt-4">
@@ -1818,10 +1824,10 @@ function ProductScreen({
             <div className="text-[9px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
               🤵 SARTORIAL STYLE
             </div>
-            <h3 className="mt-1 font-display text-[20px] font-medium text-[#172641]">
+            <h3 className="mt-1 font-display text-[20px] font-medium text-slate-900">
               To‘liq obraz yig‘ish (Complete the Look)
             </h3>
-            <p className="mt-1 text-xs text-[#172641]/70">
+            <p className="mt-1 text-xs text-slate-900/70">
               Ushbu kiyim bilan ideal mos tushadigan klassik modellar:
             </p>
 
@@ -1844,7 +1850,7 @@ function ProductScreen({
                   <div className="min-w-0 flex-1">
                     <Link
                       to={`/miniapp/product/${item.id}`}
-                      className="truncate text-xs font-bold text-[#172641] no-underline hover:underline block"
+                      className="truncate text-xs font-bold text-slate-900 no-underline hover:underline block"
                     >
                       {item.name_uz}
                     </Link>
@@ -1853,7 +1859,7 @@ function ProductScreen({
                     </div>
                     <Link
                       to={`/miniapp/product/${item.id}`}
-                      className="mt-1.5 inline-block text-[10px] font-bold uppercase tracking-wider text-[#172641] underline underline-offset-2"
+                      className="mt-1.5 inline-block text-[10px] font-bold uppercase tracking-wider text-slate-900 underline underline-offset-2"
                     >
                       Ko‘rish va qo‘shish →
                     </Link>
@@ -1872,14 +1878,14 @@ function ProductScreen({
             <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
               ISBOtLANGAN SIFAT
             </div>
-            <h3 className="mt-1 font-display text-[22px] text-[#172641]">
+            <h3 className="mt-1 font-display text-[22px] text-slate-900">
               📸 Real mijozlarimiz fikrlari (Pochta orqali)
             </h3>
           </div>
           <button
             type="button"
             onClick={() => setShowReviewModal(true)}
-            className="rounded-full border border-[#172641]/25 bg-[#faf8f3] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#172641] cursor-pointer hover:bg-[#172641] hover:text-[#f4efe5] transition"
+            className="rounded-full border border-[#172641]/25 bg-[#faf8f3] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-900 cursor-pointer hover:bg-[#172641] hover:text-[#f4efe5] transition"
           >
             + Fikr bildirish
           </button>
@@ -1893,13 +1899,13 @@ function ProductScreen({
             >
               <div>
                 <div className="flex items-center justify-between gap-1">
-                  <span className="font-bold text-[#172641]">{rev.name}</span>
+                  <span className="font-bold text-slate-900">{rev.name}</span>
                   <span className="text-[#a8742a]">★★★★★</span>
                 </div>
                 <div className="mt-0.5 text-[10px] font-semibold text-[#397252]">
                   ✓ {rev.city}
                 </div>
-                <p className="mt-2 text-[#172641]/85 leading-relaxed text-[11px]">
+                <p className="mt-2 text-slate-900/85 leading-relaxed text-[11px]">
                   «{lang === "ru" ? rev.text_ru || rev.text_uz : rev.text_uz}»
                 </p>
               </div>
@@ -1913,7 +1919,7 @@ function ProductScreen({
         {/* Review Modal */}
         {showReviewModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-sm rounded-2xl border border-border bg-[#faf8f3] p-5 shadow-2xl text-[#172641] space-y-3.5 rise-in">
+            <div className="w-full max-w-sm rounded-2xl border border-border bg-[#faf8f3] p-5 shadow-2xl text-slate-900 space-y-3.5 rise-in">
               <div className="flex items-center justify-between border-b border-[#172641]/10 pb-2.5">
                 <h3 className="font-display text-base font-bold">
                   ✍️ Xarid bo‘yicha fikr qoldirish
@@ -1956,29 +1962,29 @@ function ProductScreen({
                 className="space-y-3"
               >
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                     Ismingiz
                   </label>
                   <input
                     value={revName}
                     onChange={(e) => setRevName(e.target.value)}
                     placeholder="Sardor M."
-                    className="mt-1 h-9 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-[#172641] outline-none"
+                    className="mt-1 h-9 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-slate-900 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                     Viloyat / Shahar (Pochta)
                   </label>
                   <input
                     value={revCity}
                     onChange={(e) => setRevCity(e.target.value)}
                     placeholder="Samarqand / Toshkent..."
-                    className="mt-1 h-9 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-[#172641] outline-none"
+                    className="mt-1 h-9 w-full rounded-lg border border-[#172641]/20 bg-white px-3 text-xs text-slate-900 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-[#172641]/70">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-900/70">
                     Fikringiz (Mato sifati, o‘lcham, pochta yetib kelishi) *
                   </label>
                   <textarea
@@ -1987,7 +1993,7 @@ function ProductScreen({
                     value={revText}
                     onChange={(e) => setRevText(e.target.value)}
                     placeholder="Kiyim kutilganidek a'lo darajada o'tirdi..."
-                    className="mt-1 w-full rounded-lg border border-[#172641]/20 bg-white p-2.5 text-xs text-[#172641] outline-none resize-none"
+                    className="mt-1 w-full rounded-lg border border-[#172641]/20 bg-white p-2.5 text-xs text-slate-900 outline-none resize-none"
                   />
                 </div>
                 <button
@@ -2054,10 +2060,10 @@ function CartScreen({
             <path d="M16 10a4 4 0 0 1-8 0" />
           </svg>
         </div>
-        <h1 className="mt-5 font-display text-[26px] text-[#172641]">
+        <h1 className="mt-5 font-display text-[26px] text-slate-900">
           {t.emptyCart}
         </h1>
-        <p className="mt-2 text-[12px] text-[#172641]/60">
+        <p className="mt-2 text-[12px] text-slate-900/60">
           Kolleksiyadan o‘zingizga mosini tanlang.
         </p>
         <Link
@@ -2072,7 +2078,7 @@ function CartScreen({
 
   return (
     <div className="px-4 pt-5 max-w-3xl mx-auto rise-in">
-      <h1 className="font-display text-[30px] text-[#172641]">{t.cart}</h1>
+      <h1 className="font-display text-[30px] text-slate-900">{t.cart}</h1>
 
       <div className="mt-4 divide-y divide-[#172641]/12 border-y border-[#172641]/12">
         {cart.items.map((item) => (
@@ -2092,7 +2098,7 @@ function CartScreen({
               <div className="flex justify-between gap-2">
                 <Link
                   to={`/miniapp/product/${item.product_id}`}
-                  className="line-clamp-2 font-display text-[16px] font-semibold text-[#172641] no-underline"
+                  className="line-clamp-2 font-display text-[16px] font-semibold text-slate-900 no-underline"
                 >
                   {lang === "ru" ? item.name_ru : item.name_uz}
                 </Link>
@@ -2100,13 +2106,13 @@ function CartScreen({
                   type="button"
                   onClick={() => removeRow(item.variant_id)}
                   aria-label={t.remove}
-                  className="shrink-0 p-1 text-[#172641]/50 hover:text-[#a3463c] bg-transparent border-0 cursor-pointer text-xs"
+                  className="shrink-0 p-1 text-slate-900/50 hover:text-[#a3463c] bg-transparent border-0 cursor-pointer text-xs"
                 >
                   {t.remove}
                 </button>
               </div>
 
-              <div className="mt-1 text-[11px] text-[#172641]/60">
+              <div className="mt-1 text-[11px] text-slate-900/60">
                 {item.size} {item.color ? `· ${item.color}` : ""} ·{" "}
                 {item.sale_type === "stock" ? t.inStockBadge : t.preorderBadge}
               </div>
@@ -2116,7 +2122,7 @@ function CartScreen({
                   <button
                     type="button"
                     onClick={() => changeQty(item.variant_id, -1)}
-                    className="px-2.5 py-1 text-xs font-bold text-[#172641] bg-transparent border-0 cursor-pointer"
+                    className="px-2.5 py-1 text-xs font-bold text-slate-900 bg-transparent border-0 cursor-pointer"
                   >
                     −
                   </button>
@@ -2127,12 +2133,12 @@ function CartScreen({
                     type="button"
                     onClick={() => changeQty(item.variant_id, 1)}
                     disabled={item.qty >= item.max_qty}
-                    className="px-2.5 py-1 text-xs font-bold text-[#172641] bg-transparent border-0 cursor-pointer disabled:opacity-30"
+                    className="px-2.5 py-1 text-xs font-bold text-slate-900 bg-transparent border-0 cursor-pointer disabled:opacity-30"
                   >
                     +
                   </button>
                 </div>
-                <span className="text-[13px] font-bold text-[#172641]">
+                <span className="text-[13px] font-bold text-slate-900">
                   {formatPrice(item.price * item.qty)}
                 </span>
               </div>
@@ -2142,14 +2148,14 @@ function CartScreen({
       </div>
 
       <div className="mt-5 flex items-baseline justify-between">
-        <span className="text-[11px] font-bold uppercase tracking-[.16em] text-[#172641]/60">
+        <span className="text-[11px] font-bold uppercase tracking-[.16em] text-slate-900/60">
           {t.total}
         </span>
-        <span className="font-display text-[26px] font-medium text-[#172641]">
+        <span className="font-display text-[26px] font-medium text-slate-900">
           {formatPrice(cart.total)}
         </span>
       </div>
-      <p className="mt-1 text-[11px] text-[#172641]/55">
+      <p className="mt-1 text-[11px] text-slate-900/55">
         To‘lov va yetkazish tafsilotlari buyurtmadan so‘ng menejer bilan
         kelishiladi.
       </p>
@@ -2247,7 +2253,7 @@ function CheckoutScreen({
   };
 
   const fieldCls =
-    "mt-1 h-11 w-full border border-[#172641]/20 bg-[#fbf8f2] px-3 text-[13px] text-[#172641] outline-none focus:border-[#172641]";
+    "mt-1 h-11 w-full border border-[#172641]/20 bg-[#fbf8f2] px-3 text-[13px] text-slate-900 outline-none focus:border-[#172641]";
 
   return (
     <form
@@ -2258,7 +2264,7 @@ function CheckoutScreen({
         <div className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
           WITHMORE CHECKOUT
         </div>
-        <h1 className="mt-1 font-display text-[28px] text-[#172641]">
+        <h1 className="mt-1 font-display text-[28px] text-slate-900">
           {t.checkout}
         </h1>
       </div>
@@ -2267,7 +2273,7 @@ function CheckoutScreen({
         <div>
           <label
             htmlFor="co-name"
-            className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+            className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
           >
             {t.yourName} *
           </label>
@@ -2283,7 +2289,7 @@ function CheckoutScreen({
         <div>
           <label
             htmlFor="co-phone"
-            className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+            className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
           >
             {customer?.is_telegram ? t.phoneOptionalTg : `${t.phone} *`}
           </label>
@@ -2298,7 +2304,7 @@ function CheckoutScreen({
         </div>
 
         <div>
-          <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70 mb-1.5">
+          <span className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70 mb-1.5">
             {t.deliveryMethod}
           </span>
           <div className="grid grid-cols-2 gap-2">
@@ -2309,8 +2315,8 @@ function CheckoutScreen({
                 onClick={() => setDelivery(m)}
                 className={`border py-3 text-[12px] font-semibold transition cursor-pointer ${
                   delivery === m
-                    ? "border-[#172641] bg-[#172641] text-[#f4efe5]"
-                    : "border-[#172641]/20 bg-[#fbf8f2] text-[#172641]"
+                    ? "border-[#172641] bg-slate-900 text-white shadow-xs"
+                    : "border-[#172641]/20 bg-[#fbf8f2] text-slate-900"
                 }`}
               >
                 {m === "courier" ? t.courier : t.pickup}
@@ -2322,7 +2328,7 @@ function CheckoutScreen({
         <div>
           <label
             htmlFor="co-city"
-            className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+            className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
           >
             {t.city}
           </label>
@@ -2338,7 +2344,7 @@ function CheckoutScreen({
           <div>
             <label
               htmlFor="co-address"
-              className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+              className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
             >
               {t.address} *
             </label>
@@ -2355,7 +2361,7 @@ function CheckoutScreen({
         <div>
           <label
             htmlFor="co-comment"
-            className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+            className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
           >
             {t.comment}
           </label>
@@ -2373,7 +2379,7 @@ function CheckoutScreen({
           <div className="flex-1">
             <label
               htmlFor="co-promo"
-              className="block text-[10px] font-bold uppercase tracking-[.14em] text-[#172641]/70"
+              className="block text-[10px] font-bold uppercase tracking-[.14em] text-slate-900/70"
             >
               {t.promoCode}
             </label>
@@ -2388,7 +2394,7 @@ function CheckoutScreen({
           <button
             type="button"
             onClick={checkPromo}
-            className="h-11 border border-[#172641]/25 bg-[#fbf8f2] px-4 text-xs font-bold text-[#172641] cursor-pointer"
+            className="h-11 border border-[#172641]/25 bg-[#fbf8f2] px-4 text-xs font-bold text-slate-900 cursor-pointer"
           >
             {t.applyPromo}
           </button>
@@ -2396,7 +2402,7 @@ function CheckoutScreen({
       </div>
 
       {/* Delivery & Return Rules */}
-      <div className="border border-[#172641]/15 bg-[#fbf8f2] p-4 space-y-1.5 text-xs text-[#172641]/75">
+      <div className="border border-[#172641]/15 bg-[#fbf8f2] p-4 space-y-1.5 text-xs text-slate-900/75">
         <div className="text-[10px] font-bold uppercase tracking-[.18em] text-[#8a6c43]">
           {t.deliveryAndReturnTerms}
         </div>
@@ -2407,7 +2413,7 @@ function CheckoutScreen({
       {/* Summary & Submit */}
       <div className="border-t border-[#172641]/15 pt-4 space-y-2">
         <div className="flex justify-between text-xs">
-          <span className="text-[#172641]/60">{t.subtotal}</span>
+          <span className="text-slate-900/60">{t.subtotal}</span>
           <span className="font-semibold">{formatPrice(cart.total)}</span>
         </div>
         {discount > 0 && (
@@ -2424,7 +2430,7 @@ function CheckoutScreen({
             {formatPrice(finalTotal)}
           </span>
         </div>
-        <div className="flex justify-between text-xs text-[#172641]/60">
+        <div className="flex justify-between text-xs text-slate-900/60">
           <span>Oldindan to'lov ({advancePct}%)</span>
           <span>
             {formatPrice(Math.round((finalTotal * advancePct) / 100))}
@@ -2568,10 +2574,10 @@ function OrderResultScreen({
         <div className="mt-5 text-[10px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
           {t.orderCreatedTitle}
         </div>
-        <h1 className="mt-2 font-display text-[34px] text-[#172641]">
+        <h1 className="mt-2 font-display text-[34px] text-slate-900">
           {order.code}
         </h1>
-        <div className="mt-1 text-[16px] font-bold text-[#172641]">
+        <div className="mt-1 text-[16px] font-bold text-slate-900">
           {formatPrice(order.total)}
         </div>
         <div className="mt-2 flex justify-center">
@@ -2586,16 +2592,16 @@ function OrderResultScreen({
             <div className="text-[10px] font-bold uppercase tracking-[.18em] text-[#8a6c43]">
               {lang === "ru" ? "Отслеживание заказа" : "Buyurtma holati va Kargo"}
             </div>
-            <div className="font-display text-lg text-[#172641]">
+            <div className="font-display text-lg text-slate-900">
               {lang === "ru" ? "Маршрут: Китай → Узбекистан" : "Yo'nalish: Xitoy → O'zbekiston"}
             </div>
           </div>
           {order.tracking && (
             <div className="text-right">
-              <div className="text-[9px] font-bold uppercase tracking-wider text-[#172641]/60">
+              <div className="text-[9px] font-bold uppercase tracking-wider text-slate-900/60">
                 Trek-kod
               </div>
-              <div className="font-mono text-xs font-bold text-[#172641] bg-[#d6bd92]/35 px-2 py-0.5">
+              <div className="font-mono text-xs font-bold text-slate-900 bg-[#d6bd92]/35 px-2 py-0.5">
                 {order.tracking}
               </div>
             </div>
@@ -2620,7 +2626,7 @@ function OrderResultScreen({
                           ? "bg-[#397252] text-white"
                           : current
                           ? "bg-[#172641] text-[#d6bd92] ring-2 ring-[#d6bd92]"
-                          : "border border-[#172641]/20 bg-white text-[#172641]/40"
+                          : "border border-[#172641]/20 bg-white text-slate-900/40"
                       }`}
                     >
                       {done ? "✓" : idx + 1}
@@ -2637,15 +2643,15 @@ function OrderResultScreen({
                     <div
                       className={`text-xs font-bold ${
                         current
-                          ? "text-[#172641]"
+                          ? "text-slate-900"
                           : done
                           ? "text-[#397252]"
-                          : "text-[#172641]/45"
+                          : "text-slate-900/45"
                       }`}
                     >
                       {lang === "ru" ? st.ru : st.uz}
                     </div>
-                    <div className="text-[11px] text-[#172641]/60">
+                    <div className="text-[11px] text-slate-900/60">
                       {lang === "ru" ? st.desc_ru : st.desc_uz}
                     </div>
                   </div>
@@ -2675,7 +2681,7 @@ function OrderResultScreen({
                 isPaidOrLater
                   ? "bg-[#397252] text-white"
                   : order.receipt_photo
-                  ? "bg-[#d6bd92] text-[#172641]"
+                  ? "bg-[#c5a676] text-[#0F172A]"
                   : "bg-white/15 text-[#f4efe5]"
               }`}
             >
@@ -2707,7 +2713,7 @@ function OrderResultScreen({
                   navigator.clipboard?.writeText(cardNumber.replace(/\s+/g, ""));
                   toast(t.copied);
                 }}
-                className="bg-[#d6bd92] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#172641] border-0 cursor-pointer"
+                className="bg-[#d6bd92] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-900 border-0 cursor-pointer"
               >
                 {lang === "ru" ? "Копировать" : "Nusxalash"}
               </button>
@@ -2740,7 +2746,7 @@ function OrderResultScreen({
           )}
 
           {!isPaidOrLater && (
-            <label className="flex h-11 w-full items-center justify-center gap-2 bg-[#d6bd92] text-[11px] font-bold uppercase tracking-[.14em] text-[#172641] cursor-pointer">
+            <label className="flex h-11 w-full items-center justify-center gap-2 bg-[#d6bd92] text-[11px] font-bold uppercase tracking-[.14em] text-slate-900 cursor-pointer">
               <span>
                 {uploadingReceipt
                   ? lang === "ru"
@@ -2772,10 +2778,10 @@ function OrderResultScreen({
 
       {/* Ready Message Summary */}
       <div className="space-y-2.5">
-        <div className="text-[10px] font-bold uppercase tracking-[.16em] text-[#172641]/60">
+        <div className="text-[10px] font-bold uppercase tracking-[.16em] text-slate-900/60">
           {t.readyMessage}
         </div>
-        <pre className="max-h-56 overflow-auto whitespace-pre-wrap border border-[#172641]/15 bg-[#fbf8f2] p-4 text-left font-sans text-xs leading-5 text-[#172641]">
+        <pre className="max-h-56 overflow-auto whitespace-pre-wrap border border-[#172641]/15 bg-[#fbf8f2] p-4 text-left font-sans text-xs leading-5 text-slate-900">
           {order.summary}
         </pre>
         <button
@@ -2784,7 +2790,7 @@ function OrderResultScreen({
             navigator.clipboard?.writeText(order.summary);
             toast(t.copied);
           }}
-          className="h-11 w-full border border-[#172641]/25 bg-[#fbf8f2] text-[11px] font-bold uppercase tracking-[.12em] text-[#172641] cursor-pointer"
+          className="h-11 w-full border border-[#172641]/25 bg-[#fbf8f2] text-[11px] font-bold uppercase tracking-[.12em] text-slate-900 cursor-pointer"
         >
           {t.copyMessage}
         </button>
@@ -2792,7 +2798,7 @@ function OrderResultScreen({
 
       {/* Assigned Admin Selector */}
       <div className="space-y-3 border-t border-[#172641]/15 pt-5">
-        <div className="text-[10px] font-bold uppercase tracking-[.16em] text-[#172641]/60">
+        <div className="text-[10px] font-bold uppercase tracking-[.16em] text-slate-900/60">
           {t.assignedAdmin}
         </div>
         <div className="space-y-2">
@@ -2821,10 +2827,10 @@ function OrderResultScreen({
                     </div>
                   )}
                   <div>
-                    <div className="text-sm font-bold text-[#172641]">
+                    <div className="text-sm font-bold text-slate-900">
                       {a.full_name}
                     </div>
-                    <div className="text-xs text-[#172641]/60">
+                    <div className="text-xs text-slate-900/60">
                       @{a.username}
                     </div>
                   </div>
@@ -2832,8 +2838,8 @@ function OrderResultScreen({
                 <span
                   className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
                     isSelected
-                      ? "bg-[#172641] text-[#f4efe5]"
-                      : "border border-[#172641]/20 text-[#172641]"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "border border-[#172641]/20 text-slate-900"
                   }`}
                 >
                   {isSelected ? "Tanlangan" : "Tanlash"}
@@ -2929,10 +2935,10 @@ function OrdersScreen({ content }: { content: any }) {
           <div className="text-[9px] font-bold uppercase tracking-[.22em] text-[#8a6c43]">
             WITHMORE · TRACKING
           </div>
-          <h1 className="mt-1 font-display text-[30px] leading-tight text-[#172641]">
+          <h1 className="mt-1 font-display text-[30px] leading-tight text-slate-900">
             {t.orders}
           </h1>
-          <p className="mt-1 text-[12px] text-[#172641]/65">
+          <p className="mt-1 text-[12px] text-slate-900/65">
             {lang === "ru"
               ? "Статус оплаты, выкупа из Китая и карго-доставки в реальном времени."
               : "To‘lov holati, Xitoydan xarid va kargo yetkazib berish jarayonini kuzating."}
@@ -2941,7 +2947,7 @@ function OrdersScreen({ content }: { content: any }) {
         <button
           type="button"
           onClick={loadOrders}
-          className="rounded-full border border-[#172641]/20 bg-[#fbf8f2] px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-[#172641] cursor-pointer transition active:scale-95"
+          className="rounded-full border border-[#172641]/20 bg-[#fbf8f2] px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-900 cursor-pointer transition active:scale-95"
         >
           ↻ {lang === "ru" ? "Обновить" : "Yangilash"}
         </button>
@@ -2964,7 +2970,7 @@ function OrdersScreen({ content }: { content: any }) {
                 ? "Введите код заказа (напр. WM...)"
                 : "Buyurtma kodini kiriting (masalan: WM...)"
             }
-            className="h-11 flex-1 rounded-xl border border-[#172641]/20 bg-white px-3.5 font-mono text-xs font-bold uppercase text-[#172641] outline-none focus:border-[#172641]"
+            className="h-11 flex-1 rounded-xl border border-[#172641]/20 bg-white px-3.5 font-mono text-xs font-bold uppercase text-slate-900 outline-none focus:border-[#172641]"
           />
           <button
             type="submit"
@@ -2987,7 +2993,7 @@ function OrdersScreen({ content }: { content: any }) {
           <span className="font-display text-xs tracking-[.22em] text-[#d6bd92]">
             WITHMORE SARTORIAL CLUB
           </span>
-          <span className="rounded-full bg-[#d6bd92] px-2.5 py-0.5 text-[9px] font-extrabold uppercase text-[#172641]">
+          <span className="rounded-full bg-[#d6bd92] px-2.5 py-0.5 text-[9px] font-extrabold uppercase text-slate-900">
             {orders.length >= 5
               ? "👑 VIP Member"
               : orders.length >= 3
@@ -3029,7 +3035,7 @@ function OrdersScreen({ content }: { content: any }) {
         <SkeletonList count={3} />
       ) : orders.length === 0 ? (
         <div className="rounded-2xl border border-[#172641]/15 bg-[#fbf8f2] px-6 py-14 text-center space-y-4">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#172641]/10 text-[#172641]">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#172641]/10 text-slate-900">
             <svg
               width="24"
               height="24"
@@ -3044,10 +3050,10 @@ function OrdersScreen({ content }: { content: any }) {
             </svg>
           </div>
           <div>
-            <h2 className="font-display text-[22px] text-[#172641]">
+            <h2 className="font-display text-[22px] text-slate-900">
               {lang === "ru" ? "У вас пока нет заказов" : "Sizda hali buyurtmalar yo‘q"}
             </h2>
-            <p className="mt-1 text-xs text-[#172641]/60">
+            <p className="mt-1 text-xs text-slate-900/60">
               {lang === "ru"
                 ? "Выберите классическую одежду из нашего каталога или введите код заказа выше."
                 : "Katalogimizdan o‘zingizga mos kiyim tanlang yoki yuqorida buyurtma kodingizni kiriting."}
@@ -3073,7 +3079,7 @@ function OrdersScreen({ content }: { content: any }) {
                 key={o.code}
                 to={`/miniapp/order/${o.code}`}
                 state={{ order: o }}
-                className="block overflow-hidden rounded-2xl border border-[#172641]/15 bg-[#fbf8f2] text-[#172641] no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-[#172641]/40 hover:shadow-md"
+                className="block overflow-hidden rounded-2xl border border-[#172641]/15 bg-[#fbf8f2] text-slate-900 no-underline shadow-sm transition hover:-translate-y-0.5 hover:border-[#172641]/40 hover:shadow-md"
               >
                 {/* Card Top Header */}
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#172641]/10 bg-[#172641] px-4 py-3 text-[#f4efe5]">
@@ -3108,7 +3114,7 @@ function OrdersScreen({ content }: { content: any }) {
                         />
                       </div>
                       {o.tracking && (
-                        <div className="pt-1 text-[11px] font-semibold text-[#172641]">
+                        <div className="pt-1 text-[11px] font-semibold text-slate-900">
                           🚚 Trek-kod:{" "}
                           <span className="font-mono font-bold text-[#8a6c43]">
                             {o.tracking}
@@ -3125,14 +3131,14 @@ function OrdersScreen({ content }: { content: any }) {
                         key={idx}
                         className="flex items-center justify-between gap-2 text-xs"
                       >
-                        <span className="truncate font-semibold text-[#172641]">
+                        <span className="truncate font-semibold text-slate-900">
                           {it.name}{" "}
-                          <span className="font-normal text-[#172641]/65">
+                          <span className="font-normal text-slate-900/65">
                             ({it.size}
                             {it.color ? ` · ${it.color}` : ""}) × {it.qty}
                           </span>
                         </span>
-                        <span className="shrink-0 font-semibold text-[#172641]/80">
+                        <span className="shrink-0 font-semibold text-slate-900/80">
                           {formatPrice(it.price * it.qty)}
                         </span>
                       </div>
@@ -3142,10 +3148,10 @@ function OrdersScreen({ content }: { content: any }) {
                   {/* Price & Payment Status Footer */}
                   <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#172641]/10 pt-3">
                     <div>
-                      <div className="text-[10px] uppercase tracking-wider text-[#172641]/55">
+                      <div className="text-[10px] uppercase tracking-wider text-slate-900/55">
                         {lang === "ru" ? "Итоговая сумма" : "Jami buyurtma"}
                       </div>
-                      <div className="font-display text-[20px] font-semibold text-[#172641]">
+                      <div className="font-display text-[20px] font-semibold text-slate-900">
                         {formatPrice(o.total)}
                       </div>
                       {o.paid_amount > 0 ? (
@@ -3260,10 +3266,10 @@ function AboutScreen({
           }}
           className="h-16 w-16 rounded-full object-cover border border-[#172641]/20"
         />
-        <h1 className="mt-4 font-display text-[32px] text-[#172641]">
+        <h1 className="mt-4 font-display text-[32px] text-slate-900">
           {t.about}
         </h1>
-        <p className="mt-3 whitespace-pre-line text-[13px] leading-6 text-[#172641]/80">
+        <p className="mt-3 whitespace-pre-line text-[13px] leading-6 text-slate-900/80">
           {about}
         </p>
 
@@ -3290,7 +3296,7 @@ function AboutScreen({
       {/* Customer Orders */}
       {myOrders.length > 0 && (
         <section className="border-t border-[#172641]/15 pt-5 space-y-3">
-          <h2 className="font-display text-[22px] text-[#172641]">
+          <h2 className="font-display text-[22px] text-slate-900">
             {t.orders}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -3298,7 +3304,7 @@ function AboutScreen({
               <Link
                 key={o.code}
                 to={`/miniapp/order/${o.code}`}
-                className="flex items-center justify-between border border-[#172641]/15 bg-[#fbf8f2] p-3.5 text-[#172641] no-underline hover:border-[#172641]"
+                className="flex items-center justify-between border border-[#172641]/15 bg-[#fbf8f2] p-3.5 text-slate-900 no-underline hover:border-[#172641]"
               >
                 <div>
                   <div className="font-bold text-sm">{o.code}</div>
@@ -3316,7 +3322,7 @@ function AboutScreen({
       {/* Favorites */}
       {favProducts.length > 0 && (
         <section className="border-t border-[#172641]/15 pt-5 space-y-3">
-          <h2 className="font-display text-[22px] text-[#172641]">
+          <h2 className="font-display text-[22px] text-slate-900">
             {t.favorites}
           </h2>
           <div className="miniapp-product-grid">
@@ -3338,7 +3344,7 @@ function AboutScreen({
           <h2 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
             {t.deliveryRules}
           </h2>
-          <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-[#172641]/80">
+          <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-slate-900/80">
             {delivery}
           </p>
         </div>
@@ -3346,7 +3352,7 @@ function AboutScreen({
           <h2 className="text-[10px] font-bold uppercase tracking-[.2em] text-[#8a6c43]">
             {t.returnRules}
           </h2>
-          <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-[#172641]/80">
+          <p className="mt-2 whitespace-pre-line text-[13px] leading-6 text-slate-900/80">
             {returns}
           </p>
         </div>
@@ -3355,7 +3361,7 @@ function AboutScreen({
       {/* FAQ Accordion */}
       {faq.length > 0 && (
         <section className="border-t border-[#172641]/15 pt-5">
-          <h2 className="font-display text-[22px] text-[#172641]">
+          <h2 className="font-display text-[22px] text-slate-900">
             {t.faqTitle}
           </h2>
           <div className="mt-3 divide-y divide-[#172641]/12 border-y border-[#172641]/12">
@@ -3366,7 +3372,7 @@ function AboutScreen({
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : i)}
-                    className="flex w-full items-center justify-between gap-3 py-4 text-left text-[13px] font-semibold text-[#172641] bg-transparent border-0 cursor-pointer"
+                    className="flex w-full items-center justify-between gap-3 py-4 text-left text-[13px] font-semibold text-slate-900 bg-transparent border-0 cursor-pointer"
                   >
                     <span>
                       {lang === "ru" ? item.q_ru || item.q_uz : item.q_uz}
@@ -3374,7 +3380,7 @@ function AboutScreen({
                     <span className="text-sm">{isOpen ? "−" : "+"}</span>
                   </button>
                   {isOpen && (
-                    <p className="pb-4 text-[12.5px] leading-6 text-[#172641]/75">
+                    <p className="pb-4 text-[12.5px] leading-6 text-slate-900/75">
                       {lang === "ru" ? item.a_ru || item.a_uz : item.a_uz}
                     </p>
                   )}
