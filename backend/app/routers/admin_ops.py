@@ -132,10 +132,44 @@ def finance(days: int = 30, admin: AdminAccount = Depends(stats_perm), db: Sessi
     profit = revenue - cost_goods - cost_cargo - post_total
     top = sorted(({**v, "profit": v["revenue"] - v["cost"]} for v in per_product.values()),
                  key=lambda r: r["profit"], reverse=True)[:10]
+    # Order-by-Order Unit Economics Breakdown
+    order_details = []
+    for o in orders[:50]:  # Top 50 recent orders
+        o_cogs = 0
+        o_cargo = 0
+        items_desc = []
+        for it in o.items:
+            p = db.get(Product, it.product_id) if it.product_id else None
+            g = int((p.price_yuan if p else 0) * rate) * it.qty
+            c = int((p.weight_kg if p else 0) * ship) * it.qty
+            o_cogs += g
+            o_cargo += c
+            items_desc.append(f"{it.name} ({it.qty} dona)")
+
+        o_delivery = post_fee
+        o_profit = o.total - o_cogs - o_cargo - o_delivery
+        o_margin = round(o_profit * 100 / o.total, 1) if o.total > 0 else 0
+
+        order_details.append({
+            "id": o.id,
+            "code": o.code,
+            "date": o.created_at.strftime("%Y-%m-%d %H:%M"),
+            "customer_name": o.name or "Mijoz",
+            "items_summary": ", ".join(items_desc),
+            "revenue": o.total,
+            "cogs": o_cogs,
+            "cargo": o_cargo,
+            "delivery": o_delivery,
+            "profit": o_profit,
+            "margin_pct": o_margin,
+            "status": o.status,
+        })
+
     return {"days": days, "orders": len(orders), "revenue": revenue, "discounts": discounts, "paid": paid,
             "cost_goods": cost_goods, "cost_cargo": cost_cargo, "post_fee": post_fee, "post_total": post_total,
             "profit": profit, "margin_pct": round(profit * 100 / revenue, 1) if revenue else 0,
-            "debt": max(0, revenue - paid), "yuan_rate": rate, "shipping_per_kg": ship, "top": top}
+            "debt": max(0, revenue - paid), "yuan_rate": rate, "shipping_per_kg": ship, "top": top,
+            "order_details": order_details}
 
 
 # ---------------- postal label (nakladnoy) ----------------
@@ -191,3 +225,25 @@ table{{width:100%;border-collapse:collapse;font-size:13px}} td,th{{border-bottom
 {f"<div style='margin-top:8px;font-size:12px'><span class='lbl'>Izoh:</span> {e(o.comment)}</div>" if o.comment else ""}
 </div></body></html>"""
     return HTMLResponse(page)
+
+
+# ---------------- Unit Economics Settings ----------------
+class FinanceSettingsPayload(BaseModel):
+    cny_rate: int | None = None
+    shipping_per_kg: int | None = None
+    post_fee: int | None = None
+
+
+@router.post("/finance/settings")
+def update_finance_settings(
+    payload: FinanceSettingsPayload,
+    admin: AdminAccount = Depends(stats_perm),
+    db: Session = Depends(get_db),
+):
+    if payload.cny_rate is not None:
+        set_setting(db, "cny_rate", str(payload.cny_rate))
+    if payload.shipping_per_kg is not None:
+        set_setting(db, "shipping_per_kg", str(payload.shipping_per_kg))
+    if payload.post_fee is not None:
+        set_setting(db, "post_fee", str(payload.post_fee))
+    return {"status": "ok", "message": "Moliya va unit-economics koeffitsiyentlari yangilandi"}

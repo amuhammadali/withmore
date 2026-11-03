@@ -292,7 +292,12 @@ export function FinanceProfitPage() {
         title="💰 Sof Foyda va Xarajatlar"
         detail={`Oxirgi ${days} kundagi tovar tannarxi, kargo va pochta xarajatlari chegirilgan sof foyda tahlili.`}
         action={
-          <div className="flex rounded-xl border border-border bg-card p-1">
+          <div className="flex items-center gap-2">
+            <div className="rounded-xl border border-border bg-[#faf8f3] px-3 py-1.5 text-xs text-[#172641] flex items-center gap-3">
+              <span>🇨🇳 1¥ = <b>{data.yuan_rate} so'm</b></span>
+              <span>✈️ 1kg = <b>{formatPrice(data.shipping_per_kg)}</b></span>
+            </div>
+            <div className="flex rounded-xl border border-border bg-card p-1">
             {[7, 30, 90, 365].map((d) => (
               <button
                 key={d}
@@ -308,6 +313,7 @@ export function FinanceProfitPage() {
               </button>
             ))}
           </div>
+        </div>
         }
       />
 
@@ -404,6 +410,81 @@ export function FinanceProfitPage() {
           </p>
         </div>
       </div>
+
+            {/* Order-by-Order Real Net Profit (Unit Economics Breakdown) */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="border-b border-border bg-[#faf8f3] px-5 py-3 flex items-center justify-between">
+          <div>
+            <h2 className="text-[13px] font-extrabold text-[#172641]">
+              🧾 Har bir buyurtma bo‘yicha sof foyda tahlili (Unit Economics)
+            </h2>
+            <div className="text-[11px] text-muted-foreground mt-0.5">
+              Har bir buyurtmaning tushumi, Xitoydan tannarxi (COGS), kargo va yetkazib berishdan keyingi aniq sof foydasi.
+            </div>
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-[#f6f2e9] text-[9px] font-bold uppercase tracking-[.12em] text-muted-foreground">
+              <tr>
+                <th className="px-5 py-3">Buyurtma & Mijoz</th>
+                <th className="px-4 py-3">Mahsulotlar</th>
+                <th className="px-4 py-3 text-right">Sotuv Narxi</th>
+                <th className="px-4 py-3 text-right">Tannarx (Xitoy)</th>
+                <th className="px-4 py-3 text-right">Kargo & Pochta</th>
+                <th className="px-5 py-3 text-right">Haqiqiy Sof Foyda</th>
+                <th className="px-4 py-3 text-center">Marja</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/70">
+              {(data.order_details || []).map((ord: any) => {
+                const isPositive = ord.profit > 0;
+                return (
+                  <tr key={ord.id} className="hover:bg-[#faf8f3]/60 transition">
+                    <td className="px-5 py-3">
+                      <div className="font-bold text-[#172641] font-mono">
+                        {ord.code}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {ord.customer_name} · {ord.date}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[11px] text-slate-700 max-w-[200px] truncate">
+                      {ord.items_summary}
+                    </td>
+                    <td className="px-4 py-3 text-right font-medium">
+                      {formatPrice(ord.revenue)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">
+                      {formatPrice(ord.cogs)}
+                    </td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">
+                      {formatPrice(ord.cargo + ord.delivery)}
+                    </td>
+                    <td className="px-5 py-3 text-right font-display text-[13px] font-bold">
+                      <span
+                        className={`inline-block px-2.5 py-0.5 rounded-full ${
+                          isPositive
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {isPositive ? "+" : ""}{formatPrice(ord.profit)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="font-extrabold text-[11px] text-[#aa8a5e]">
+                        {ord.margin_pct}%
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
 
       {/* Top Most Profitable Products Table */}
       <div className="overflow-hidden rounded-2xl border border-border bg-card">

@@ -8,7 +8,7 @@ import { PageHeader } from "./AdminPages";
 export function AdminCrmPage() {
   const { lang } = useLang();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<"pipeline" | "tasks">("pipeline");
+  const [activeTab, setActiveTab] = useState<"pipeline" | "tasks" | "abandoned">("pipeline");
 
   // Pipeline state
   const [columns, setColumns] = useState<any[]>([]);
@@ -72,6 +72,45 @@ export function AdminCrmPage() {
     }
   };
 
+  // Abandoned Carts State
+  const [abandonedData, setAbandonedData] = useState<any>(null);
+  const [loadingAbandoned, setLoadingAbandoned] = useState(false);
+  const [selectedCart, setSelectedCart] = useState<any>(null);
+  const [recoverDiscount, setRecoverDiscount] = useState<number>(5);
+  const [recoverCustomMsg, setRecoverCustomMsg] = useState("");
+  const [recovering, setRecovering] = useState(false);
+
+  const loadAbandonedCarts = () => {
+    setLoadingAbandoned(true);
+    adminFetch("/api/admin/crm/abandoned-carts")
+      .then(setAbandonedData)
+      .catch((e) => toast(e.message, "error"))
+      .finally(() => setLoadingAbandoned(false));
+  };
+
+  const handleSendRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCart) return;
+    setRecovering(true);
+    try {
+      const res = await adminFetch(`/api/admin/crm/abandoned-carts/${selectedCart.session_id}/recover`, {
+        method: "POST",
+        body: JSON.stringify({
+          discount_percent: recoverDiscount,
+          message: recoverCustomMsg.trim() || undefined,
+        }),
+      });
+      toast(res.message || "Telegramdan eslatma yuborildi", "success");
+      setSelectedCart(null);
+      setRecoverCustomMsg("");
+      loadAbandonedCarts();
+    } catch (e: any) {
+      toast(e.message, "error");
+    } finally {
+      setRecovering(false);
+    }
+  };
+
   // Tasks state
   const [tasks, setTasks] = useState<any[]>([]);
   const [tasksFilter, setTasksFilter] = useState<"pending" | "done">("pending");
@@ -111,8 +150,10 @@ export function AdminCrmPage() {
   useEffect(() => {
     if (activeTab === "pipeline") {
       loadPipeline();
-    } else {
+    } else if (activeTab === "tasks") {
       loadTasks();
+    } else if (activeTab === "abandoned") {
+      loadAbandonedCarts();
     }
   }, [activeTab, tasksFilter]);
 
@@ -545,6 +586,277 @@ export function AdminCrmPage() {
       )}
 
       
+      
+      {/* ---------------- 2.8 ABANDONED CARTS & LIVE RADAR VIEW ---------------- */}
+      {activeTab === "abandoned" && (
+        <div className="space-y-6">
+          {/* Top KPI Summary Banner */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="rounded-2xl border border-border bg-[#faf8f3] p-4 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                Tashlab ketilgan savatlar
+              </span>
+              <div className="mt-1 text-2xl font-display font-medium text-[#172641]">
+                {abandonedData?.summary?.total_abandoned_count || 0} ta
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Kiyim tanlab, buyurtmani yakunlamagan mijozlar
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-border bg-[#faf8f3] p-4 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#aa8a5e] block">
+                Savatlardagi jami summa
+              </span>
+              <div className="mt-1 text-2xl font-display font-medium text-[#aa8a5e]">
+                {formatPrice(abandonedData?.summary?.total_abandoned_value || 0)}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Qaytarib olish mumkin bo'lgan sotuv hajmi
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-[#172641]/20 bg-[#172641] text-[#f5f1e8] p-4 shadow-sm">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#d6bd92] block">
+                Tezkor Qaytarish (1-klikda)
+              </span>
+              <div className="mt-1 text-sm font-semibold text-[#f5f1e8]">
+                Telegram orqali maxsus promo
+              </div>
+              <p className="text-[11px] text-[#d6bd92]/80 mt-0.5">
+                Mijoz botiga to'g'ridan-to'g'ri chegirma yuboriladi
+              </p>
+            </div>
+          </div>
+
+          {/* List of Abandoned Carts */}
+          {loadingAbandoned ? (
+            <SkeletonList count={3} />
+          ) : !abandonedData || abandonedData.abandoned_carts.length === 0 ? (
+            <EmptyState
+              text="Ayni paytda tashlab ketilgan faol savatlar yo'q. Barcha mijozlar buyurtmani muvaffaqiyatli yakunlagan!"
+            />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {abandonedData.abandoned_carts.map((cart: any) => (
+                <div
+                  key={cart.session_id}
+                  className="rounded-2xl border border-border bg-white p-5 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-3">
+                    {/* Header: Customer and Timestamp */}
+                    <div className="flex items-start justify-between gap-2 border-b border-border/70 pb-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-sm text-[#172641]">
+                            👤 {cart.customer_name}
+                          </span>
+                          {cart.customer_id && (
+                            <button
+                              type="button"
+                              onClick={() => openDossier(cart.customer_id)}
+                              className="text-[10px] font-bold text-[#aa8a5e] hover:underline cursor-pointer"
+                            >
+                              Dosye →
+                            </button>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                          {cart.customer_phone && (
+                            <a
+                              href={`tel:${cart.customer_phone}`}
+                              className="font-medium text-[#172641] hover:underline"
+                            >
+                              📞 {cart.customer_phone}
+                            </a>
+                          )}
+                          {cart.tg_username && (
+                            <a
+                              href={`https://t.me/${cart.tg_username}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              @{cart.tg_username}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[10px] font-extrabold text-amber-800">
+                          {cart.last_action}
+                        </span>
+                        <div className="text-[10px] text-muted-foreground mt-1">
+                          {cart.last_seen ? cart.last_seen.slice(0, 16).replace("T", " ") : ""}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Products in Cart */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Savatdagi mahsulotlar ({cart.items_count} dona):
+                      </span>
+                      <div className="space-y-1.5">
+                        {cart.items.map((item: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-[#faf8f3] p-2 text-xs"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt=""
+                                  className="h-10 w-10 rounded-lg object-cover border border-border/60 shrink-0"
+                                />
+                              ) : (
+                                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-xs shrink-0">
+                                  👔
+                                </div>
+                              )}
+                              <div className="truncate">
+                                <div className="font-bold text-foreground truncate">
+                                  {item.title}
+                                </div>
+                                <div className="text-[11px] text-muted-foreground">
+                                  {item.size ? `O'lcham: ${item.size}` : ""} {item.color ? `· ${item.color}` : ""} · {item.qty} dona
+                                </div>
+                              </div>
+                            </div>
+                            <div className="font-bold text-[#172641] shrink-0 text-right">
+                              {formatPrice(item.total)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer: Total and Action */}
+                  <div className="border-t border-border pt-3 flex items-center justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">
+                        Savat qiymati:
+                      </span>
+                      <span className="text-base font-extrabold text-[#aa8a5e]">
+                        {formatPrice(cart.cart_total)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {cart.recovery_sent && (
+                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-xl flex items-center gap-1">
+                          ✓ Eslatma yuborilgan
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCart(cart);
+                          setRecoverCustomMsg(
+                            `Salom, ${cart.customer_name}! 👔\n\nWithmore savatingizda siz tanlagan nafis kiyimlar kutmoqda. Buyurtmani yakunlash uchun maxsus 5% chegirma promokodini taqdim etamiz: WITHMORE5`
+                          );
+                        }}
+                        className="rounded-xl border border-[#172641] bg-[#172641] hover:bg-[#23385e] text-[#f5f1e8] px-3.5 py-2 text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span>📲</span>
+                        <span>Chegirma bilan qaytarish</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Recovery Modal */}
+          {selectedCart && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+              <div className="w-full max-w-md rounded-2xl border border-border bg-[#faf8f3] p-6 shadow-2xl text-slate-900 space-y-4 rise-in">
+                <div className="flex items-center justify-between border-b border-[#172641]/10 pb-3">
+                  <div>
+                    <span className="text-[9px] font-bold uppercase tracking-[.2em] text-[#aa8a5e]">
+                      TELEGRAM AVTOMATIK QAYTARISH
+                    </span>
+                    <h3 className="font-display text-lg font-bold text-[#172641]">
+                      Mijozga chegirma va eslatma yuborish
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCart(null)}
+                    className="rounded-lg p-1 text-slate-500 hover:text-slate-900 cursor-pointer"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="rounded-xl border border-border bg-white p-3 text-xs space-y-1">
+                  <div className="font-bold text-foreground">
+                    👤 Qabul qiluvchi: {selectedCart.customer_name}
+                  </div>
+                  <div className="text-muted-foreground">
+                    Savat qiymati: <b>{formatPrice(selectedCart.cart_total)}</b> ({selectedCart.items_count} ta mahsulot)
+                  </div>
+                </div>
+
+                <form onSubmit={handleSendRecovery} className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Chegirma foizi (Promokod)
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[5, 10, 15].map((pct) => (
+                        <button
+                          key={pct}
+                          type="button"
+                          onClick={() => {
+                            setRecoverDiscount(pct);
+                            setRecoverCustomMsg(
+                              `Salom, ${selectedCart.customer_name}! 👔\n\nWithmore savatingizda siz tanlagan nafis kiyimlar kutmoqda. Buyurtmani yakunlash uchun maxsus ${pct}% chegirma promokodini taqdim etamiz: WITHMORE${pct}`
+                            );
+                          }}
+                          className={`rounded-xl py-2 text-xs font-bold transition cursor-pointer border ${
+                            recoverDiscount === pct
+                              ? "bg-[#172641] text-[#f5f1e8] border-[#172641]"
+                              : "bg-white text-slate-700 border-border hover:bg-slate-50"
+                          }`}
+                        >
+                          -{pct}% chegirma
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                      Telegram xabar matni
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={recoverCustomMsg}
+                      onChange={(e) => setRecoverCustomMsg(e.target.value)}
+                      className="w-full rounded-xl border border-[#172641]/20 bg-white p-3 text-xs text-slate-900 font-medium"
+                      placeholder="Xabar matnini kiriting..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={recovering}
+                    className="w-full rounded-xl bg-[#172641] py-3 text-xs font-bold uppercase tracking-wider text-[#faf7f2] shadow-md hover:bg-[#23385e] transition cursor-pointer"
+                  >
+                    {recovering ? "Yuborilmoqda..." : "🚀 Telegram orqali yuborish"}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ---------------- 3. CUSTOMER 360° SARTORIAL DOSSIER MODAL ---------------- */}
       {dossierCid && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-[3px] overflow-y-auto">

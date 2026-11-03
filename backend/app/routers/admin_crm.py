@@ -458,3 +458,164 @@ def notify_customer_fitting(fid: int, admin: AdminAccount = Depends(orders_perm)
     db.commit()
     audit(db, admin, "notify_fitting", "fitting", str(apt.id), f"Sent to {cust.tg_id}")
     return {"success": True, "message": "Mijozga Telegram orqali eslatma yuborildi!"}
+
+
+# ---------------- 4. ABANDONED CARTS & LIVE RADAR ----------------
+@router.get("/abandoned-carts")
+def get_abandoned_carts(
+    admin: AdminAccount = Depends(customers_perm),
+    db: Session = Depends(get_db),
+):
+    """
+    Finds customer sessions that have active items in their cart,
+    sorted by most recently active, excluding customers who already ordered recently.
+    """
+    sessions = (
+        db.query(ShopSession)
+        .filter(ShopSession.cart != None)
+        .order_by(ShopSession.last_seen.desc())
+        .limit(100)
+        .all()
+    )
+
+    result = []
+    total_abandoned_val = 0
+
+    for s in sessions:
+        cart = s.cart or []
+        if not cart or not isinstance(cart, list) or len(cart) == 0:
+            continue
+
+        cust = db.get(Customer, s.customer_id) if s.customer_id else None
+        if not cust:
+            continue
+
+        # Check if customer placed an order after or near this session
+        recent_order = (
+            db.query(Order)
+            .filter(Order.customer_id == cust.id, Order.created_at >= s.created_at)
+            .first()
+        )
+        if recent_order:
+            continue  # They completed an order
+
+        # Hydrate items
+        hydrated_items = []
+        cart_total = 0
+        for item in cart:
+            var_id = item.get("variant_id") or item.get("id")
+            qty = int(item.get("qty", 1))
+            var = db.get(ProductVariant, var_id) if var_id else None
+            prod = db.get(Product, var.product_id) if var and var.product_id else None
+            if not prod and item.get("product_id"):
+                prod = db.get(Product, item.get("product_id"))
+
+            if prod:
+                price = prod.manual_price or prod.price_uzs or 0
+                item_sum = price * qty
+                cart_total += item_sum
+                first_img = prod.images[0].path if prod.images else None
+                hydrated_items.append({
+                    "product_id": prod.id,
+                    "title": prod.name_uz or prod.name_ru or "Mahsulot",
+                    "price": price,
+                    "qty": qty,
+                    "size": var.size if var else "",
+                    "color": var.color if var else "",
+                    "image": first_img,
+                    "total": item_sum,
+                })
+
+        if not hydrated_items:
+            continue
+
+        total_abandoned_val += cart_total
+
+        # Find customer's latest store event
+        last_event = (
+            db.query(StoreEvent)
+            .filter(StoreEvent.customer_id == cust.id)
+            .order_by(StoreEvent.created_at.desc())
+            .first()
+        )
+        last_action_text = "Savatga kiyim qo'shdi"
+        if last_event:
+            if last_event.type == "checkout_click":
+                last_action_text = "Rasmiylashtirish tugmasini bosdi"
+            elif last_event.type == "add_to_cart":
+                last_action_text = "Savatga kiyim qo'shdi"
+            elif last_event.type == "product_view":
+                last_action_text = "Mahsulot sahifasini ko'rdi"
+
+        # Check if reminder was already sent
+        recovery_flag = get_setting(db, f"crm:abandoned_recovered:{s.id}")
+
+        result.append({
+            "session_id": s.id,
+            "customer_id": cust.id,
+            "customer_name": f"{cust.first_name or ''} {cust.last_name or ''}".strip() or "Noma'lum mijoz",
+            "customer_phone": cust.phone or "",
+            "tg_username": cust.username or "",
+            "tg_user_id": cust.tg_user_id,
+            "items": hydrated_items,
+            "items_count": len(hydrated_items),
+            "cart_total": cart_total,
+            "last_seen": s.last_seen.isoformat() if s.last_seen else s.created_at.isoformat(),
+            "last_action": last_action_text,
+            "recovery_sent": bool(recovery_flag),
+        })
+
+    return {
+        "summary": {
+            "total_abandoned_count": len(result),
+            "total_abandoned_value": total_abandoned_val,
+        },
+        "abandoned_carts": result,
+    }
+
+
+class RecoverCartRequest(BaseModel):
+    message: str | None = None
+    discount_code: str | None = None
+    discount_percent: int | None = 5
+
+
+@router.post("/abandoned-carts/{sid}/recover")
+def recover_abandoned_cart(
+    sid: int,
+    payload: RecoverCartRequest = RecoverCartRequest(),
+    admin: AdminAccount = Depends(customers_perm),
+    db: Session = Depends(get_db),
+):
+    """
+    Sends an automated, elegant recovery message directly to the customer's Telegram chat.
+    """
+    session = db.get(ShopSession, sid)
+    if not session or not session.customer_id:
+        raise HTTPException(404, "Sessiya yoki mijoz topilmadi")
+
+    cust = db.get(Customer, session.customer_id)
+    if not cust or not cust.tg_user_id:
+        raise HTTPException(400, "Mijozning Telegram ID raqami mavjud emas")
+
+    first_name = cust.first_name or "Hurmatli mijoz"
+    bot_username = (get_setting(db, "contact_username") or "Withmoreuz_bot").replace("@", "")
+
+    if payload.message and payload.message.strip():
+        text = payload.message.strip()
+    else:
+        promo = payload.discount_code or f"WITHMORE{payload.discount_percent or 5}"
+        text = (
+            f"Salom, {first_name}! 👔\n\n"
+            f"Withmore savatingizda siz tanlagan nafis kiyimlar sizni kutmoqda.\n"
+            f"Bugun buyurtmangizni yakunlash uchun maxsus chegirma promokodini taqdim etamiz: <b>{promo}</b> (-{payload.discount_percent or 5}%)\n\n"
+            f"🛒 Savatni ko'rish va rasmiylashtirish:\nhttps://t.me/{bot_username}/shop"
+        )
+
+    enqueue(db, cust.tg_user_id, text)
+    set_setting(db, f"crm:abandoned_recovered:{sid}", "1")
+
+    return {
+        "status": "ok",
+        "message": f"Telegram orqali {first_name} ga maxsus chegirma va eslatma yuborildi!",
+    }
