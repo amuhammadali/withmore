@@ -10,6 +10,7 @@ import {
   CustomersPage,
   DashboardPage,
   GrowthPage,
+  BroadcastPage,
   MarketingPage,
   OrderDetailPage,
   OrdersPage,
@@ -127,10 +128,10 @@ const NAV_DEFS: NavItemDef[] = [
   },
   {
     to: "/admin/marketing",
-    labelUz: "Marketing",
-    labelRu: "Маркетинг",
-    subUz: "Manbalar",
-    subRu: "Источники",
+    labelUz: "📈 Reklama & UTM",
+    labelRu: "📈 Реклама и UTM",
+    subUz: "Trafik tahlili",
+    subRu: "Анализ источников",
     perm: "statistics",
     icon: "M18 20V10M12 20V4M6 20v-6",
   },
@@ -631,7 +632,7 @@ export function AdminRoot() {
             />
             <Route
               path="broadcast"
-              element={<MarketingPage />}
+              element={<BroadcastPage />}
             />
             <Route
               path="marketing"

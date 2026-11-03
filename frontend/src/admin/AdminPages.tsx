@@ -11,6 +11,7 @@ import {
 } from "../ui";
 export {
   AuditPage,
+  BroadcastPage,
   ContentPage,
   CustomersPage,
   GrowthPage,
