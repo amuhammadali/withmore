@@ -43,7 +43,22 @@ async def default_sender(chat_id: int, text: str, photo: str, button_text: str, 
             InlineKeyboardButton(text="❌ Rad etish", callback_data=f"pay_no:{oid}"),
         ]])
     elif button_text and _can_button(button_url):
-        markup = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text=button_text, url=button_url)]])
+        from aiogram.types import WebAppInfo
+        app_url = get_settings().APP_URL.rstrip("/")
+        clean_url = button_url.strip()
+        if "t.me" in clean_url and ("/shop" in clean_url or "/app" in clean_url):
+            clean_url = f"{app_url}/miniapp"
+        elif clean_url.startswith(app_url) or "withmore.uz/miniapp" in clean_url:
+            clean_url = clean_url if clean_url.startswith("http") else f"{app_url}/miniapp"
+
+        if clean_url.startswith("https://") and ("miniapp" in clean_url or "withmore.uz" in clean_url):
+            markup = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text=button_text, web_app=WebAppInfo(url=clean_url))
+            ]])
+        else:
+            markup = InlineKeyboardMarkup(inline_keyboard=[[
+                InlineKeyboardButton(text=button_text, url=button_url)
+            ]])
     if photo:
         path = Path(get_settings().UPLOAD_DIR) / photo
         if len(text) <= 1000:

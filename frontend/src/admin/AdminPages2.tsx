@@ -2716,7 +2716,7 @@ export function BroadcastPage() {
   const [campText, setCampText] = useState("");
   const [campImage, setCampImage] = useState("");
   const [campBtnText, setCampBtnText] = useState("Kolleksiyani ko'rish 👔");
-  const [campBtnUrl, setCampBtnUrl] = useState("https://t.me/Withmoreuz_bot/shop");
+  const [campBtnUrl, setCampBtnUrl] = useState("https://withmore.uz/miniapp");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 
@@ -2872,7 +2872,7 @@ export function BroadcastPage() {
                 type="url"
                 value={campBtnUrl}
                 onChange={(e) => setCampBtnUrl(e.target.value)}
-                placeholder="https://t.me/Withmoreuz_bot/shop"
+                placeholder="https://withmore.uz/miniapp"
                 className="wm-input w-full text-xs"
               />
             </div>
@@ -2999,7 +2999,7 @@ export function MarketingPage() {
   const [campText, setCampText] = useState("");
   const [campImage, setCampImage] = useState("");
   const [campBtnText, setCampBtnText] = useState("Kolleksiyani ko'rish 👔");
-  const [campBtnUrl, setCampBtnUrl] = useState("https://t.me/Withmoreuz_bot/shop");
+  const [campBtnUrl, setCampBtnUrl] = useState("https://withmore.uz/miniapp");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 

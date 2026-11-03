@@ -54,3 +54,4 @@ if 'enqueue(db, cust.tg_user_id, text)' in crm_text:
     print("Fixed enqueue in admin_crm.py!")
 else:
     print("crm_text did not contain target!")
+
