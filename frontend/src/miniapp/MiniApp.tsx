@@ -595,14 +595,7 @@ function NavTab({
 
 // ---------------- REPLIT EDITORIAL PRODUCT CARD ----------------
 function getCategoryIcon(name: string): string {
-  const n = (name || "").toLowerCase();
-  if (n.includes("kostyum") || n.includes("smoking") || n.includes("костюм") || n.includes("пиджак")) return "👔";
-  if (n.includes("ko'ylak") || n.includes("koylak") || n.includes("rubashka") || n.includes("рубашк")) return "👔";
-  if (n.includes("poyabzal") || n.includes("tufli") || n.includes("oyoq") || n.includes("обув") || n.includes("туфли") || n.includes("krossovk")) return "👞";
-  if (n.includes("shim") || n.includes("bryuk") || n.includes("брюк") || n.includes("джинс")) return "👖";
-  if (n.includes("kurtka") || n.includes("palto") || n.includes("nimcha") || n.includes("куртк") || n.includes("пальто")) return "🧥";
-  if (n.includes("aksessuar") || n.includes("galstuk") || n.includes("kamar") || n.includes("аксессуар")) return "🎒";
-  return "✨";
+  return "";
 }
 
 function ProductCard({
@@ -1091,36 +1084,33 @@ function CatalogScreen({
         </div>
       )}
 
-      {/* Category Pill Strip (Luxury Rounded Interactive Badges) */}
+      {/* Category Pill Strip (Pure Typography, No Icons) */}
       <div className="no-scrollbar -mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 pb-2">
         <button
           type="button"
           onClick={() => setSearchParams({})}
-          className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
+          className={`shrink-0 inline-flex items-center rounded-2xl px-4 py-2 text-[11.5px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
             !selectedCat
-              ? "bg-slate-900 text-white shadow-sm ring-1 ring-slate-900 scale-[1.02]"
-              : "border border-slate-200/90 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
+              ? "bg-[#172641] text-white shadow-sm ring-1 ring-[#172641] scale-[1.02]"
+              : "border border-slate-200/90 bg-white text-[#172641] shadow-xs hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
           }`}
         >
-          <span className="text-sm drop-shadow-sm">✨</span>
           <span>{t.allCategories}</span>
         </button>
         {categories.map((c) => {
           const active = selectedCat === c.id;
           const label = lang === "ru" ? c.name_ru || c.name_uz : c.name_uz;
-          const icon = getCategoryIcon(label);
           return (
             <button
               key={c.id}
               type="button"
               onClick={() => setSearchParams({ category: String(c.id) })}
-              className={`shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-[11px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
+              className={`shrink-0 inline-flex items-center rounded-2xl px-4 py-2 text-[11.5px] font-bold tracking-wide transition-all duration-200 cursor-pointer ${
                 active
-                  ? "bg-slate-900 text-white shadow-sm ring-1 ring-slate-900 scale-[1.02]"
-                  : "border border-slate-200/90 bg-white text-slate-800 shadow-xs hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
+                  ? "bg-[#172641] text-white shadow-sm ring-1 ring-[#172641] scale-[1.02]"
+                  : "border border-slate-200/90 bg-white text-[#172641] shadow-xs hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
               }`}
             >
-              <span className="text-sm transition-transform duration-200 group-hover:scale-110">{icon}</span>
               <span>{label}</span>
             </button>
           );

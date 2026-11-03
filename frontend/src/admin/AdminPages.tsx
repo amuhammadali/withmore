@@ -641,15 +641,7 @@ function MetricCard({
 }
 
 export function getCategoryIcon(name: string = ""): string {
-  const n = (name || "").toLowerCase();
-  if (n.includes("kostyum") || n.includes("ko'ylak") || n.includes("rubashka") || n.includes("shirt") || n.includes("suit")) return "👔";
-  if (n.includes("poyabzal") || n.includes("tufli") || n.includes("krossovk") || n.includes("shoes") || n.includes("boot") || n.includes("oyoq")) return "👞";
-  if (n.includes("shim") || n.includes("jeans") || n.includes("pants") || n.includes("trousers") || n.includes("bryuk")) return "👖";
-  if (n.includes("kurtka") || n.includes("palto") || n.includes("jaket") || n.includes("outerwear") || n.includes("coat")) return "🧥";
-  if (n.includes("sumka") || n.includes("aksessuar") || n.includes("kamar") || n.includes("bag") || n.includes("accessories")) return "🎒";
-  if (n.includes("soat") || n.includes("watch")) return "⌚";
-  if (n.includes("sport") || n.includes("fitnes")) return "🏃";
-  return "🏷️";
+  return "";
 }
 
 // ---------------- 2. PRODUCTS & QUICK ADD ----------------
@@ -793,7 +785,7 @@ export function ProductsPage() {
           ...categories.map((c) => ({ id: String(c.id), name_uz: c.name_uz })),
         ].map((c) => {
           const active = catId === c.id;
-          const icon = c.id ? getCategoryIcon(c.name_uz) : "✨";
+          const icon = "";
           return (
             <button
               key={c.id || "all"}
@@ -805,7 +797,6 @@ export function ProductsPage() {
                   : "border border-border/80 bg-card text-muted-foreground hover:border-[#172641]/35 hover:text-foreground"
               }`}
             >
-              <span>{icon}</span>
               <span>{c.name_uz}</span>
             </button>
           );
@@ -2060,7 +2051,7 @@ export function CategoriesPage() {
           </div>
           {nameUz.trim() && (
             <div className="inline-flex items-center gap-2 rounded-2xl border border-[#172641]/15 bg-white px-3 py-1.5 shadow-xs">
-              <span className="text-base">{getCategoryIcon(nameUz)}</span>
+              
               <span className="text-xs font-bold text-[#172641]">{nameUz}</span>
               {nameRu && (
                 <span className="text-[11px] text-muted-foreground">/ {nameRu}</span>
@@ -2142,7 +2133,7 @@ export function CategoriesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((c, idx) => {
-            const icon = getCategoryIcon(c.name_uz);
+            // no icon
             return (
               <div
                 key={c.id}
@@ -2151,8 +2142,8 @@ export function CategoriesPage() {
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#172641]/10 via-[#172641]/5 to-[#c5a776]/15 text-2xl border border-[#172641]/10 shadow-xs transition-transform duration-300 group-hover:scale-105">
-                        {icon}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#172641]/10 text-[12px] font-black text-[#172641] border border-[#172641]/10">
+                        #{idx + 1}
                       </div>
                       <div className="min-w-0">
                         <h4 className="truncate text-[15px] font-bold text-foreground">
@@ -2239,7 +2230,7 @@ export function CategoriesPage() {
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl">{getCategoryIcon(editItem.name_uz)}</span>
+                
                 <h3 className="text-base font-bold text-foreground">
                   Bo‘limni tahrirlash
                 </h3>
