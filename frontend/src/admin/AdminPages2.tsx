@@ -2708,6 +2708,71 @@ export function SettingsPage() {
 export function MarketingPage() {
   const { t } = useLang();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<"broadcast" | "utm">("broadcast");
+
+  // Broadcast state
+  const [segments, setSegments] = useState<any>({ all: 0, vip: 0, inactive_30d: 0, cart_abandoned: 0 });
+  const [selectedSegment, setSelectedSegment] = useState<string>("all");
+  const [campTitle, setCampTitle] = useState("");
+  const [campText, setCampText] = useState("");
+  const [campImage, setCampImage] = useState("");
+  const [campBtnText, setCampBtnText] = useState("Kolleksiyani ko'rish 👔");
+  const [campBtnUrl, setCampBtnUrl] = useState("https://t.me/Withmoreuz_bot/shop");
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+
+  // Load broadcast info
+  const loadBroadcastData = () => {
+    adminFetch("/api/admin/ops/broadcast/segments")
+      .then(setSegments)
+      .catch(() => {});
+    adminFetch("/api/admin/ops/broadcast/history")
+      .then((h) => {
+        if (Array.isArray(h)) setHistory(h);
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadBroadcastData();
+  }, []);
+
+  const handleSendBroadcast = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!campTitle.trim() || !campText.trim()) {
+      toast("Iltimos, kampaniya nomi va xabar matnini kiriting", "error");
+      return;
+    }
+    const count = segments[selectedSegment] || 0;
+    if (!window.confirm(`Haqiqatan ham ${count} ta mijozga Telegram orqali xabarnoma jo'natmoqchimisiz?`)) {
+      return;
+    }
+
+    setSendingBroadcast(true);
+    try {
+      const res = await adminFetch("/api/admin/ops/broadcast/send", {
+        method: "POST",
+        body: JSON.stringify({
+          title: campTitle.trim(),
+          segment: selectedSegment,
+          text: campText.trim(),
+          image_url: campImage.trim() || undefined,
+          button_text: campBtnText.trim() || undefined,
+          button_url: campBtnUrl.trim() || undefined,
+        }),
+      });
+      toast(res.message || "Xabarnoma muvaffaqiyatli jo'natildi!", "success");
+      setCampTitle("");
+      setCampText("");
+      setCampImage("");
+      loadBroadcastData();
+    } catch (e: any) {
+      toast(e.message || "Xatolik yuz berdi", "error");
+    } finally {
+      setSendingBroadcast(false);
+    }
+  };
+
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(30);

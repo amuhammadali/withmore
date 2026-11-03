@@ -9,7 +9,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..core import all_settings, audit, fmt_dt, get_setting, set_setting, thumb_of
 from ..db import get_db
-from ..models import STATUS_UZ, STATUSES, AdminAccount, Order, Product, now
+from ..models import STATUS_UZ, STATUSES, AdminAccount, Order, Product, Customer, ShopSession, LookbookBundle, BroadcastCampaign, now
+from ..outbox import enqueue
 from ..orders_service import fmt_money, set_status
 from ..security import require
 
@@ -17,6 +18,8 @@ router = APIRouter(prefix="/api/admin/ops", tags=["admin-ops"])
 orders_perm = require("orders")
 products_perm = require("products")
 stats_perm = require("statistics")
+marketing_perm = require("marketing")
+catalog_perm = require("products")
 
 
 # ---------------- supplier links (1688 / Taobao / Poizon) ----------------
@@ -247,3 +250,208 @@ def update_finance_settings(
     if payload.post_fee is not None:
         set_setting(db, "post_fee", str(payload.post_fee))
     return {"status": "ok", "message": "Moliya va unit-economics koeffitsiyentlari yangilandi"}
+
+
+# ---------------- TELEGRAM SEGMENTED BROADCAST ----------------
+@router.get("/broadcast/segments")
+def get_broadcast_segments(
+    admin: AdminAccount = Depends(marketing_perm),
+    db: Session = Depends(get_db),
+):
+    """
+    Counts audiences for different broadcast segments.
+    """
+    all_count = db.query(Customer).filter(Customer.tg_id != None).count()
+
+    # VIP customers (LTV > 2,000,000 UZS)
+    from sqlalchemy import func
+    vip_subq = (
+        db.query(Order.customer_id)
+        .group_by(Order.customer_id)
+        .having(func.sum(Order.total) >= 2000000)
+        .subquery()
+    )
+    vip_count = (
+        db.query(Customer)
+        .filter(Customer.tg_id != None, Customer.id.in_(vip_subq))
+        .count()
+    )
+
+    # Inactive customers (no orders in 30+ days)
+    cutoff_30d = now() - timedelta(days=30)
+    active_recent_subq = (
+        db.query(Order.customer_id)
+        .filter(Order.created_at >= cutoff_30d)
+        .subquery()
+    )
+    inactive_count = (
+        db.query(Customer)
+        .filter(Customer.tg_id != None, ~Customer.id.in_(active_recent_subq))
+        .count()
+    )
+
+    # Abandoned cart customers
+    cart_subq = (
+        db.query(ShopSession.customer_id)
+        .filter(ShopSession.cart != None)
+        .subquery()
+    )
+    cart_count = (
+        db.query(Customer)
+        .filter(Customer.tg_id != None, Customer.id.in_(cart_subq))
+        .count()
+    )
+
+    return {
+        "all": all_count,
+        "vip": vip_count,
+        "inactive_30d": inactive_count,
+        "cart_abandoned": cart_count,
+    }
+
+
+class SendBroadcastPayload(BaseModel):
+    title: str
+    segment: str = "all"  # all, vip, inactive_30d, cart_abandoned
+    text: str
+    image_url: str | None = None
+    button_text: str | None = None
+    button_url: str | None = None
+
+
+@router.post("/broadcast/send")
+def send_broadcast_campaign(
+    payload: SendBroadcastPayload,
+    admin: AdminAccount = Depends(marketing_perm),
+    db: Session = Depends(get_db),
+):
+    """
+    Enqueues targeted Telegram blast to selected customer segment.
+    """
+    q = db.query(Customer).filter(Customer.tg_id != None)
+
+    if payload.segment == "vip":
+        from sqlalchemy import func
+        vip_subq = (
+            db.query(Order.customer_id)
+            .group_by(Order.customer_id)
+            .having(func.sum(Order.total) >= 2000000)
+            .subquery()
+        )
+        q = q.filter(Customer.id.in_(vip_subq))
+    elif payload.segment == "inactive_30d":
+        cutoff_30d = now() - timedelta(days=30)
+        active_subq = db.query(Order.customer_id).filter(Order.created_at >= cutoff_30d).subquery()
+        q = q.filter(~Customer.id.in_(active_subq))
+    elif payload.segment == "cart_abandoned":
+        cart_subq = db.query(ShopSession.customer_id).filter(ShopSession.cart != None).subquery()
+        q = q.filter(Customer.id.in_(cart_subq))
+
+    recipients = q.all()
+    sent_count = 0
+
+    for cust in recipients:
+        if cust.tg_id:
+            formatted_text = payload.text.replace("{name}", cust.first_name or "Hurmatli mijoz")
+            if payload.image_url and payload.image_url.strip():
+                formatted_text = f"{payload.image_url.strip()}\n\n" + formatted_text
+            if payload.button_text and payload.button_url:
+                formatted_text += f"\n\n🔗 <a href='{payload.button_url}'>{payload.button_text}</a>"
+            enqueue(db, cust.tg_id, formatted_text)
+            sent_count += 1
+
+    # Save campaign log
+    camp = BroadcastCampaign(
+        title=payload.title,
+        segment=payload.segment,
+        text=payload.text,
+        image_url=payload.image_url or "",
+        button_text=payload.button_text or "",
+        button_url=payload.button_url or "",
+        sent_count=sent_count,
+        status="sent",
+    )
+    db.add(camp)
+    db.commit()
+
+    return {
+        "status": "ok",
+        "message": f"Xabarnoma {sent_count} ta mijozga muvaffaqiyatli jo'natildi!",
+        "sent_count": sent_count,
+    }
+
+
+@router.get("/broadcast/history")
+def get_broadcast_history(
+    admin: AdminAccount = Depends(marketing_perm),
+    db: Session = Depends(get_db),
+):
+    campaigns = db.query(BroadcastCampaign).order_by(BroadcastCampaign.id.desc()).limit(20).all()
+    return [
+        {
+            "id": c.id,
+            "title": c.title,
+            "segment": c.segment,
+            "text": c.text,
+            "image_url": c.image_url,
+            "button_text": c.button_text,
+            "sent_count": c.sent_count,
+            "created_at": c.created_at.strftime("%Y-%m-%d %H:%M"),
+        }
+        for c in campaigns
+    ]
+
+
+# ---------------- ADMIN LOOKBOOK MANAGEMENT ----------------
+@router.get("/lookbooks")
+def admin_get_lookbooks(
+    admin: AdminAccount = Depends(catalog_perm),
+    db: Session = Depends(get_db),
+):
+    bundles = db.query(LookbookBundle).order_by(LookbookBundle.sort.asc(), LookbookBundle.id.desc()).all()
+    res = []
+    for b in bundles:
+        res.append({
+            "id": b.id,
+            "title_uz": b.title_uz,
+            "title_ru": b.title_ru,
+            "description_uz": b.description_uz,
+            "image": b.image,
+            "product_ids": b.product_ids or [],
+            "discount_pct": b.discount_pct or 10,
+            "sort": b.sort,
+            "active": b.active,
+        })
+    return res
+
+
+class SaveLookbookPayload(BaseModel):
+    title_uz: str
+    title_ru: str | None = ""
+    description_uz: str | None = ""
+    description_ru: str | None = ""
+    image: str | None = ""
+    product_ids: list[int] = []
+    discount_pct: int = 10
+    active: bool = True
+
+
+@router.post("/lookbooks")
+def admin_create_lookbook(
+    payload: SaveLookbookPayload,
+    admin: AdminAccount = Depends(catalog_perm),
+    db: Session = Depends(get_db),
+):
+    b = LookbookBundle(
+        title_uz=payload.title_uz,
+        title_ru=payload.title_ru or "",
+        description_uz=payload.description_uz or "",
+        description_ru=payload.description_ru or "",
+        image=payload.image or "",
+        product_ids=payload.product_ids,
+        discount_pct=payload.discount_pct,
+        active=payload.active,
+    )
+    db.add(b)
+    db.commit()
+    return {"status": "ok", "id": b.id}

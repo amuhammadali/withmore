@@ -740,7 +740,32 @@ function HomeScreen({
   onToggleFav: (id: number) => void;
 }) {
   const { lang, t } = useLang();
+  const { toast } = useToast();
   const [featured, setFeatured] = useState<any[]>([]);
+  const [lookbooks, setLookbooks] = useState<any[]>([]);
+  const [addingBundleId, setAddingBundleId] = useState<number | null>(null);
+
+  useEffect(() => {
+    shopFetch("/api/shop/lookbooks")
+      .then((data) => {
+        if (Array.isArray(data)) setLookbooks(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleAddBundle = async (bid: number) => {
+    setAddingBundleId(bid);
+    try {
+      const res = await shopFetch(`/api/shop/lookbooks/${bid}/add-bundle`, {
+        method: "POST",
+      });
+      toast(res.message || "To'liq obraz savatingizga qo'shildi!", "success");
+    } catch (e: any) {
+      toast(e.message || "Xatolik yuz berdi", "error");
+    } finally {
+      setAddingBundleId(null);
+    }
+  };
   const [allProds, setAllProds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -821,7 +846,110 @@ function HomeScreen({
 
       
 
-      {/* Editorial Luxury Category Chips Row */}
+            {/* ---------------- BUY THE LOOK (LOOKBOOK BUNDLES) ---------------- */}
+      {lookbooks.length > 0 && (
+        <section className="px-4 py-5 border-t border-[#172641]/10 bg-gradient-to-b from-[#faf8f4] to-transparent">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-[.22em] text-[#a4814d] block">
+                WITHMORE EDITORIAL
+              </span>
+              <h2 className="font-display text-[20px] font-bold text-[#172641]">
+                Buy The Look · Tayyor Obrazlar
+              </h2>
+            </div>
+            <span className="text-[10px] font-extrabold uppercase bg-[#172641] text-[#f5f1e8] px-2.5 py-1 rounded-full shadow-xs">
+              -10% KOMPLEKT
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {lookbooks.map((look: any) => (
+              <div
+                key={look.id}
+                className="overflow-hidden rounded-2xl border border-[#c5a676]/30 bg-white shadow-sm hover:shadow-md transition-all"
+              >
+                {/* Lookbook Cover & Header */}
+                <div className="p-4 bg-gradient-to-r from-[#172641] to-[#25395b] text-[#f5f1e8] flex items-center justify-between">
+                  <div>
+                    <span className="text-[9px] font-bold uppercase tracking-[.2em] text-[#d6bd92]">
+                      TAYYOR OBRAZ
+                    </span>
+                    <h3 className="font-display text-lg font-bold text-white">
+                      {lang === "ru" ? look.title_ru || look.title_uz : look.title_uz}
+                    </h3>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] text-slate-300 line-through block">
+                      {formatPrice(look.regular_total)}
+                    </span>
+                    <span className="text-base font-extrabold text-[#d6bd92]">
+                      {formatPrice(look.bundle_price)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 space-y-3">
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {lang === "ru" ? look.description_ru || look.description_uz : look.description_uz}
+                  </p>
+
+                  {/* Included Items preview */}
+                  <div className="grid grid-cols-3 gap-2 pt-1">
+                    {look.items.map((it: any) => (
+                      <Link
+                        key={it.id}
+                        to={`/miniapp/product/${it.id}`}
+                        className="rounded-xl border border-slate-100 bg-[#faf8f3] p-2 text-center text-slate-900 no-underline hover:border-[#172641] transition"
+                      >
+                        {it.image ? (
+                          <img
+                            src={it.image}
+                            alt=""
+                            className="h-16 w-full rounded-lg object-cover mx-auto mb-1.5"
+                          />
+                        ) : (
+                          <div className="h-16 w-full rounded-lg bg-slate-200 flex items-center justify-center text-xs mb-1.5">
+                            👔
+                          </div>
+                        )}
+                        <div className="text-[10px] font-bold truncate">
+                          {lang === "ru" ? it.title_ru || it.title_uz : it.title_uz}
+                        </div>
+                        <div className="text-[9px] text-[#8a6c43] font-semibold mt-0.5">
+                          {formatPrice(it.price)}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Add Entire Look Button */}
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      disabled={addingBundleId === look.id}
+                      onClick={() => handleAddBundle(look.id)}
+                      className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#172641] to-[#25395b] hover:from-[#223555] hover:to-[#2e4770] text-[11px] font-bold uppercase tracking-[.14em] text-[#f5f1e8] shadow-sm transition active:scale-[.98] cursor-pointer"
+                    >
+                      <span>👔</span>
+                      <span>
+                        {addingBundleId === look.id
+                          ? "Qo'shilmoqda..."
+                          : `To'liq obrazni savatga qo'shish (-${look.discount_pct}% tejash)`}
+                      </span>
+                    </button>
+                    <div className="mt-1 text-center text-[10px] text-slate-500 font-medium">
+                      Komplekt chegirmasi orqali {formatPrice(look.savings)} tejab qolasiz
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+{/* Editorial Luxury Category Chips Row */}
       {categories.length > 0 && (
         <section
           aria-label="Kategoriyalar"
@@ -2369,6 +2497,7 @@ function CheckoutScreen({
         </div>
       </div>
 
+            
       {/* Delivery & Return Rules */}
       <div className="border border-[#172641]/15 bg-[#fbf8f2] p-4 space-y-1.5 text-xs text-slate-900/75">
         <div className="text-[10px] font-bold uppercase tracking-[.18em] text-[#8a6c43]">
@@ -3207,6 +3336,26 @@ function AboutScreen({
   const [myOrders, setMyOrders] = useState<any[]>([]);
   const [favProducts, setFavProducts] = useState<any[]>([]);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  // Referral Club State
+  const [refData, setRefData] = useState<any>(null);
+
+  useEffect(() => {
+    shopFetch("/api/shop/referral")
+      .then(setRefData)
+      .catch(() => {});
+  }, []);
+
+  const handleShareReferral = () => {
+    if (!refData) return;
+    const shareText = `Salom! Men Withmore premium erkaklar kiyimidan kiyinaman. Ushbu havola orqali birinchi xaridingizga 100,000 so'm sovg'a olasiz: ${refData.invite_link}`;
+    const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(refData.invite_link)}&text=${encodeURIComponent(shareText)}`;
+    if (window.Telegram?.WebApp?.openTelegramLink) {
+      window.Telegram.WebApp.openTelegramLink(tgUrl);
+    } else {
+      window.open(tgUrl, "_blank");
+    }
+    toast("Ulashish oynasi ochildi!", "success");
+  };
   // Sartorial Measurements Profile
   const [measurements, setMeasurements] = useState<any>(null);
   const [loadingMeasurements, setLoadingMeasurements] = useState(false);
@@ -3329,6 +3478,61 @@ function AboutScreen({
           </a>
         )}
       </div>
+
+      {/* ---------------- GENTLEMEN REFERRAL CLUB CARD ---------------- */}
+      <section className="border-t border-[#172641]/15 pt-5 space-y-3">
+        <div className="rounded-2xl border-2 border-[#c5a676] bg-gradient-to-br from-[#172641] via-[#1f3357] to-[#121c2e] p-5 text-[#f5f1e8] shadow-md space-y-3.5">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-[.25em] text-[#d6bd92]">
+                EXCLUSIVE REFERRAL PRIVILEGE
+              </span>
+              <h2 className="font-display text-[22px] font-bold text-white mt-0.5">
+                Gentlemen Referral Club
+              </h2>
+            </div>
+            <span className="text-2xl">🥂</span>
+          </div>
+
+          <p className="text-xs text-[#f5f1e8]/85 leading-relaxed">
+            Do‘stingizga <b>100,000 so‘m</b> xarid sovg‘asini ulashing. U birinchi buyurtmasini amalga oshirgach, sizning hisobingizga ham <b>100,000 so‘m</b> bonus tushadi!
+          </p>
+
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-center">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#d6bd92] block">
+                Mening bonuslarim
+              </span>
+              <span className="text-base font-extrabold text-white">
+                {formatPrice(refData?.bonus_balance || 0)}
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-center">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#d6bd92] block">
+                Taklif etilgan do‘stlar
+              </span>
+              <span className="text-base font-extrabold text-white">
+                {refData?.friends_count || 0} nafar
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={handleShareReferral}
+              className="w-full flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#c5a676] via-[#d6bd92] to-[#b38f5c] text-xs font-bold uppercase tracking-[.14em] text-[#172641] shadow-md hover:brightness-105 active:scale-[.98] transition cursor-pointer"
+            >
+              <span>📲</span>
+              <span>Do‘stlarga Telegramdan ulashish</span>
+            </button>
+            <div className="mt-1.5 text-center text-[10px] text-white/60">
+              Shaxsiy referal kodingiz: <b className="text-[#d6bd92]">{refData?.referral_code || "WM0001"}</b>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Customer Orders */}
       {myOrders.length > 0 && (

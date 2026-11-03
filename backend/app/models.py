@@ -76,6 +76,9 @@ class Customer(Base):
     username: Mapped[str] = mapped_column(String(64), default="")
     phone: Mapped[str] = mapped_column(String(32), default="", index=True)
     language: Mapped[str] = mapped_column(String(2), default="uz")
+    bonus_balance: Mapped[int] = mapped_column(Integer, default=0)
+    referral_code: Mapped[str] = mapped_column(String(32), default="")
+    referred_by_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
     last_seen: Mapped[datetime] = mapped_column(DateTime, default=now)
 
@@ -319,3 +322,32 @@ class FittingAppointment(Base):
     status: Mapped[str] = mapped_column(String(24), default="pending", index=True)  # pending | confirmed | completed | cancelled
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now, index=True)
 
+
+
+class LookbookBundle(Base):
+    __tablename__ = "lookbook_bundles"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title_uz: Mapped[str] = mapped_column(String(160))
+    title_ru: Mapped[str] = mapped_column(String(160), default="")
+    description_uz: Mapped[str] = mapped_column(Text, default="")
+    description_ru: Mapped[str] = mapped_column(Text, default="")
+    image: Mapped[str] = mapped_column(String(500), default="")
+    product_ids: Mapped[list] = mapped_column(JSON, default=list)  # list of product ids
+    discount_pct: Mapped[int] = mapped_column(Integer, default=10)
+    sort: Mapped[int] = mapped_column(Integer, default=0)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now)
+
+
+class BroadcastCampaign(Base):
+    __tablename__ = "broadcast_campaigns"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(160))
+    segment: Mapped[str] = mapped_column(String(40), default="all")  # all, vip, inactive_30d, cart_abandoned
+    text: Mapped[str] = mapped_column(Text)
+    image_url: Mapped[str] = mapped_column(String(500), default="")
+    button_text: Mapped[str] = mapped_column(String(64), default="")
+    button_url: Mapped[str] = mapped_column(String(500), default="")
+    sent_count: Mapped[int] = mapped_column(Integer, default=0)
+    status: Mapped[str] = mapped_column(String(20), default="sent")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now)

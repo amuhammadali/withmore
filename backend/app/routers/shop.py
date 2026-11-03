@@ -11,7 +11,7 @@ from .. import botstate
 from ..config import get_settings
 from ..core import all_settings, fmt_dt, get_setting, process_upload, set_setting, thumb_of
 from ..db import get_db
-from ..models import (FittingAppointment, STATUS_RU, STATUS_UZ, AdminAccount, Category, Customer, Favorite, MarketingVisit, Order,
+from ..models import (FittingAppointment, LookbookBundle, STATUS_RU, STATUS_UZ, AdminAccount, Category, Customer, Favorite, MarketingVisit, Order,
                       OrderStatusHistory, Product, ProductVariant, RestockSubscription, ShopSession, StoreEvent, now)
 from ..orders_service import (active_order_admins, check_promo, create_order, customer_summary_text, fmt_money)
 from ..outbox import enqueue
@@ -719,3 +719,130 @@ def get_customer_fittings(c: Customer = Depends(shop_customer), db: Session = De
         }
         for r in rows
     ]
+
+
+# ---------------- LOOKBOOK & BUY THE LOOK ENDPOINTS ----------------
+@router.get("/lookbooks")
+def get_lookbooks(db: Session = Depends(get_db)):
+    """
+    Returns active Lookbook bundles with hydrated products and discounted bundle pricing.
+    """
+    bundles = (
+        db.query(LookbookBundle)
+        .filter(LookbookBundle.active == True)
+        .order_by(LookbookBundle.sort.asc(), LookbookBundle.id.desc())
+        .all()
+    )
+
+    result = []
+    for b in bundles:
+        items = []
+        regular_total = 0
+        for pid in (b.product_ids or []):
+            prod = db.get(Product, pid)
+            if prod and prod.active and not prod.deleted_at:
+                price = prod.manual_price or prod.price_uzs or 0
+                regular_total += price
+                first_img = prod.images[0].path if prod.images else None
+                first_var = prod.variants[0] if prod.variants else None
+                items.append({
+                    "id": prod.id,
+                    "title_uz": prod.name_uz,
+                    "title_ru": prod.name_ru,
+                    "price": price,
+                    "image": first_img,
+                    "default_variant_id": first_var.id if first_var else None,
+                    "sizes": [v.size for v in prod.variants if v.size and (prod.sale_type == "preorder" or (v.stock or 0) > 0)],
+                })
+
+        discount_mult = (100 - (b.discount_pct or 10)) / 100.0
+        bundle_price = int(regular_total * discount_mult)
+
+        result.append({
+            "id": b.id,
+            "title_uz": b.title_uz,
+            "title_ru": b.title_ru,
+            "description_uz": b.description_uz,
+            "description_ru": b.description_ru,
+            "image": b.image or (items[0]["image"] if items else ""),
+            "discount_pct": b.discount_pct or 10,
+            "regular_total": regular_total,
+            "bundle_price": bundle_price,
+            "savings": max(0, regular_total - bundle_price),
+            "items": items,
+        })
+
+    return result
+
+
+@router.post("/lookbooks/{bid}/add-bundle")
+def add_lookbook_bundle_to_cart(
+    bid: int,
+    session: ShopSession = Depends(current_shop),
+    db: Session = Depends(get_db),
+):
+    """
+    Adds all items in the lookbook bundle to the customer's cart in one click.
+    """
+    b = db.get(LookbookBundle, bid)
+    if not b or not b.active:
+        raise HTTPException(404, "Obraz topilmadi")
+
+    cart = list(session.cart or [])
+    added_count = 0
+
+    for pid in (b.product_ids or []):
+        prod = db.get(Product, pid)
+        if prod and prod.active and not prod.deleted_at and prod.variants:
+            first_avail = next((v for v in prod.variants if prod.sale_type == "preorder" or (v.stock or 0) > 0), prod.variants[0])
+            # Check if variant already in cart
+            existing = next((c for c in cart if c.get("variant_id") == first_avail.id), None)
+            if existing:
+                existing["qty"] = int(existing.get("qty", 1)) + 1
+            else:
+                cart.append({
+                    "variant_id": first_avail.id,
+                    "product_id": prod.id,
+                    "qty": 1,
+                    "price": prod.manual_price or prod.price_uzs or 0,
+                })
+            added_count += 1
+
+    session.cart = cart
+    session.last_seen = now()
+    db.commit()
+
+    return {
+        "status": "ok",
+        "message": f"To'liq obraz ({added_count} ta kiyim) savatingizga qo'shildi!",
+        "cart_count": len(cart),
+    }
+
+
+# ---------------- GENTLEMEN REFERRAL CLUB ENDPOINTS ----------------
+@router.get("/referral")
+def get_customer_referral(
+    session: ShopSession = Depends(current_shop),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns referral status, personal invite link, and bonus balance for customer.
+    """
+    cust = db.get(Customer, session.customer_id) if session.customer_id else None
+    bot_user = (get_setting(db, "contact_username") or "Withmoreuz_bot").replace("@", "")
+
+    cid = cust.id if cust else 0
+    ref_code = cust.referral_code if (cust and cust.referral_code) else f"WM{cid:04d}"
+    invite_link = f"https://t.me/{bot_user}?start=ref_{cid}"
+
+    # Count friends invited
+    friends_count = db.query(Customer).filter(Customer.referred_by_id == cid).count() if cid else 0
+
+    return {
+        "customer_id": cid,
+        "referral_code": ref_code,
+        "invite_link": invite_link,
+        "bonus_balance": getattr(cust, "bonus_balance", 0) if cust else 0,
+        "friends_count": friends_count,
+        "reward_per_friend": 100000,
+    }
