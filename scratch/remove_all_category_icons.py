@@ -144,3 +144,4 @@ with open(admin_path, "w", encoding="utf-8") as f:
     f.write(admin_content)
 
 print("AdminPages.tsx category icons completely removed!")
+

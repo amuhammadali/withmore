@@ -612,7 +612,7 @@ def recover_abandoned_cart(
             f"🛒 Savatni ko'rish va rasmiylashtirish:\nhttps://t.me/{bot_username}/shop"
         )
 
-    enqueue(db, cust.tg_user_id, text)
+    enqueue(db, "crm_direct", cust.tg_user_id, text)
     set_setting(db, f"crm:abandoned_recovered:{sid}", "1")
 
     return {

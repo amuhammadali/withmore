@@ -350,14 +350,27 @@ def send_broadcast_campaign(
     recipients = q.all()
     sent_count = 0
 
+    btn_txt = (payload.button_text or "").strip()
+    btn_url = (payload.button_url or "").strip()
+    img_url = (payload.image_url or "").strip()
+
     for cust in recipients:
         if cust.tg_id:
             formatted_text = payload.text.replace("{name}", cust.first_name or "Hurmatli mijoz")
-            if payload.image_url and payload.image_url.strip():
-                formatted_text = f"{payload.image_url.strip()}\n\n" + formatted_text
-            if payload.button_text and payload.button_url:
-                formatted_text += f"\n\n🔗 <a href='{payload.button_url}'>{payload.button_text}</a>"
-            enqueue(db, cust.tg_id, formatted_text)
+            if img_url:
+                if img_url.startswith("http"):
+                    formatted_text = f"<a href=\"{img_url}\">&#8205;</a>" + formatted_text
+                else:
+                    formatted_text = f"{img_url}\n\n" + formatted_text
+            
+            enqueue(
+                db,
+                "broadcast",
+                cust.tg_id,
+                formatted_text,
+                button_text=btn_txt,
+                button_url=btn_url if btn_url.startswith("https://") else "",
+            )
             sent_count += 1
 
     # Save campaign log
