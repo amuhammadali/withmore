@@ -657,11 +657,11 @@ function ProductCard({
           <div className="mt-2 flex items-center justify-between gap-1 pt-1.5 border-t border-slate-100">
             <div className="flex flex-col">
               <span className="text-[8.5px] uppercase tracking-wider font-semibold text-slate-400">Narx</span>
-              <span className="text-[13px] sm:text-[14px] font-black text-slate-900 tracking-tight leading-none">
+              <span className="text-[13px] sm:text-[14px] font-black text-[#172641] tracking-tight leading-none">
                 {formatPrice(p.price)}
               </span>
             </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-900 px-3 py-1.5 text-[10px] font-bold text-white shadow-xs transition-all duration-200 group-hover:bg-[#8a6c43] group-hover:scale-105 active:scale-95">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#172641] px-3.5 py-1.5 text-[10px] font-bold text-white shadow-xs transition-all duration-200 group-hover:bg-[#223558] group-hover:scale-105 active:scale-95">
               <span>Tanlash</span>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </span>
@@ -701,27 +701,27 @@ function BrandMarquee() {
   return (
     <section
       aria-label="Original brendlar va mato uylari"
-      className="relative overflow-hidden border-y border-[#c5a676]/40 bg-gradient-to-r from-[#0c1524] via-[#16243d] to-[#0c1524] py-3 text-[#f4efe5] shadow-[inset_0_3px_14px_rgba(0,0,0,0.35)]"
+      className="relative overflow-hidden border-y border-[#c5a676]/30 bg-[#172641] py-3.5 text-white shadow-sm"
     >
       {/* Edge gradient mask for smooth fade in/out */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-[#0c1524] to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0c1524] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-[#172641] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-[#172641] to-transparent z-10" />
 
-      <div className="animate-marquee flex items-center gap-5">
+      <div className="animate-marquee flex items-center gap-3 sm:gap-5">
         {marqueeItems.map((b, idx) => (
           <div
             key={idx}
-            className="group flex items-center gap-3.5 shrink-0 rounded-2xl border border-[#c5a676]/30 bg-white/[0.04] px-4 py-2 backdrop-blur-md transition-all duration-300 hover:border-[#c5a676] hover:bg-white/[0.12] hover:scale-105 shadow-sm"
+            className="group flex items-center gap-3 shrink-0 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-2 backdrop-blur-md transition-all duration-300 hover:border-[#c5a676]/70 hover:bg-white/[0.12] hover:scale-105 shadow-xs"
           >
-            <div className="text-[#e8dfcf] group-hover:text-[#faf7f2] transition-colors">
+            <div className="text-white group-hover:text-[#f4efe5] transition-colors">
               {b.svg}
             </div>
-            <div className="h-6 w-px bg-white/15" />
+            <div className="h-5 w-px bg-white/20" />
             <div className="text-left">
               <div className="text-[9px] font-bold uppercase tracking-[.18em] text-[#c5a676]">
                 {b.origin}
               </div>
-              <div className="text-[8px] font-medium text-[#f4efe5]/70 tracking-wider uppercase whitespace-nowrap">
+              <div className="text-[7.5px] font-semibold text-white/75 tracking-wider uppercase whitespace-nowrap">
                 {b.type}
               </div>
             </div>
@@ -827,21 +827,18 @@ function HomeScreen({
       <BrandMarquee />
 
       {/* Atelier Excellence Highlights */}
-      <section className="mx-4 mt-4 mb-2 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
-        <div className="grid grid-cols-3 gap-2 text-center divide-x divide-slate-100">
+      <section className="mx-4 mt-4 mb-2 rounded-2xl border border-slate-200/80 bg-white py-3.5 px-3 shadow-[0_2px_8px_rgba(0,0,0,0.03)]">
+        <div className="grid grid-cols-3 gap-1 text-center divide-x divide-slate-100">
           <div className="px-1">
-            <div className="text-base mb-1">✂️</div>
-            <div className="text-[11px] font-bold text-slate-900">Aniq Bichim</div>
+            <div className="text-[11px] font-bold tracking-tight text-[#172641]">Aniq Bichim</div>
             <div className="text-[9px] font-medium text-slate-400 mt-0.5">Qaddi-qomatga mos</div>
           </div>
           <div className="px-1">
-            <div className="text-base mb-1">🇮🇹</div>
-            <div className="text-[11px] font-bold text-slate-900">100% Original</div>
+            <div className="text-[11px] font-bold tracking-tight text-[#172641]">100% Original</div>
             <div className="text-[9px] font-medium text-slate-400 mt-0.5">Italiya & Angliya</div>
           </div>
           <div className="px-1">
-            <div className="text-base mb-1">⚡</div>
-            <div className="text-[11px] font-bold text-slate-900">Tezkor Kuryer</div>
+            <div className="text-[11px] font-bold tracking-tight text-[#172641]">Tezkor Kuryer</div>
             <div className="text-[9px] font-medium text-slate-400 mt-0.5">Butun O‘zbekiston</div>
           </div>
         </div>
@@ -864,24 +861,21 @@ function HomeScreen({
               {lang === "ru" ? "Весь каталог →" : "Barchasi →"}
             </Link>
           </div>
-          <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
             <Link
               to="/miniapp/catalog"
-              className="shrink-0 flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-[11px] font-bold text-white shadow-sm ring-1 ring-slate-900 no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
+              className="shrink-0 flex items-center rounded-2xl bg-[#172641] px-4 py-2.5 text-[11.5px] font-bold text-white shadow-sm ring-1 ring-[#172641] no-underline transition-all duration-200 hover:scale-[1.02] active:scale-95"
             >
-              <span className="text-sm drop-shadow-sm">✨</span>
               <span className="tracking-wide">{t.allCategories}</span>
             </Link>
             {categories.map((c) => {
               const label = lang === "ru" ? c.name_ru || c.name_uz : c.name_uz;
-              const icon = getCategoryIcon(label);
               return (
                 <Link
                   key={c.id}
                   to={`/miniapp/catalog?category=${c.id}`}
-                  className="shrink-0 flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-[11px] font-bold text-slate-800 shadow-[0_1px_4px_rgba(0,0,0,0.03)] no-underline transition-all duration-200 hover:border-slate-300 hover:shadow-md hover:-translate-y-0.5 hover:text-black active:scale-95"
+                  className="shrink-0 flex items-center rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-[11.5px] font-bold text-[#172641] shadow-[0_1px_4px_rgba(0,0,0,0.03)] no-underline transition-all duration-200 hover:border-[#172641]/40 hover:shadow-md hover:-translate-y-0.5 active:scale-95"
                 >
-                  <span className="text-sm">{icon}</span>
                   <span className="tracking-wide">{label}</span>
                 </Link>
               );

@@ -4,8 +4,8 @@
   --bg-milk: #F8F9FA;
   --bg-milk-deep: #F1F3F5;
   --card-white: #FFFFFF;
-  --navy: #0F172A;
-  --navy-light: #1E293B;
+  --navy: #172641;
+  --navy-light: #243b66;
   --slate: #475569;
   --slate-muted: #64748B;
   --line: #E2E8F0;
@@ -66,7 +66,7 @@ h1, h2, h3, .font-serif-heading, .font-display {
 }
 
 .text-foreground {
-  color: #0F172A;
+  color: #172641;
 }
 
 .text-muted-foreground {
@@ -74,7 +74,7 @@ h1, h2, h3, .font-serif-heading, .font-display {
 }
 
 .text-primary {
-  color: #0F172A;
+  color: #172641;
 }
 
 .border-border {
