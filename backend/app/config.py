@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=str(ENV_FILE), extra="ignore")
 
     BOT_TOKEN: str = ""
+    FAL_KEY: str = ""
     ADMIN_PASSWORD: str = ""
     SESSION_SECRET: str = ""
     DATABASE_URL: str = f"sqlite:///{(ROOT / 'data' / 'whitmore.db').as_posix()}"
