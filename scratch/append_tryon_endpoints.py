@@ -159,3 +159,4 @@ if "/tryon/generate" not in text:
     print("TryOn endpoints added to backend/app/routers/shop.py successfully!")
 else:
     print("TryOn endpoints already exist!")
+

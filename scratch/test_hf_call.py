@@ -37,3 +37,4 @@ stdin, stdout, stderr = ssh.exec_command(f'python3 -c "{remote}"')
 print("OUT:", stdout.read().decode())
 print("ERR:", stderr.read().decode())
 ssh.close()
+

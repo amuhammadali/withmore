@@ -539,3 +539,4 @@ with open('frontend/src/miniapp/MiniApp.tsx', 'w', encoding='utf-8') as f:
     f.write(code)
 
 print("Updated MiniApp.tsx successfully!")
+

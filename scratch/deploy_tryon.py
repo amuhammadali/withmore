@@ -29,3 +29,4 @@ run_cmd("systemctl restart whitmore && systemctl status whitmore --no-pager -n 4
 
 ssh.close()
 print("\nDeployment of AI Try-On completed!")
+
