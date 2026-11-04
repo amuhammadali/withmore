@@ -901,6 +901,7 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
     if human_url.startswith("/"):
         human_url = f"{settings.APP_URL}{human_url}"
 
+    last_err = "Unknown error"
     # 1. Call HuggingFace IDM-VTON State-of-the-Art Try-On Model
     try:
         payload = {
@@ -976,7 +977,7 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
                         "mode": "ai_generated"
                     }
     except Exception as e:
-        pass
+        last_err = f"HF error: {str(e)}"
 
     # 2. Fal.ai check if unlocked
     if getattr(settings, "FAL_KEY", None):
@@ -1008,4 +1009,4 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
         except Exception:
             pass
 
-    raise HTTPException(status_code=500, detail="AI xizmati hozirda band. Iltimos, 1 daqiqadan so'ng qayta urinib ko'ring.")
+    raise HTTPException(status_code=500, detail=f"AI xizmati: {last_err}")
