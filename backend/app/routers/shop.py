@@ -907,7 +907,7 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
             "data": [
                 {"background": {"path": human_url, "url": human_url}, "layers": [], "composite": None},
                 {"path": garment_url, "url": garment_url},
-                f"A tailored bespoke luxury {p.name_uz}",
+                f"A tailored luxury {p.name_uz}",
                 True,
                 False,
                 20,
@@ -920,51 +920,61 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json", "User-Agent": "Withmore-AI/1.0"}
         )
-        with urllib.request.urlopen(req, timeout=15) as res:
+        with urllib.request.urlopen(req, timeout=20) as res:
             res_data = json.loads(res.read().decode())
             event_id = res_data.get("event_id")
 
         if event_id:
             poll_url = f"https://yisol-idm-vton.hf.space/call/tryon/{event_id}"
             poll_req = urllib.request.Request(poll_url, headers={"User-Agent": "Withmore-AI/1.0"})
-            with urllib.request.urlopen(poll_req, timeout=40) as stream:
-                for _ in range(40):
+            start_t = time.time()
+            remote_img_url = None
+
+            with urllib.request.urlopen(poll_req, timeout=60) as stream:
+                while time.time() - start_t < 60:
                     line = stream.readline().decode("utf-8")
+                    if not line:
+                        break
                     if line.startswith("data:"):
                         raw = line[5:].strip()
                         if raw and raw != "null":
-                            parsed = json.loads(raw)
-                            if isinstance(parsed, list) and len(parsed) > 0 and isinstance(parsed[0], dict):
-                                remote_img_url = parsed[0].get("url")
-                                if remote_img_url:
-                                    # Download and save locally on Withmore
-                                    try:
-                                        target_dir = upload_root() / "tryon"
-                                        target_dir.mkdir(parents=True, exist_ok=True)
-                                        out_name = f"ai_fitted_{p.id}_{secrets.token_hex(6)}.png"
-                                        out_file = target_dir / out_name
-                                        
-                                        img_req = urllib.request.Request(remote_img_url, headers={"User-Agent": "Withmore-AI/1.0"})
-                                        with urllib.request.urlopen(img_req, timeout=15) as img_res:
-                                            out_file.write_bytes(img_res.read())
+                            try:
+                                parsed = json.loads(raw)
+                                if isinstance(parsed, list) and len(parsed) > 0 and isinstance(parsed[0], dict):
+                                    remote_img_url = parsed[0].get("url")
+                                    if remote_img_url:
+                                        break
+                            except Exception:
+                                pass
 
-                                        return {
-                                            "success": True,
-                                            "result_url": f"/uploads/tryon/{out_name}",
-                                            "human_url": human_url,
-                                            "garment_url": garment_url,
-                                            "provider": "huggingface-idm-vton",
-                                            "mode": "ai_generated"
-                                        }
-                                    except Exception:
-                                        return {
-                                            "success": True,
-                                            "result_url": remote_img_url,
-                                            "human_url": human_url,
-                                            "garment_url": garment_url,
-                                            "provider": "huggingface-idm-vton",
-                                            "mode": "ai_generated"
-                                        }
+            if remote_img_url:
+                target_dir = upload_root() / "tryon"
+                target_dir.mkdir(parents=True, exist_ok=True)
+                out_name = f"ai_fitted_{p.id}_{secrets.token_hex(6)}.png"
+                out_file = target_dir / out_name
+
+                try:
+                    img_req = urllib.request.Request(remote_img_url, headers={"User-Agent": "Withmore-AI/1.0"})
+                    with urllib.request.urlopen(img_req, timeout=20) as img_res:
+                        out_file.write_bytes(img_res.read())
+
+                    return {
+                        "success": True,
+                        "result_url": f"/uploads/tryon/{out_name}",
+                        "human_url": human_url,
+                        "garment_url": garment_url,
+                        "provider": "huggingface-idm-vton",
+                        "mode": "ai_generated"
+                    }
+                except Exception:
+                    return {
+                        "success": True,
+                        "result_url": remote_img_url,
+                        "human_url": human_url,
+                        "garment_url": garment_url,
+                        "provider": "huggingface-idm-vton",
+                        "mode": "ai_generated"
+                    }
     except Exception as e:
         pass
 
@@ -983,7 +993,7 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
                     "Content-Type": "application/json"
                 }
             )
-            with urllib.request.urlopen(fal_req, timeout=10) as fal_res:
+            with urllib.request.urlopen(fal_req, timeout=12) as fal_res:
                 fal_data = json.loads(fal_res.read().decode())
                 img_url = fal_data.get("image", {}).get("url")
                 if img_url:
@@ -998,5 +1008,4 @@ async def generate_tryon(body: TryOnIn, db: Session = Depends(get_db)):
         except Exception:
             pass
 
-    # Fallback to local Pillow composition if both remote AI fail
     raise HTTPException(status_code=500, detail="AI xizmati hozirda band. Iltimos, 1 daqiqadan so'ng qayta urinib ko'ring.")
