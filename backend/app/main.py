@@ -113,5 +113,12 @@ def spa(full_path: str):
         return JSONResponse({"detail": "Frontend is not built. Run start-windows.bat"}, status_code=503)
     target = (DIST / full_path).resolve()
     if full_path and target.is_file() and DIST.resolve() in target.parents:
-        return FileResponse(target)
-    return FileResponse(DIST / "index.html")
+        resp = FileResponse(target)
+        if target.suffix in [".js", ".css"]:
+            resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return resp
+    resp = FileResponse(DIST / "index.html")
+    resp.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
