@@ -2042,7 +2042,9 @@ function ProductScreen({
   const [showSizeCalc, setShowSizeCalc] = useState(false);
   const [showTryOnModal, setShowTryOnModal] = useState(false);
   const [tryonUserPhoto, setTryonUserPhoto] = useState<string>("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80");
+  const [tryonServerPhoto, setTryonServerPhoto] = useState<string>("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80");
   const [tryonPresetId, setTryonPresetId] = useState<string>("m1");
+  const [tryonUploading, setTryonUploading] = useState<boolean>(false);
   const [tryonGenerating, setTryonGenerating] = useState<boolean>(false);
   const [tryonResult, setTryonResult] = useState<string | null>(null);
 
@@ -2053,6 +2055,7 @@ function ProductScreen({
     setTryonUserPhoto(localUrl);
     setTryonPresetId("");
     setTryonResult(null);
+    setTryonUploading(true);
 
     try {
       const formData = new FormData();
@@ -2060,13 +2063,23 @@ function ProductScreen({
       const res = await fetch("/api/shop/tryon/upload", { method: "POST", body: formData });
       if (res.ok) {
         const data = await res.json();
-        setTryonUserPhoto(data.url);
+        setTryonServerPhoto(data.url);
+        toast("Suratingiz tayyorlandi!", "success");
+      } else {
+        toast("Rasmni yuklashda xatolik", "error");
       }
-    } catch {}
+    } catch {
+      toast("Rasmni yuklashda xatolik", "error");
+    } finally {
+      setTryonUploading(false);
+    }
   };
 
   const handleInlineTryOnGenerate = async () => {
-    if (!tryonUserPhoto) {
+    const photoToUse = tryonPresetId
+      ? (PRESET_MODELS.find((m) => m.id === tryonPresetId)?.photo || tryonUserPhoto)
+      : (tryonServerPhoto || tryonUserPhoto);
+    if (!photoToUse) {
       toast("Iltimos, avval suratingizni yuklang yoki model tanlang", "error");
       return;
     }
@@ -2077,16 +2090,18 @@ function ProductScreen({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           product_id: product.id,
-          human_image_url: tryonUserPhoto,
+          human_image_url: photoToUse,
           category: "upper_body"
         })
       });
-      if (res.result_url) {
+      if (res && res.result_url) {
         setTryonResult(res.result_url);
         toast("Kiyim muvaffaqiyatli moslashtirildi!", "success");
+      } else {
+        toast("Generatsiyada xatolik yuz berdi", "error");
       }
     } catch (e: any) {
-      toast(e.message || "Xatolik yuz berdi", "error");
+      toast(e.message || "Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.", "error");
     } finally {
       setTryonGenerating(false);
     }
@@ -2356,7 +2371,12 @@ function ProductScreen({
                     className="hidden"
                     onChange={handleTryOnFileUpload}
                   />
-                  {tryonUserPhoto && !tryonPresetId ? (
+                  {tryonUploading ? (
+                    <div className="h-15 sm:h-16 flex flex-col items-center justify-center gap-1">
+                      <div className="h-4 w-4 border-2 border-[#d6bd92] border-t-transparent rounded-full animate-spin" />
+                      <span className="text-[8px] font-bold text-[#d6bd92]">Yuklanmoqda...</span>
+                    </div>
+                  ) : tryonUserPhoto && !tryonPresetId ? (
                     <img src={tryonUserPhoto} alt="Siz" className="h-15 sm:h-16 w-full object-cover rounded-xl" />
                   ) : (
                     <div className="h-15 sm:h-16 flex flex-col items-center justify-center gap-0.5">
@@ -2442,11 +2462,12 @@ function ProductScreen({
               ) : (
                 <button
                   type="button"
+                  disabled={tryonUploading}
                   onClick={handleInlineTryOnGenerate}
-                  className="w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black uppercase tracking-wider shadow-lg transition cursor-pointer border-0"
+                  className={`w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#d6bd92] via-[#e5d2ae] to-[#c5a676] hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black uppercase tracking-wider shadow-lg transition cursor-pointer border-0 ${tryonUploading ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   <span>✨</span>
-                  <span>{lang === "ru" ? "Примерить костюм на фото (AI)" : "Kiyintirib generatsiya qilish (AI Try-On)"}</span>
+                  <span>{tryonUploading ? "Rasm yuklanmoqda..." : lang === "ru" ? "Примерить костюм на фото (AI)" : "Kiyintirib generatsiya qilish (AI Try-On)"}</span>
                 </button>
               )}
             </div>

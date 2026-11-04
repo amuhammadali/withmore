@@ -13,6 +13,8 @@ class Settings(BaseSettings):
 
     BOT_TOKEN: str = ""
     FAL_KEY: str = ""
+    FASHN_API_KEY: str = ""
+    HF_TOKEN: str = ""
     ADMIN_PASSWORD: str = ""
     SESSION_SECRET: str = ""
     DATABASE_URL: str = f"sqlite:///{(ROOT / 'data' / 'whitmore.db').as_posix()}"
