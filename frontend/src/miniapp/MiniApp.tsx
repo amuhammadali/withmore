@@ -1616,10 +1616,12 @@ function ProductScreen({
   const [revText, setRevText] = useState("");
   const [revSubmitting, setRevSubmitting] = useState(false);
   useEffect(() => {
-    shopFetch(`/api/shop/reviews?product_id=${product.id}`)
+    const pid = id || product?.id;
+    const url = pid ? `/api/shop/reviews?product_id=${pid}` : "/api/shop/reviews";
+    shopFetch(url)
       .then((res) => setReviews(Array.isArray(res) ? res : []))
       .catch(() => {});
-  }, [product.id]);
+  }, [id, product?.id]);
 
   useEffect(() => {
     setLoading(true);
