@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Link,
   Route,
@@ -1610,11 +1611,43 @@ function ProductScreen({
   const [quickLoading, setQuickLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"desc" | "reviews" | "delivery">("desc");
   const [reviews, setReviews] = useState<any[]>([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [revName, setRevName] = useState("");
   const [revCity, setRevCity] = useState("Samarqand");
   const [revText, setRevText] = useState("");
   const [revSubmitting, setRevSubmitting] = useState(false);
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (revSubmitting || !revText.trim() || !product) return;
+    setRevSubmitting(true);
+    try {
+      const newRev = await shopFetch("/api/shop/reviews", {
+        method: "POST",
+        body: JSON.stringify({
+          product_id: product.id,
+          name: revName.trim() || "Mijoz",
+          city: revCity.trim() || "Toshkent",
+          item: product.name_uz,
+          text: revText.trim(),
+          rating: revRating,
+        }),
+      });
+      toast("Fikringiz uchun katta rahmat! Sharhingiz qo'shildi.", "success");
+      setReviews((prev) => [newRev, ...prev]);
+      setShowReviewModal(false);
+      setShowReviewForm(false);
+      setRevText("");
+      setActiveTab("reviews");
+      const el = document.getElementById("product-tabs-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    } catch (err: any) {
+      toast(err.message || "Sharh yuborishda xatolik yuz berdi", "error");
+    } finally {
+      setRevSubmitting(false);
+    }
+  };
   useEffect(() => {
     const pid = id || product?.id;
     const url = pid ? `/api/shop/reviews?product_id=${pid}` : "/api/shop/reviews";
@@ -2340,12 +2373,141 @@ function ProductScreen({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setShowReviewModal(true)}
+                      onClick={() => setShowReviewForm((v) => !v)}
                       className="rounded-xl bg-[#172641] hover:bg-[#223558] text-white px-3.5 py-2 text-xs font-bold cursor-pointer border-0 shadow-sm transition active:scale-95"
                     >
-                      ✍️ Sharh yozish
+                      {showReviewForm ? "✕ Yopish" : "✍️ Sharh yozish"}
                     </button>
                   </div>
+
+                  {/* Inline Review Form */}
+                  {showReviewForm && (
+                    <div className="rounded-2xl border-2 border-[#172641]/20 bg-[#faf8f3] p-4 text-slate-900 space-y-3.5 shadow-sm rise-in">
+                      <div className="flex items-center justify-between border-b border-[#172641]/10 pb-2.5">
+                        <div>
+                          <h4 className="font-display text-sm font-bold text-[#172641]">
+                            ✍️ Mahsulot haqida sharh qoldirish
+                          </h4>
+                          <p className="text-[10px] text-slate-500">{product.name_uz}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowReviewForm(false)}
+                          className="h-7 w-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-bold border-0 cursor-pointer"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleReviewSubmit} className="space-y-3">
+                        {/* 5-Star Rating Selector */}
+                        <div>
+                          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Bahoingiz
+                          </label>
+                          <div className="flex items-center gap-1.5 bg-amber-50/70 border border-amber-200/60 rounded-xl p-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => setRevRating(star)}
+                                className="text-2xl cursor-pointer transition hover:scale-125 p-0.5 bg-transparent border-0 text-amber-500 leading-none"
+                              >
+                                {star <= revRating ? "★" : "☆"}
+                              </button>
+                            ))}
+                            <span className="ml-auto text-xs font-bold text-amber-900">
+                              {revRating === 5 ? "5/5 · A'lo!" : revRating === 4 ? "4/5 · Yaxshi" : `${revRating}/5`}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700">
+                              Ismingiz
+                            </label>
+                            <input
+                              value={revName}
+                              onChange={(e) => setRevName(e.target.value)}
+                              placeholder="Masalan: Sardorbek M."
+                              className="mt-1 h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs text-slate-900 outline-none focus:border-[#172641]"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700">
+                              Shahar / Hudud
+                            </label>
+                            <input
+                              value={revCity}
+                              onChange={(e) => setRevCity(e.target.value)}
+                              placeholder="Samarqand / Toshkent..."
+                              className="mt-1 h-9 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs text-slate-900 outline-none focus:border-[#172641]"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-700">
+                            Fikringiz *
+                          </label>
+                          {/* Quick feedback chips */}
+                          <div className="mt-1 flex flex-wrap gap-1.5 mb-1.5">
+                            {[
+                              "Mato sifati a'lo darajada 👍",
+                              "O'lchami ideal tushdi ✨",
+                              "Pochta tez yetib keldi 🚚",
+                              "Tavsiya qilaman ⭐"
+                            ].map((chip) => (
+                              <button
+                                key={chip}
+                                type="button"
+                                onClick={() => {
+                                  setRevText((prev) => (prev ? `${prev}. ${chip}` : chip));
+                                }}
+                                className="rounded-full bg-slate-200 hover:bg-slate-300 px-2.5 py-1 text-[10px] font-medium text-slate-700 border-0 cursor-pointer transition active:scale-95"
+                              >
+                                + {chip}
+                              </button>
+                            ))}
+                          </div>
+                          <textarea
+                            required
+                            rows={3}
+                            value={revText}
+                            onChange={(e) => setRevText(e.target.value)}
+                            placeholder="Mato qalinligi, tikilishi va o'lcham bo'yicha fikringizni yozing..."
+                            className="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-[#172641] transition resize-none"
+                          />
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowReviewForm(false)}
+                            className="h-10 px-4 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 cursor-pointer hover:bg-slate-100"
+                          >
+                            Bekor qilish
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={revSubmitting || !revText.trim()}
+                            className="flex-1 h-10 flex items-center justify-center gap-2 rounded-xl bg-[#172641] hover:bg-[#25395b] text-xs font-bold uppercase tracking-wider text-[#f4efe5] border-0 cursor-pointer disabled:opacity-50 transition shadow-sm active:scale-95"
+                          >
+                            {revSubmitting ? (
+                              <span className="flex items-center gap-2">
+                                <span className="h-3.5 w-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                                Yuborilmoqda...
+                              </span>
+                            ) : (
+                              <span>✍️ Sharhni e'lon qilish</span>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
 
                   <div className="space-y-2.5">
                     {reviews.length > 0 ? (
@@ -2378,7 +2540,7 @@ function ProductScreen({
                         <div className="text-xs font-semibold text-slate-600">Bu mahsulotga hali sharh qoldirilmagan.</div>
                         <button
                           type="button"
-                          onClick={() => setShowReviewModal(true)}
+                          onClick={() => setShowReviewForm(true)}
                           className="rounded-xl bg-[#172641] text-white px-4 py-2 text-xs font-bold cursor-pointer border-0 shadow-sm"
                         >
                           Birinchi bo‘lib sharh qoldiring
@@ -2510,7 +2672,12 @@ function ProductScreen({
           </div>
           <button
             type="button"
-            onClick={() => setShowReviewModal(true)}
+            onClick={() => {
+              setActiveTab("reviews");
+              setShowReviewForm(true);
+              const el = document.getElementById("product-tabs-section");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+            }}
             className="rounded-full border border-[#172641]/25 bg-[#faf8f3] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-900 cursor-pointer hover:bg-[#172641] hover:text-[#f4efe5] transition"
           >
             + Fikr bildirish
@@ -2542,8 +2709,8 @@ function ProductScreen({
           ))}
         </div>
 
-        {/* Review Modal */}
-        {showReviewModal && (
+        {/* Review Modal with Portal */}
+        {showReviewModal && typeof document !== "undefined" && createPortal(
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
             <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-5 shadow-2xl text-slate-900 space-y-4 rise-in max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -2564,38 +2731,7 @@ function ProductScreen({
                 </button>
               </div>
 
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (revSubmitting || !revText.trim()) return;
-                  setRevSubmitting(true);
-                  try {
-                    const newRev = await shopFetch("/api/shop/reviews", {
-                      method: "POST",
-                      body: JSON.stringify({
-                        product_id: product.id,
-                        name: revName.trim() || "Mijoz",
-                        city: revCity.trim() || "Toshkent",
-                        item: product.name_uz,
-                        text: revText.trim(),
-                        rating: revRating,
-                      }),
-                    });
-                    toast("Fikringiz uchun katta rahmat! Sharhingiz qo'shildi.", "success");
-                    setReviews((prev) => [newRev, ...prev]);
-                    setShowReviewModal(false);
-                    setRevText("");
-                    setActiveTab("reviews");
-                    const el = document.getElementById("product-tabs-section");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  } catch (err: any) {
-                    toast(err.message || "Sharh yuborishda xatolik yuz berdi", "error");
-                  } finally {
-                    setRevSubmitting(false);
-                  }
-                }}
-                className="space-y-3.5"
-              >
+              <form onSubmit={handleReviewSubmit} className="space-y-3.5">
                 {/* 5-Star Rating Selector */}
                 <div>
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
@@ -2692,7 +2828,8 @@ function ProductScreen({
                 </button>
               </form>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </section>
     </div>
