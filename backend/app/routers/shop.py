@@ -544,7 +544,7 @@ DEFAULT_REVIEWS = [
 
 
 class ReviewIn(BaseModel):
-    product_id: Optional[int] = None
+    product_id: int | None = None
     name: str = Field(default="Mijoz", min_length=1, max_length=80)
     city: str = Field(default="Toshkent", max_length=80)
     item: str = Field(default="", max_length=120)
@@ -553,7 +553,7 @@ class ReviewIn(BaseModel):
 
 
 @router.get("/reviews")
-def get_reviews(product_id: Optional[int] = None, db: Session = Depends(get_db)):
+def get_reviews(product_id: int | None = None, db: Session = Depends(get_db)):
     raw = get_setting(db, "customer_reviews_json")
     custom = json.loads(raw) if raw else []
     all_revs = custom + DEFAULT_REVIEWS
@@ -647,7 +647,7 @@ def save_customer_measurements(body: CustomerMeasurementsIn, c: Customer = Depen
 class FittingBookingIn(BaseModel):
     date: str = Field(min_length=8, max_length=16)
     time_slot: str = Field(min_length=3, max_length=32)
-    product_id: Optional[int] = None
+    product_id: int | None = None
     suit_size: Optional[str] = Field(default="", max_length=32)
     name: Optional[str] = Field(default="", max_length=120)
     phone: Optional[str] = Field(default="", max_length=32)
