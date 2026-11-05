@@ -544,36 +544,45 @@ DEFAULT_REVIEWS = [
 
 
 class ReviewIn(BaseModel):
-    name: str = Field(min_length=2, max_length=80)
+    product_id: Optional[int] = None
+    name: str = Field(default="Mijoz", min_length=1, max_length=80)
     city: str = Field(default="Toshkent", max_length=80)
     item: str = Field(default="", max_length=120)
-    text: str = Field(min_length=5, max_length=500)
-    rating: int = Field(default=5, ge=4, le=5)
+    text: str = Field(min_length=2, max_length=1000)
+    rating: int = Field(default=5, ge=1, le=5)
 
 
 @router.get("/reviews")
-def get_reviews(db: Session = Depends(get_db)):
+def get_reviews(product_id: Optional[int] = None, db: Session = Depends(get_db)):
     raw = get_setting(db, "customer_reviews_json")
     custom = json.loads(raw) if raw else []
-    return custom + DEFAULT_REVIEWS
+    all_revs = custom + DEFAULT_REVIEWS
+    if product_id:
+        prod_revs = [r for r in all_revs if r.get("product_id") == product_id]
+        other_revs = [r for r in all_revs if r.get("product_id") != product_id]
+        return prod_revs + other_revs
+    return all_revs
 
 
 @router.post("/reviews", status_code=201)
-def add_review(body: ReviewIn, c: Customer = Depends(shop_customer), db: Session = Depends(get_db)):
+def add_review(body: ReviewIn, db: Session = Depends(get_db)):
     raw = get_setting(db, "customer_reviews_json")
     custom = json.loads(raw) if raw else []
+    city_str = body.city.strip() if body.city else "Toshkent"
     entry = {
         "id": int(now().timestamp()),
-        "name": body.name.strip(),
-        "city": f"{body.city.strip()} · Pochta",
+        "product_id": body.product_id,
+        "name": body.name.strip() or "Mijoz",
+        "city": f"{city_str} · Pochta" if "Pochta" not in city_str else city_str,
         "rating": body.rating,
         "item": body.item.strip() or "WITHMORE Collection",
+        "text": body.text.strip(),
         "text_uz": body.text.strip(),
         "text_ru": body.text.strip(),
-        "date": "Yangi fikr",
+        "date": "Hozirgi sharh",
     }
     custom.insert(0, entry)
-    set_setting(db, "customer_reviews_json", json.dumps(custom[:30], ensure_ascii=False))
+    set_setting(db, "customer_reviews_json", json.dumps(custom[:60], ensure_ascii=False))
     db.commit()
     return entry
 
