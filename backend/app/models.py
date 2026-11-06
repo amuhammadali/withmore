@@ -13,18 +13,34 @@ def now() -> datetime:
 
 PERMISSIONS = ["products", "orders", "customers", "promotions", "settings", "statistics"]
 
-STATUSES = ["new", "awaiting_payment", "paid", "ordered_china", "china_warehouse",
-            "in_transit", "in_uz", "delivered", "cancelled"]
+STATUSES = [
+    "new", "awaiting_payment", "paid", "preparing", "ready_to_ship",
+    "ordered_china", "china_warehouse", "in_transit", "in_uz", "delivered", "cancelled"
+]
 STATUS_UZ = {
-    "new": "Yangi", "awaiting_payment": "To'lov kutilmoqda", "paid": "To'langan",
-    "ordered_china": "Xitoyda buyurtma berildi", "china_warehouse": "Xitoy omborida",
-    "in_transit": "Yo'lda", "in_uz": "O'zbekistonda", "delivered": "Yetkazildi",
+    "new": "Yangi buyurtma",
+    "awaiting_payment": "To'lov kutilmoqda",
+    "paid": "Tasdiqlangan",
+    "preparing": "Ombordan yig'ilmoqda / Qadoqlash",
+    "ready_to_ship": "Jo'natishga tayyor",
+    "ordered_china": "Ombordan yig'ilmoqda",
+    "china_warehouse": "Jo'natishga tayyor",
+    "in_transit": "Pochtada yo'lda (BTS / EMU)",
+    "in_uz": "Pochta filialiga yetib borgan",
+    "delivered": "Yetkazildi",
     "cancelled": "Bekor qilindi",
 }
 STATUS_RU = {
-    "new": "Новый", "awaiting_payment": "Ожидает оплаты", "paid": "Оплачен",
-    "ordered_china": "Заказан в Китае", "china_warehouse": "На складе в Китае",
-    "in_transit": "В пути", "in_uz": "В Узбекистане", "delivered": "Доставлен",
+    "new": "Новый заказ",
+    "awaiting_payment": "Ожидает оплаты",
+    "paid": "Подтвержден",
+    "preparing": "В сборке / Упаковка",
+    "ready_to_ship": "Готов к отправке",
+    "ordered_china": "В сборке / Упаковка",
+    "china_warehouse": "Готов к отправке",
+    "in_transit": "В пути (BTS / EMU)",
+    "in_uz": "Прибыл в пункт выдачи",
+    "delivered": "Доставлен",
     "cancelled": "Отменён",
 }
 

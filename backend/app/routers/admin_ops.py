@@ -46,39 +46,80 @@ def supplier_put(pid: int, body: SupplierIn, admin: AdminAccount = Depends(produ
     return {"product_id": pid, "url": url}
 
 
-# ---------------- China purchase list ----------------
+# ---------------- Dispatch & Shipping list (BTS / EMU) ----------------
+@router.get("/dispatch-list")
 @router.get("/china-list")
-def china_list(status: str = "paid", admin: AdminAccount = Depends(orders_perm), db: Session = Depends(get_db)):
-    """Aggregate all items of orders with given status (default: paid) for buying in China."""
-    if status not in STATUSES:
+def dispatch_list(status: str = "paid", admin: AdminAccount = Depends(orders_perm), db: Session = Depends(get_db)):
+    """Aggregate items and orders ready for packaging and dispatch via BTS / EMU."""
+    if status not in STATUSES and status != "all_ready":
         raise HTTPException(422, "Holat noto'g'ri")
-    orders = db.query(Order).options(selectinload(Order.items)).filter(Order.status == status) \
-        .order_by(Order.id).all()
+    
+    q = db.query(Order).options(selectinload(Order.items))
+    if status == "all_ready":
+        orders = q.filter(Order.status.in_(["paid", "preparing", "ready_to_ship", "ordered_china", "china_warehouse"])).order_by(Order.id.desc()).all()
+    else:
+        orders = q.filter(Order.status == status).order_by(Order.id.desc()).all()
+
     s = all_settings(db)
     agg: dict[tuple, dict] = {}
+    orders_data = []
+
     for o in orders:
+        items_desc = []
         for it in o.items:
-            if it.sale_type == "stock":
-                continue
             key = (it.product_id, it.size, it.color)
             row = agg.get(key)
             if not row:
                 p = db.get(Product, it.product_id) if it.product_id else None
-                row = {"product_id": it.product_id, "name": it.name, "size": it.size, "color": it.color,
-                       "qty": 0, "orders": [], "price_yuan": p.price_yuan if p else 0,
-                       "thumb": thumb_of(p.images[0].path) if p and p.images else None,
-                       "supplier_url": get_setting(db, f"supplier:{it.product_id}") if it.product_id else ""}
+                row = {
+                    "product_id": it.product_id,
+                    "name": it.name,
+                    "size": it.size,
+                    "color": it.color,
+                    "qty": 0,
+                    "orders": [],
+                    "price_uzs": it.price,
+                    "thumb": thumb_of(p.images[0].path) if p and p.images else None,
+                    "sku": get_setting(db, f"supplier:{it.product_id}") if it.product_id else "",
+                }
                 agg[key] = row
             row["qty"] += it.qty
             row["orders"].append(o.code)
+            items_desc.append(f"{it.name} ({it.size or '-'}) x{it.qty}")
+
+        orders_data.append({
+            "id": o.id,
+            "code": o.code,
+            "date": o.created_at.strftime("%Y-%m-%d %H:%M"),
+            "customer_name": o.name or "Mijoz",
+            "phone": o.phone or "",
+            "city": o.city or "Toshkent",
+            "address": o.address or "",
+            "items_summary": ", ".join(items_desc),
+            "total": o.total,
+            "paid_amount": o.paid_amount,
+            "remaining": max(0, o.total - o.paid_amount),
+            "delivery": o.delivery or "courier",
+            "tracking": o.tracking or "",
+            "status": o.status,
+        })
+
     items = sorted(agg.values(), key=lambda r: (r["name"], r["size"]))
-    total_yuan = sum(r["price_yuan"] * r["qty"] for r in items)
-    return {"status": status, "orders_count": len(orders), "order_ids": [o.id for o in orders],
-            "items": items, "total_qty": sum(r["qty"] for r in items),
-            "total_yuan": round(total_yuan, 2), "total_uzs": int(total_yuan * float(s["yuan_rate"]))}
+    total_uzs = sum(r["price_uzs"] * r["qty"] for r in items)
+
+    return {
+        "status": status,
+        "orders_count": len(orders),
+        "order_ids": [o.id for o in orders],
+        "items": items,
+        "orders": orders_data,
+        "total_qty": sum(r["qty"] for r in items),
+        "total_yuan": 0,
+        "total_uzs": total_uzs,
+    }
 
 
-# ---------------- bulk cargo status ----------------
+# ---------------- bulk status updater ----------------
 class BulkStatusIn(BaseModel):
     order_ids: list[int] = Field(min_length=1, max_length=300)
     status: str
@@ -123,8 +164,11 @@ def finance(days: int = 30, admin: AdminAccount = Depends(stats_perm), db: Sessi
         paid += o.paid_amount
         for it in o.items:
             p = db.get(Product, it.product_id) if it.product_id else None
-            g = int((p.price_yuan if p else 0) * rate) * it.qty
-            c = int((p.weight_kg if p else 0) * ship) * it.qty
+            if p and p.price_yuan and p.price_yuan > 0:
+                g = int(p.price_yuan * rate) * it.qty
+            else:
+                g = int(it.price * 0.55) * it.qty
+            c = 0
             cost_goods += g
             cost_cargo += c
             row = per_product.setdefault(it.product_id or 0, {"name": it.name, "qty": 0, "revenue": 0, "cost": 0})
@@ -132,7 +176,7 @@ def finance(days: int = 30, admin: AdminAccount = Depends(stats_perm), db: Sessi
             row["revenue"] += it.price * it.qty
             row["cost"] += g + c
     post_total = post_fee * len(orders)
-    profit = revenue - cost_goods - cost_cargo - post_total
+    profit = revenue - cost_goods - post_total
     top = sorted(({**v, "profit": v["revenue"] - v["cost"]} for v in per_product.values()),
                  key=lambda r: r["profit"], reverse=True)[:10]
     # Order-by-Order Unit Economics Breakdown
@@ -143,14 +187,15 @@ def finance(days: int = 30, admin: AdminAccount = Depends(stats_perm), db: Sessi
         items_desc = []
         for it in o.items:
             p = db.get(Product, it.product_id) if it.product_id else None
-            g = int((p.price_yuan if p else 0) * rate) * it.qty
-            c = int((p.weight_kg if p else 0) * ship) * it.qty
+            if p and p.price_yuan and p.price_yuan > 0:
+                g = int(p.price_yuan * rate) * it.qty
+            else:
+                g = int(it.price * 0.55) * it.qty
             o_cogs += g
-            o_cargo += c
             items_desc.append(f"{it.name} ({it.qty} dona)")
 
         o_delivery = post_fee
-        o_profit = o.total - o_cogs - o_cargo - o_delivery
+        o_profit = o.total - o_cogs - o_delivery
         o_margin = round(o_profit * 100 / o.total, 1) if o.total > 0 else 0
 
         order_details.append({

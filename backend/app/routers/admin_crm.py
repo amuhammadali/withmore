@@ -29,13 +29,13 @@ orders_perm = require("orders")
 customers_perm = require("customers")
 
 KANBAN_STAGES = [
-    {"id": "new", "title_uz": "Yangi so'rov", "title_ru": "Новые", "color": "#172641"},
+    {"id": "new", "title_uz": "Yangi buyurtma", "title_ru": "Новые", "color": "#172641"},
     {"id": "awaiting_payment", "title_uz": "Aloqada / To'lov", "title_ru": "В работе / Оплата", "color": "#aa8a5e"},
-    {"id": "paid", "title_uz": "To'langan (Avans)", "title_ru": "Оплачено (Аванс)", "color": "#2c6e49"},
-    {"id": "ordered_china", "title_uz": "🇨🇳 Xitoyda olindi", "title_ru": "🇨🇳 Куплено в Китае", "color": "#a3463c"},
-    {"id": "in_transit", "title_uz": "✈️ Karvonda / Yo'lda", "title_ru": "✈️ В пути", "color": "#3f5e94"},
-    {"id": "in_uz", "title_uz": "🏢 Toshkent omborida", "title_ru": "🏢 Склад в Ташкенте", "color": "#735d78"},
-    {"id": "delivered", "title_uz": "📮 Pochtaga berildi", "title_ru": "📮 Отправлено почтой", "color": "#1b4931"},
+    {"id": "paid", "title_uz": "Tasdiqlangan", "title_ru": "Подтвержден", "color": "#2c6e49"},
+    {"id": "preparing", "title_uz": "✂️ Ombordan yig'ish / Qadoqlash", "title_ru": "✂️ Сборка / Упаковка", "color": "#a3463c"},
+    {"id": "in_transit", "title_uz": "🚚 Pochtada yo'lda (BTS / EMU)", "title_ru": "🚚 В пути (Почта)", "color": "#3f5e94"},
+    {"id": "in_uz", "title_uz": "🏢 Filialga yetib borgan", "title_ru": "🏢 Прибыл в пункт выдачи", "color": "#735d78"},
+    {"id": "delivered", "title_uz": "🎉 Yetkazildi", "title_ru": "🎉 Доставлено", "color": "#1b4931"},
     {"id": "cancelled", "title_uz": "❌ Bekor qilingan", "title_ru": "❌ Отменено", "color": "#782823"},
 ]
 
@@ -58,7 +58,10 @@ def get_pipeline(admin: AdminAccount = Depends(orders_perm), db: Session = Depen
     stage_map = {s["id"]: [] for s in KANBAN_STAGES}
 
     for o in orders:
-        if o.status not in stage_map:
+        status_key = o.status
+        if status_key in ("ordered_china", "china_warehouse", "ready_to_ship"):
+            status_key = "preparing"
+        if status_key not in stage_map:
             continue
         items_summary = ", ".join(f"{it.name} ({it.size or '-'}) x{it.qty}" for it in o.items[:2])
         if len(o.items) > 2:

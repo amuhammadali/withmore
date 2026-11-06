@@ -29,9 +29,9 @@ T = {
     "uz": {
         "choose_lang": "Tilni tanlang / Выберите язык",
         "welcome": (
-            "<b>WITHMORE — Sartorial Menswear</b>\n\n"
-            "Xitoydan buyurtma asosida yetkaziladigan klassik erkaklar kiyimi.\n"
-            "Do'konni (Mini App) ochish yoki bo'limlarni ko'rish uchun pastdagi tugmalardan foydalaning:"
+            "<b>WITHMORE — Erkaklar liboslari do'koni</b>\n\n"
+            "Zamonaviy va klassik kiyimlar to'plami. Butun O'zbekiston bo'ylab tezkor yetkazib berish (BTS / EMU).\n"
+            "Do'konni (Mini App) ochish yoki katalog bilan tanishish uchun quyidagi tugmalardan foydalaning:"
         ),
         "share_phone": "📱 Telefon raqamini ulashish (ixtiyoriy)",
         "phone_saved": "Raqamingiz saqlandi. Rahmat!",
@@ -55,8 +55,8 @@ T = {
     "ru": {
         "choose_lang": "Tilni tanlang / Выберите язык",
         "welcome": (
-            "<b>WITHMORE — Sartorial Menswear</b>\n\n"
-            "Классическая мужская одежда под заказ из Китая.\n"
+            "<b>WITHMORE — Магазин мужской одежды</b>\n\n"
+            "Коллекция стильной и классической одежды. Быстрая доставка по всему Узбекистану (BTS / EMU).\n"
             "Используйте кнопки ниже, чтобы открыть магазин (Mini App) или разделы:"
         ),
         "share_phone": "📱 Поделиться номером (по желанию)",

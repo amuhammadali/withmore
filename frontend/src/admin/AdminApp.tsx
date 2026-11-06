@@ -83,10 +83,10 @@ const NAV_DEFS: NavItemDef[] = [
   },
   {
     to: "/admin/china",
-    labelUz: "🇨🇳 Xitoy Zakup",
-    labelRu: "🇨🇳 Закупки в Китае",
-    subUz: "Ta’minot",
-    subRu: "Закупки",
+    labelUz: "📦 Pochta & Jo'natish",
+    labelRu: "📦 Доставка (BTS / EMU)",
+    subUz: "BTS & EMU Reestri",
+    subRu: "Отправка заказов",
     perm: "orders",
     icon: "M16 11V7a4 4 0 0 0-8 0v4M5 9h14l1 12H4L5 9z",
   },
@@ -762,7 +762,7 @@ function LoginScreen({
         </div>
 
         <div className="relative flex items-center justify-between text-[11px] text-white/45">
-          <span>Toshkent · O‘zbekiston / Guangzhou · Xitoy</span>
+          <span>Toshkent · O‘zbekiston (BTS / EMU Express)</span>
           <LangSwitcher />
         </div>
       </div>

@@ -268,24 +268,24 @@ export function OrdersPage() {
             {
               id: "pending_payment",
               title: "To‘lov kutilmoqda",
-              match: ["pending_payment", "confirmed"],
+              match: ["pending_payment", "confirmed", "awaiting_payment"],
               color: "from-amber-500/10 via-yellow-500/5 to-transparent",
               border: "border-amber-300/80",
               badge: "bg-amber-100 text-amber-900 border-amber-200",
               nextStatus: "in_transit",
-              nextLabel: "Xitoydan yo‘lda →",
+              nextLabel: "Pochtaga topshirish →",
               icon: "⏳",
             },
             {
               id: "in_transit",
-              title: "Xitoydan yo‘lda (Kargo)",
-              match: ["in_transit", "paid", "ordered_china"],
+              title: "Pochtada yo‘lda (BTS / EMU)",
+              match: ["in_transit", "paid", "preparing", "ready_to_ship", "ordered_china"],
               color: "from-purple-500/10 via-violet-500/5 to-transparent",
               border: "border-purple-300/80",
               badge: "bg-purple-100 text-purple-900 border-purple-200",
               nextStatus: "delivering",
               nextLabel: "Yetkazishga berish →",
-              icon: "✈️",
+              icon: "🚚",
             },
             {
               id: "delivering",
@@ -581,7 +581,7 @@ export function OrdersPage() {
               {selected.length}
             </span>
             <span className="text-xs font-bold">
-              buyurtma tanlandi (Kargo partiya boshqaruvi)
+              buyurtma tanlandi (Pochta & Partiya boshqaruvi)
             </span>
           </div>
 
@@ -591,23 +591,23 @@ export function OrdersPage() {
               onChange={(e) => setBulkStatus(e.target.value)}
               className="h-9 rounded-xl border border-white/20 bg-white/10 px-3 text-xs font-bold text-white outline-none focus:bg-[#172641]"
             >
-              <option value="ordered_china" className="text-black">
-                🇨🇳 Xitoyda buyurtma berildi (ordered_china)
+              <option value="preparing" className="text-black">
+                ✂️ Ombordan yig'ilmoqda / Qadoqlash (preparing)
               </option>
-              <option value="china_warehouse" className="text-black">
-                🏢 Xitoy omborida (china_warehouse)
+              <option value="ready_to_ship" className="text-black">
+                📦 Jo'natishga tayyor (ready_to_ship)
               </option>
               <option value="in_transit" className="text-black">
-                ✈️ Yo‘lda kargo (in_transit)
+                🚚 Pochtada yo‘lda BTS/EMU (in_transit)
               </option>
               <option value="in_uz" className="text-black">
-                🇺🇿 O‘zbekistonga yetib keldi (in_uz)
+                🏢 Pochta filialiga yetib borgan (in_uz)
               </option>
               <option value="delivered" className="text-black">
-                📮 Pochtaga topshirildi / Yetkazildi (delivered)
+                🎉 Yetkazildi (delivered)
               </option>
               <option value="paid" className="text-black">
-                ✓ To‘langan (paid)
+                ✓ Tasdiqlangan / To‘langan (paid)
               </option>
             </select>
 

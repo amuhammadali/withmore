@@ -1514,13 +1514,13 @@ export function ProductFormPage() {
             onChange={(e) => setForm({ ...form, sale_type: e.target.value })}
             className="wm-input"
           >
-            <option value="preorder">{t.preorderBadge}</option>
-            <option value="stock">{t.inStockBadge}</option>
+            <option value="stock">Omborda tayyor mavjud (Stock)</option>
+            <option value="preorder">Buyurtmaga tayyorlanadi / Tikiladi (Pre-order)</option>
           </select>
         </div>
         <div className="md:col-span-2">
           <label htmlFor="pf-sup" className="wm-label flex items-center justify-between">
-            <span>🇨🇳 Xitoy yetkazib beruvchi havolasi (1688 / Taobao / Poizon link)</span>
+            <span>🏷️ Mahsulot artikuli / Shrif / Ta'minotchi (SKU / Supplier)</span>
             <span className="text-[10px] text-muted-foreground font-normal">Faqat admin uchun</span>
           </label>
           <div className="flex gap-2">
@@ -1528,7 +1528,7 @@ export function ProductFormPage() {
               id="pf-sup"
               value={supplierUrl}
               onChange={(e) => setSupplierUrl(e.target.value)}
-              placeholder="https://detail.1688.com/offer/... yoki taobao link"
+              placeholder="Masalan: ART-2026-GRAFIT yoki Tikuv sexi #1"
               className="wm-input flex-1"
             />
             {supplierUrl.startsWith("http") && (

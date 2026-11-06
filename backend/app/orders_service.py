@@ -189,35 +189,42 @@ def release_stock(db: Session, order: Order):
     order.meta.stock_reserved = False
 
 
-def status_text(customer: Customer, order: Order) -> str:
+def status_text(customer: Customer, order: Order, db: Session | None = None) -> str:
     lang = customer.language if customer else "uz"
     code = html.escape(order.code)
     tracking = html.escape(order.tracking) if order.tracking else ""
     name = html.escape(customer.display_name if customer else order.name)
+    brand_name = "WITHMORE"
+    if db:
+        brand_name = get_setting(db, "brand_name") or "WITHMORE"
 
     if lang == "ru":
         msgs = {
-            "new": f"🆕 <b>Заказ принят!</b>\n\nЗдравствуйте, {name}. Ваш заказ <b>{code}</b> успешно зарегистрирован. Мы свяжемся с вами для подтверждения.",
-            "awaiting_payment": f"💳 <b>Ожидание оплаты / Аванса</b>\n\nПо заказу <b>{code}</b> ожидается оплата аванса. Свяжитесь с администратором или отправьте чек.",
-            "paid": f"✅ <b>Оплата подтверждена!</b>\n\nУважаемый(ая) {name}, оплата по заказу <b>{code}</b> успешно получена. Заказ отправлен на закупку поставщику.",
-            "ordered_china": f"🇨🇳 <b>Выкуплен в Китае!</b>\n\nВаш заказ <b>{code}</b> успешно выкуплен и направлен на карго-склад в Китае.",
-            "china_warehouse": f"📦 <b>Принят на складе в Китае!</b>\n\nТовары по заказу <b>{code}</b> проверены и упакованы для международной отправки.",
-            "in_transit": f"✈️ <b>Заказ в пути!</b>\n\nВаш заказ <b>{code}</b> отправлен карго-рейсом в Узбекистан. Ожидаемый срок прибытия: 5-8 дней.",
-            "in_uz": f"🏢 <b>Прибыл в Ташкент!</b>\n\nЗаказ <b>{code}</b> поступил на главный склад в Ташкенте и готовится к передаче в почтовую службу (BTS / EMU).",
-            "delivered": f"📮 <b>Отправлен почтой!</b>\n\nУважаемый(ая) {name}, ваш заказ <b>{code}</b> передан в почтовую службу (BTS / EMU).\n" + (f"📦 Трек-номер: <code>{tracking}</code>\n" if tracking else "") + f"📍 Адрес выдачи: {html.escape(order.city)}, {html.escape(order.address)}\n\nСпасибо за выбор WHITMORE!",
-            "cancelled": f"❌ <b>Заказ отменён</b>\n\nЗаказ <b>{code}</b> был отменён. Если у вас возникли вопросы, обратитесь к администратору.",
+            "new": f"🆕 <b>Заказ принят!</b>\n\nЗдравствуйте, {name}. Ваш заказ <b>{code}</b> успешно зарегистрирован. Наш менеджер скоро свяжется с вами для подтверждения.",
+            "awaiting_payment": f"💳 <b>Ожидание оплаты</b>\n\nПо заказу <b>{code}</b> ожидается подтверждение оплаты. Вы можете отправить чек об оплате администратору.",
+            "paid": f"✅ <b>Заказ подтверждён и оплачен!</b>\n\nУважаемый(ая) {name}, оплата по заказу <b>{code}</b> успешно получена. Товар передан на склад для сборки.",
+            "preparing": f"✂️ <b>Сборка и упаковка!</b>\n\nВаш заказ <b>{code}</b> собирается на складе, проходит контроль качества и упаковывается в фирменную коробку.",
+            "ready_to_ship": f"📦 <b>Готов к отправке!</b>\n\nЗаказ <b>{code}</b> полностью упакован и ожидает передачи курьеру почты (BTS / EMU).",
+            "ordered_china": f"✂️ <b>Сборка и подготовка!</b>\n\nВаш заказ <b>{code}</b> собирается и готовится к передаче в курьерскую службу.",
+            "china_warehouse": f"📦 <b>Готов к отправке!</b>\n\nЗаказ <b>{code}</b> проверен и подготовлен к отправке.",
+            "in_transit": f"🚚 <b>Заказ отправлен почтой (BTS / EMU)!</b>\n\nВаш заказ <b>{code}</b> передан в почтовую службу и уже в пути в ваш город." + (f"\n📦 Трек-номер: <code>{tracking}</code>" if tracking else ""),
+            "in_uz": f"🏢 <b>Прибыл в пункт выдачи!</b>\n\nЗаказ <b>{code}</b> прибыл в филиал почты BTS / EMU в вашем городе. Вы можете получить посылку или ожидать курьера.\n📍 Адрес: {html.escape(order.city or '')}, {html.escape(order.address or '')}",
+            "delivered": f"🎉 <b>Заказ доставлен!</b>\n\nУважаемый(ая) {name}, ваш заказ <b>{code}</b> успешно доставлен!\n\nСпасибо, что выбрали {html.escape(brand_name)}! Носите с удовольствием!",
+            "cancelled": f"❌ <b>Заказ отменён</b>\n\nЗаказ <b>{code}</b> был отменён. По всем вопросам обращайтесь к администратору.",
         }
         return msgs.get(order.status, f"Заказ <b>{code}</b>: статус - <b>{STATUS_RU.get(order.status, order.status)}</b>")
     else:
         msgs = {
             "new": f"🆕 <b>Buyurtmangiz qabul qilindi!</b>\n\nAssalomu alaykum, {name}. <b>{code}</b> raqamli buyurtmangiz tizimda ro'yxatga olindi. Tez orada menejerimiz siz bilan bog'lanadi.",
-            "awaiting_payment": f"💳 <b>To‘lov kutilmoqda</b>\n\n<b>{code}</b> raqamli buyurtmangiz uchun avans to‘lovi kutilmoqda. Menejer bergan rekvizitlar orqali to‘lov qilishingiz mumkin.",
-            "paid": f"✅ <b>To‘lov tasdiqlandi!</b>\n\nHurmatli {name}, <b>{code}</b> raqamli buyurtmangiz uchun to‘lov qabul qilindi. Mahsulot zudlik bilan xaridga yo‘naltirildi.",
-            "ordered_china": f"🇨🇳 <b>Xitoyda sotib olindi!</b>\n\n<b>{code}</b> raqamli buyurtmangiz yetkazib beruvchidan xarid qilindi va Xitoydagi kargo omboriga yo‘l oldi.",
-            "china_warehouse": f"📦 <b>Xitoy omborida qabul qilindi!</b>\n\n<b>{code}</b> buyurtmangiz tekshirildi, qadoqlandi va O‘zbekistonga jo‘natishga tayyorlandi.",
-            "in_transit": f"✈️ <b>Buyurtmangiz yo‘lga chiqdi!</b>\n\n<b>{code}</b> raqamli posilka xalqaro kargo reysi orqali O‘zbekistonga parvoz qilmoqda (5-8 kun).",
-            "in_uz": f"🏢 <b>Toshkent omboriga yetib keldi!</b>\n\n<b>{code}</b> buyurtmangiz Toshkentdagi bosh omborimizga yetib keldi. Saralanib, BTS / EMU pochtasiga topshirilmoqda.",
-            "delivered": f"📮 <b>Pochtaga topshirildi!</b>\n\nHurmatli {name}, <b>{code}</b> raqamli buyurtmangiz BTS / EMU pochta filialiga topshirildi!\n" + (f"📦 Kuzatuv trek-kodi: <code>{tracking}</code>\n" if tracking else "") + f"📍 Manzil: {html.escape(order.city)}, {html.escape(order.address)}\n\nPochta punktidan posilkani olib ketishingiz mumkin. WHITMORE kiyimlari sizga uzoq xizmat qilsin!",
+            "awaiting_payment": f"💳 <b>To‘lov kutilmoqda</b>\n\n<b>{code}</b> raqamli buyurtmangiz uchun to'lov kutilmoqda. Click / Payme yoki karta orqali to'lov chekini yuborishingiz mumkin.",
+            "paid": f"✅ <b>Buyurtma tasdiqlandi!</b>\n\nHurmatli {name}, <b>{code}</b> raqamli buyurtmangiz tasdiqlandi. Mahsulot omborga yig'ish va qadoqlashga topshirildi.",
+            "preparing": f"✂️ <b>Ombordan yig'ilmoqda / Qadoqlanmoqda!</b>\n\n<b>{code}</b> raqamli buyurtmangiz ombordan saralanib, sifat nazoratidan o'tkazilmoqda va brend paketida qadoqlanmoqda.",
+            "ready_to_ship": f"📦 <b>Jo'natishga tayyor!</b>\n\n<b>{code}</b> raqamli buyurtmangiz to'liq qadoqlandi va BTS / EMU pochta kuryeriga topshirilish navbatida turibdi.",
+            "ordered_china": f"✂️ <b>Ombordan yig'ilmoqda!</b>\n\n<b>{code}</b> raqamli buyurtmangiz saralanib, jo'natishga tayyorlanmoqda.",
+            "china_warehouse": f"📦 <b>Jo'natishga tayyor!</b>\n\n<b>{code}</b> raqamli buyurtmangiz qadoqlandi va jo'natilishga tayyor.",
+            "in_transit": f"🚚 <b>Pochtada yo‘lga chiqdi (BTS / EMU)!</b>\n\n<b>{code}</b> raqamli buyurtmangiz pochta xizmatiga topshirildi va shahringiz tomon yo'l oldi." + (f"\n📦 Kuzatuv trek-kodi: <code>{tracking}</code>" if tracking else ""),
+            "in_uz": f"🏢 <b>Pochta filialiga yetib keldi!</b>\n\n<b>{code}</b> raqamli posilka shahringizdagi BTS / EMU pochta filialiga yetib keldi. Filialdan olib ketishingiz yoki kuryer yetkazishini kutishingiz mumkin.\n📍 Manzil: {html.escape(order.city or '')}, {html.escape(order.address or '')}",
+            "delivered": f"🎉 <b>Muvaffaqiyatli yetkazib berildi!</b>\n\nHurmatli {name}, <b>{code}</b> raqamli buyurtmangiz qabul qilindi!\n\n{html.escape(brand_name)} liboslarini tanlaganingiz uchun tashakkur! Liboslarimiz sizga uzoq vaqt chiroyli xizmat qilsin!",
             "cancelled": f"❌ <b>Buyurtma bekor qilindi</b>\n\n<b>{code}</b> raqamli buyurtmangiz bekor qilindi. Savollaringiz bo‘lsa, adminga murojaat qilishingiz mumkin.",
         }
         return msgs.get(order.status, f"Buyurtma <b>{code}</b>: holati - <b>{STATUS_UZ.get(order.status, order.status)}</b>")
@@ -239,4 +246,4 @@ def set_status(db: Session, order: Order, status: str, by: str):
     order.history.append(OrderStatusHistory(status=status, by=by))
     c = order.customer
     if get_setting(db, "notify_customer_status") != "0" and c and c.tg_id:
-        enqueue(db, "status", c.tg_id, status_text(c, order), order_id=None)
+        enqueue(db, "status", c.tg_id, status_text(c, order, db), order_id=None)

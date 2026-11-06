@@ -3277,12 +3277,11 @@ function CheckoutScreen({
 // ---------------- ORDER RESULT SCREEN (REPLIT EDITORIAL) ----------------
 const TRACKER_STEPS: { key: string; uz: string; ru: string; desc_uz: string; desc_ru: string }[] = [
   { key: "new", uz: "Yangi buyurtma", ru: "Новый заказ", desc_uz: "Buyurtma qabul qilindi", desc_ru: "Заказ принят" },
-  { key: "awaiting_payment", uz: "To'lov kutilmoqda", ru: "Ожидает оплаты", desc_uz: "Oldindan to'lov (avans) tekshirilmoqda", desc_ru: "Проверка предоплаты" },
-  { key: "paid", uz: "To'langan", ru: "Оплачен", desc_uz: "Avans to'lovi tasdiqlandi", desc_ru: "Предоплата подтверждена" },
-  { key: "ordered_china", uz: "Xitoyda buyurtma berildi", ru: "Заказан в Китае", desc_uz: "Fabrika va yetkazib beruvchiga buyurtma berildi", desc_ru: "Заказано на фабрике" },
-  { key: "china_warehouse", uz: "Xitoy omborida", ru: "На складе в Китае", desc_uz: "Sifat nazorati va qadoqlash", desc_ru: "Проверка качества и упаковка" },
-  { key: "in_transit", uz: "Yo'lda (Kargo)", ru: "В пути (Карго)", desc_uz: "Xitoydan O'zbekistonga jo'natildi", desc_ru: "Отправлено из Китая в Узбекистан" },
-  { key: "in_uz", uz: "O'zbekistonda", ru: "В Узбекистане", desc_uz: "Toshkent saralash markazida", desc_ru: "В сортировочном центре Ташкента" },
+  { key: "awaiting_payment", uz: "To'lov kutilmoqda", ru: "Ожидает оплаты", desc_uz: "To'lov tekshirilmoqda", desc_ru: "Проверка оплаты" },
+  { key: "paid", uz: "Tasdiqlangan", ru: "Подтвержден", desc_uz: "Buyurtma tasdiqlandi", desc_ru: "Заказ подтвержден" },
+  { key: "preparing", uz: "Qadoqlash & Tayyorlash", ru: "Сборка и упаковка", desc_uz: "Ombordan saralanmoqda va brend paketida qadoqlanmoqda", desc_ru: "Сборка и упаковка на складе" },
+  { key: "in_transit", uz: "Pochtada yo'lda (BTS / EMU)", ru: "В пути (Почта)", desc_uz: "Pochta xizmatiga topshirildi", desc_ru: "Передано в курьерскую службу" },
+  { key: "in_uz", uz: "Filialga yetib borgan", ru: "Прибыл в пункт выдачи", desc_uz: "Shahringizdagi filialda yoki kuryerda", desc_ru: "В филиале или у курьера" },
   { key: "delivered", uz: "Yetkazildi", ru: "Доставлен", desc_uz: "Mijozga topshirildi", desc_ru: "Вручено клиенту" },
 ];
 
@@ -3375,9 +3374,13 @@ function OrderResultScreen({
   const advancePct = Number(order.advance_pct || content?.advance_pct || 30);
   const advanceAmount =
     order.advance_amount ?? Math.round((order.total * advancePct) / 100);
+  const mappedStatus =
+    order.status === "ordered_china" || order.status === "china_warehouse"
+      ? "preparing"
+      : order.status;
   const currentStepIdx = Math.max(
     0,
-    TRACKER_STEPS.findIndex((s) => s.key === order.status)
+    TRACKER_STEPS.findIndex((s) => s.key === mappedStatus)
   );
   const isPaidOrLater = currentStepIdx >= 2;
 
@@ -3410,15 +3413,15 @@ function OrderResultScreen({
         </div>
       </div>
 
-      {/* 1) VISUAL CARGO TRACKER (XITOY -> O'ZBEKISTON) */}
+      {/* 1) VISUAL DOMESTIC COURIER & POST TRACKER (BTS / EMU) */}
       <div className="border border-[#172641]/15 bg-[#fbf8f2] p-4 space-y-3">
         <div className="flex items-center justify-between border-b border-[#172641]/10 pb-2.5">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-[.18em] text-[#8a6c43]">
-              {lang === "ru" ? "Отслеживание заказа" : "Buyurtma holati va Kargo"}
+              {lang === "ru" ? "Доставка заказа (BTS / EMU)" : "Buyurtma holati va Yetkazib berish (BTS / EMU)"}
             </div>
             <div className="font-display text-lg text-slate-900">
-              {lang === "ru" ? "Маршрут: Китай → Узбекистан" : "Yo'nalish: Xitoy → O'zbekiston"}
+              {lang === "ru" ? "Маршрут: Склад → Ваш адрес" : "Yo'nalish: Ombor → Sizning manzilingiz"}
             </div>
           </div>
           {order.tracking && (
